@@ -11,6 +11,7 @@ dependencies:
     git:
       url: <this repository>
       path: packages/onebusaway
+      ref: main # or a tag/commit; pin one for reproducible builds
 ```
 
 Flutter apps embedding the arrivals panel should depend on `oba_arrivals`
