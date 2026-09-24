@@ -1,3 +1,4 @@
+import '../core/errors.dart';
 import '../core/json.dart';
 
 class Stop {
@@ -16,8 +17,8 @@ class Stop {
         id: readString(json, 'id'),
         code: readOptString(json, 'code'),
         name: readString(json, 'name'),
-        lat: readOptDouble(json, 'lat') ?? 0,
-        lon: readOptDouble(json, 'lon') ?? 0,
+        lat: readOptDouble(json, 'lat') ?? (throw const ObaFormatException('Missing "lat"')),
+        lon: readOptDouble(json, 'lon') ?? (throw const ObaFormatException('Missing "lon"')),
         direction: readOptString(json, 'direction'),
         routeIds: readStringList(json, 'routeIds'),
         wheelchairBoarding: readOptString(json, 'wheelchairBoarding'),

@@ -58,6 +58,11 @@ void main() {
         throwsA(isA<ObaFormatException>()));
   });
 
+  test('stop requires lat coordinate', () {
+    expect(() => Stop.fromJson({'id': 'X', 'name': 'N', 'lon': 1.0}),
+        throwsA(isA<ObaFormatException>()));
+  });
+
   group('References', () {
     test('looks up stops, routes, agencies and trips by id', () {
       final stop = refs.stop('MTS_24151')!;
@@ -68,6 +73,7 @@ void main() {
       expect(refs.route('UCSD_1040')!.color, 'ffcd00');
       expect(refs.route('UCSD_1040')!.textColor, isNull); // "" -> null
       expect(refs.route('NCTD_301')!.shortName, '101');
+      expect(refs.route('MTS_201'), isNotNull);
       expect(refs.agency('MTS')!.timezone, 'America/Los_Angeles');
       expect(refs.trip('MTS_19630024')!.blockId, 'MTS_103004');
     });
