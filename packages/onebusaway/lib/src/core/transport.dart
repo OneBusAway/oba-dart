@@ -86,6 +86,10 @@ class Transport {
       throw ObaNetworkException(e);
     } on http.ClientException catch (e) {
       throw ObaNetworkException(e);
+    } on Exception catch (e) {
+      // E.g. a TLS HandshakeException or SocketException raised while the
+      // body is read, which some clients don't wrap in ClientException.
+      throw ObaNetworkException(e);
     }
     return decode(response);
   }

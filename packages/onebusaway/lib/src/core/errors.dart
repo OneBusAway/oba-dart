@@ -41,8 +41,16 @@ final class ObaNetworkException extends ObaException {
 
   final Object cause;
 
+  /// Describes [cause] with the `key` query parameter of any URL in it
+  /// replaced by `REDACTED`, so the API key never reaches logs.
   @override
-  String get message => cause.toString();
+  String get message {
+    final text = cause.toString().replaceAll(_apiKeyParam, 'key=REDACTED');
+    final type = '${cause.runtimeType}';
+    return text.startsWith(type) ? text : '$type: $text';
+  }
+
+  static final _apiKeyParam = RegExp(r'key=[^&\s]+');
 }
 
 final class ObaFormatException extends ObaException {

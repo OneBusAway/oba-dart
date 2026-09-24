@@ -93,6 +93,31 @@ void main() {
           throwsA(isA<ObaNetworkException>()));
     });
 
+    test('any other Exception (e.g. TLS during body read) is '
+        'ObaNetworkException', () async {
+      final client = MockClient((_) async => throw _TlsLike());
+      await expectLater(
+        transportWith(client).get('stop', id: 'X'),
+        throwsA(isA<ObaNetworkException>()
+            .having((e) => e.cause, 'cause', isA<_TlsLike>())),
+      );
+    });
+
+    test('network failure message does not leak the API key', () async {
+      final client = MockClient(
+          (request) async => throw http.ClientException('boom', request.url));
+      final error = await transportWith(client)
+          .get('stop', id: 'X', params: {'minutesAfter': '35'})
+          .then<Object?>((_) => null, onError: (Object e) => e);
+      expect(error, isA<ObaNetworkException>());
+      final e = error! as ObaNetworkException;
+      expect(e.message, isNot(contains('org.onebusaway.iphone')));
+      expect(e.toString(), isNot(contains('org.onebusaway.iphone')));
+      expect(e.message, contains('key=REDACTED'));
+      expect(e.message, contains('minutesAfter=35'));
+      expect(e.message, startsWith('ClientException: '));
+    });
+
     test('timeout is ObaNetworkException', () async {
       final never = Completer<http.Response>();
       final client = MockClient((_) => never.future);
@@ -126,3 +151,5 @@ void main() {
     });
   });
 }
+
+class _TlsLike implements Exception {}
