@@ -1,17 +1,29 @@
 import 'package:flutter/material.dart';
 
+/// A rounded block in the theme's placeholder color, used while loading.
+class PlaceholderBox extends StatelessWidget {
+  const PlaceholderBox(this.width, this.height, {super.key, this.radius = 4});
+
+  final double width;
+  final double height;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(radius),
+        ),
+      );
+}
+
 class SkeletonRow extends StatelessWidget {
   const SkeletonRow({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme.surfaceContainerHighest;
-    Widget box(double w, double h, [double r = 4]) => Container(
-          width: w,
-          height: h,
-          decoration:
-              BoxDecoration(color: color, borderRadius: BorderRadius.circular(r)),
-        );
     // The identifying key is nested (not on this widget itself) because the
     // panel places three instances as direct siblings in a Column; Flutter
     // requires unique keys among direct siblings, but tests find all three
@@ -22,15 +34,19 @@ class SkeletonRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
-            box(64, 56, 8),
+            const PlaceholderBox(64, 56, radius: 8),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [box(140, 18), const SizedBox(height: 8), box(100, 14)],
+                children: const [
+                  PlaceholderBox(140, 18),
+                  SizedBox(height: 8),
+                  PlaceholderBox(100, 14),
+                ],
               ),
             ),
-            box(36, 22),
+            const PlaceholderBox(36, 22),
           ],
         ),
       ),

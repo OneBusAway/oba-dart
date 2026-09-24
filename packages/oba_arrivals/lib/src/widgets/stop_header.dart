@@ -3,6 +3,7 @@ import 'package:onebusaway/onebusaway.dart';
 
 import '../display/stop_display.dart';
 import '../strings.dart';
+import 'panel_states.dart';
 
 class StopHeader extends StatelessWidget {
   const StopHeader({
@@ -93,18 +94,13 @@ class _HeaderPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme.surfaceContainerHighest;
-    Widget bar(double width, double height) => Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(4),
-      ),
-    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [bar(220, 22), const SizedBox(height: 8), bar(160, 14)],
+      children: const [
+        PlaceholderBox(220, 22),
+        SizedBox(height: 8),
+        PlaceholderBox(160, 14),
+      ],
     );
   }
 }

@@ -43,6 +43,21 @@ class ArrivalsState {
   final bool isRefreshing;
 
   bool get hasData => updatedAt != null;
+
+  ArrivalsState copyWith({
+    ArrivalsStatus? status,
+    Object? error,
+    bool? isRefreshing,
+  }) =>
+      ArrivalsState(
+        status: status ?? this.status,
+        stop: stop,
+        rawArrivals: rawArrivals,
+        references: references,
+        updatedAt: updatedAt,
+        error: error ?? this.error,
+        isRefreshing: isRefreshing ?? this.isRefreshing,
+      );
 }
 
 /// Fetches arrivals for one stop and polls while running.
@@ -139,17 +154,7 @@ class ArrivalsController extends ChangeNotifier {
     _timer?.cancel();
     _timer = null;
     final request = ++_latestRequest;
-    _emit(
-      ArrivalsState(
-        status: _state.status,
-        stop: _state.stop,
-        rawArrivals: _state.rawArrivals,
-        references: _state.references,
-        updatedAt: _state.updatedAt,
-        error: _state.error,
-        isRefreshing: true,
-      ),
-    );
+    _emit(_state.copyWith(isRefreshing: true));
 
     ArrivalsState next;
     Duration? serverOffset;
@@ -168,14 +173,7 @@ class ArrivalsController extends ChangeNotifier {
       );
     } catch (error) {
       next = _state.hasData
-          ? ArrivalsState(
-              status: ArrivalsStatus.loaded,
-              stop: _state.stop,
-              rawArrivals: _state.rawArrivals,
-              references: _state.references,
-              updatedAt: _state.updatedAt,
-              error: error,
-            )
+          ? _state.copyWith(error: error, isRefreshing: false)
           : ArrivalsState(status: ArrivalsStatus.error, error: error);
     }
 

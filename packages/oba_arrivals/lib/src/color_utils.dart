@@ -30,9 +30,8 @@ double badgeFontSize(String label) {
       .toList();
   if (words.isEmpty) return 24;
   final longest = words.map((w) => w.length).reduce(math.max);
-  final size = math.min(
-    24,
-    math.min((90 / longest).round(), (42 / words.length).round()),
-  );
-  return math.max(8, size).toDouble();
+  return math
+      .min((90 / longest).round(), (42 / words.length).round())
+      .clamp(8, 24)
+      .toDouble();
 }
