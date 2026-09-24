@@ -302,6 +302,50 @@ void main() {
   });
 
   testWidgets(
+      'a host controller shared by a card and a pushed full-page panel keeps '
+      'polling while the page is on top', (tester) async {
+    var requests = 0;
+    final controller = ArrivalsController(
+      client: fakeClient((_) async {
+        requests++;
+        return okResponse();
+      }),
+      stopId: 'MTS_24151',
+    );
+    final navigator = GlobalKey<NavigatorState>();
+    await tester.pumpWidget(MaterialApp(
+      navigatorKey: navigator,
+      home: Scaffold(body: ObaArrivalsPanel(controller: controller)),
+    ));
+    await settle(tester);
+    expect(requests, 1);
+
+    unawaited(navigator.currentState!.push(MaterialPageRoute<void>(
+      builder: (_) => Scaffold(
+        body: SingleChildScrollView(
+          child: ObaArrivalsPanel(controller: controller),
+        ),
+      ),
+    )));
+    await tester.pumpAndSettle(); // transition done; the card is covered
+    final afterPush = requests;
+
+    await tester.pump(const Duration(seconds: 30));
+    await settle(tester);
+    expect(requests, greaterThan(afterPush));
+    expect(controller.isRunning, isTrue);
+
+    navigator.currentState!.pop();
+    await tester.pumpAndSettle();
+    expect(controller.isRunning, isTrue); // the card holds it again
+
+    await tester.pumpWidget(const SizedBox());
+    await settle(tester);
+    expect(controller.isRunning, isFalse); // every panel released it
+    controller.dispose();
+  });
+
+  testWidgets(
       'resuming a shared host controller on TickerMode re-enable does not '
       'notify a sibling during the panel\'s build', (tester) async {
     final controller = ArrivalsController(

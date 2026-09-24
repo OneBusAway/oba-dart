@@ -32,8 +32,12 @@ class ObaArrivalsPanel extends StatefulWidget {
   final String? stopId;
 
   /// Optional host-owned controller. When given, [client], [stopId],
-  /// [minutesAfter] and [refreshInterval] are ignored and the panel does not
-  /// dispose it.
+  /// [minutesAfter] and [refreshInterval] are ignored.
+  ///
+  /// The panel calls `ArrivalsController.acquire` while it is visible and
+  /// the app is in the foreground, and `release` otherwise, so the
+  /// controller keeps polling while any panel sharing it is on screen. The
+  /// panel never disposes it; the host does.
   final ArrivalsController? controller;
   final void Function(ArrivalAndDeparture arrival)? onArrivalTap;
   final int minutesAfter;
@@ -56,6 +60,9 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
   Timer? _tick;
   bool _appActive = true;
   bool _visible = true;
+
+  /// Whether this panel currently holds [_controller] via `acquire`.
+  bool _holding = false;
 
   /// True when a post-frame callback has already been scheduled to apply
   /// [_syncRunning], so multiple requests within one frame are coalesced.
@@ -113,12 +120,9 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
                 widget.refreshInterval != oldWidget.refreshInterval));
     if (!changed) return;
     _controller.removeListener(_onControllerChanged);
-    if (_ownedController != null) {
-      _ownedController!.dispose();
-      _ownedController = null;
-    } else {
-      _controller.pause();
-    }
+    _releaseController();
+    _ownedController?.dispose();
+    _ownedController = null;
     _controller = _resolveController();
     _controller.addListener(_onControllerChanged);
     _scheduleSyncRunning();
@@ -129,7 +133,7 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
   ///
   /// [didChangeDependencies] and [didUpdateWidget] run during the build
   /// phase. Calling [_syncRunning] from there can call
-  /// `ArrivalsController.resume`, which synchronously notifies listeners; if
+  /// `ArrivalsController.acquire`, which synchronously notifies listeners; if
   /// the host shares its controller with another widget outside this
   /// panel's subtree (e.g. a `ListenableBuilder` elsewhere in the tree),
   /// that notification can call `markNeedsBuild` on a widget the framework
@@ -145,12 +149,24 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
     });
   }
 
+  /// Holds the controller while visible and the app is active, and
+  /// releases it otherwise.
   void _syncRunning() {
-    if (_appActive && _visible) {
-      _controller.resume();
-    } else {
-      _controller.pause();
+    final want = _appActive && _visible;
+    if (want && !_holding) {
+      _holding = true;
+      _controller.acquire();
+    } else if (!want) {
+      _releaseController();
     }
+  }
+
+  /// Releases [_controller] if this panel holds it. Releasing never
+  /// notifies listeners, so it is safe during build.
+  void _releaseController() {
+    if (!_holding) return;
+    _holding = false;
+    _controller.release();
   }
 
   void _onControllerChanged() {
@@ -162,11 +178,8 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
     _tick?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     _controller.removeListener(_onControllerChanged);
-    if (_ownedController != null) {
-      _ownedController!.dispose();
-    } else {
-      _controller.pause();
-    }
+    _releaseController();
+    _ownedController?.dispose();
     super.dispose();
   }
 

@@ -203,6 +203,58 @@ void main() {
     });
   });
 
+  test('acquire() is reference counted: polls while any holder remains', () {
+    fakeAsync((async) {
+      var requests = 0;
+      final c = controllerFor(async, (_) async {
+        requests++;
+        return okResponse();
+      });
+      c.acquire();
+      async.flushMicrotasks();
+      expect(requests, 1); // 0 -> 1 refreshes now
+      expect(c.isRunning, isTrue);
+      c.acquire();
+      async.flushMicrotasks();
+      expect(requests, 1); // 1 -> 2 does not refetch
+
+      c.release(); // 2 -> 1 keeps polling
+      expect(c.isRunning, isTrue);
+      async.elapse(const Duration(seconds: 30));
+      expect(requests, 2);
+
+      c.release(); // 1 -> 0 stops
+      expect(c.isRunning, isFalse);
+      async.elapse(const Duration(minutes: 5));
+      expect(requests, 2);
+      expect(async.pendingTimers, isEmpty);
+
+      c.acquire(); // 0 -> 1 again refreshes now
+      async.flushMicrotasks();
+      expect(requests, 3);
+      c.dispose();
+    });
+  });
+
+  test('release() during an in-flight request does not schedule a poll', () {
+    fakeAsync((async) {
+      var requests = 0;
+      final pending = Completer<http.Response>();
+      final c = controllerFor(async, (_) {
+        requests++;
+        return pending.future;
+      });
+      c.acquire();
+      c.release();
+      pending.complete(okResponse());
+      async.flushMicrotasks();
+      async.elapse(const Duration(minutes: 2));
+      expect(requests, 1);
+      expect(c.state.status, ArrivalsStatus.loaded);
+      c.dispose();
+    });
+  });
+
   test('pause() stops polling; resume() refreshes immediately', () {
     fakeAsync((async) {
       var requests = 0;
