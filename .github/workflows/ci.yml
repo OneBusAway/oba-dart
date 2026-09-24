@@ -59,11 +59,13 @@ jobs:
       - name: Resolve workspace dependencies
         run: flutter pub get
 
+      # --run-skipped makes the goldens fail, rather than silently skip, if
+      # this job ever stops running on macOS in Pacific time.
       - name: Run golden tests
         working-directory: packages/oba_arrivals
         env:
           TZ: America/Los_Angeles
-        run: flutter test --tags golden
+        run: flutter test --tags golden --run-skipped
 
       - name: Upload golden failures
         if: failure()
