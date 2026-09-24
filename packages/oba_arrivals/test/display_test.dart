@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:oba_arrivals/oba_arrivals.dart';
-import 'package:onebusaway/onebusaway.dart';
 
 DateTime t(int hour, int minute, [int second = 0]) =>
     DateTime.utc(2026, 9, 24, hour, minute, second);

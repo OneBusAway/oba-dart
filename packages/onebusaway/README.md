@@ -13,6 +13,9 @@ dependencies:
       path: packages/onebusaway
 ```
 
+Flutter apps embedding the arrivals panel should depend on `oba_arrivals`
+alone; it re-exports this package.
+
 ## Usage
 
 ```dart

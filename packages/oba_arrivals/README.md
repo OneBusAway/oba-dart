@@ -4,21 +4,22 @@ A Wayfinder-style OneBusAway arrivals and departures panel for Flutter apps.
 
 ## Install
 
+`oba_arrivals` re-exports `onebusaway`, so depend on this one package:
+
 ```yaml
 dependencies:
   oba_arrivals:
     git:
       url: <this repository>
       path: packages/oba_arrivals
-  onebusaway:
-    git:
-      url: <this repository>
-      path: packages/onebusaway
+      ref: main # or a tag/commit; pin one for reproducible builds
 ```
 
 ## Embed
 
 ```dart
+import 'package:oba_arrivals/oba_arrivals.dart';
+
 final client = OneBusAwayClient(
   baseUrl: Uri.parse('https://realtime.sdmts.com/api/'), // OBA server root
   apiKey: '<your key>',

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:oba_arrivals/oba_arrivals.dart';
-import 'package:onebusaway/onebusaway.dart';
 
 import 'all_arrivals_page.dart';
 import 'demo_stops.dart';

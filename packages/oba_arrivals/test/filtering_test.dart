@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:oba_arrivals/oba_arrivals.dart';
-import 'package:onebusaway/onebusaway.dart';
 
 final serviceDate = DateTime.utc(2026, 9, 24);
 final now = DateTime.utc(2026, 9, 24, 14, 0);
