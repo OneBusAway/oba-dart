@@ -46,3 +46,7 @@ mise exec -- flutter test                                     # demo app
 iOS and Android are the primary targets, and macOS works for desktop runs.
 The SDMTS server sends CORS headers for localhost, so `flutter run -d chrome`
 works against it. Other OBA servers may not send those headers.
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE).
