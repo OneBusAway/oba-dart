@@ -40,8 +40,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   oba_arrivals:
     path: packages/oba_arrivals
-  onebusaway:
-    path: packages/onebusaway
 
 dev_dependencies:
   flutter_test:

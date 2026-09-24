@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:onebusaway/onebusaway.dart';
+import 'package:oba_arrivals/oba_arrivals.dart';
 
 import 'shuttle_card.dart';
 

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:oba_arrivals/oba_arrivals.dart';
 import 'package:oba_dart/app.dart';
-import 'package:onebusaway/onebusaway.dart';
 
 void main() {
   final fixture = File('packages/onebusaway/test/fixtures/arrivals_mts_24151.json')
