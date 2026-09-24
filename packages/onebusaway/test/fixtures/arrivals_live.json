@@ -1,0 +1,377 @@
+{
+    "code": 200,
+    "currentTime": 1790230758872,
+    "data": {
+        "entry": {
+            "arrivalsAndDepartures": [
+                {
+                    "arrivalEnabled": true,
+                    "blockTripSequence": 11,
+                    "departureEnabled": true,
+                    "distanceFromStop": 1304.2403866124805,
+                    "frequency": null,
+                    "lastUpdateTime": 1790230731000,
+                    "numberOfStopsAway": 2,
+                    "predicted": true,
+                    "predictedArrivalInterval": null,
+                    "predictedArrivalTime": 1790231040000,
+                    "predictedDepartureInterval": null,
+                    "predictedDepartureTime": 1790231040000,
+                    "routeId": "MTS_30",
+                    "routeLongName": "Old Town  - UTC via Pacific Beach",
+                    "routeShortName": "30",
+                    "scheduledArrivalInterval": null,
+                    "scheduledArrivalTime": 1790230680000,
+                    "scheduledDepartureInterval": null,
+                    "scheduledDepartureTime": 1790230680000,
+                    "serviceDate": 1790146800000,
+                    "situationIds": [],
+                    "status": "default",
+                    "stopId": "MTS_24151",
+                    "stopSequence": 9,
+                    "totalStopsInTrip": 58,
+                    "tripHeadsign": "Old Town",
+                    "tripId": "MTS_19630025",
+                    "tripStatus": {
+                        "activeTripId": "MTS_19630025",
+                        "blockTripSequence": 11,
+                        "closestStop": "MTS_10772",
+                        "closestStopTimeOffset": 42,
+                        "distanceAlongTrip": 3379.7582281241193,
+                        "frequency": null,
+                        "lastKnownDistanceAlongTrip": 0,
+                        "lastKnownLocation": {
+                            "lat": 32.874771,
+                            "lon": -117.233612
+                        },
+                        "lastKnownOrientation": 0,
+                        "lastLocationUpdateTime": 1790230731000,
+                        "lastUpdateTime": 1790230731000,
+                        "nextStop": "MTS_10772",
+                        "nextStopTimeOffset": 42,
+                        "orientation": 170.73607940154875,
+                        "phase": "in_progress",
+                        "position": {
+                            "lat": 32.87698988666869,
+                            "lon": -117.23404017434264
+                        },
+                        "predicted": true,
+                        "scheduleDeviation": 360,
+                        "scheduledDistanceAlongTrip": 3379.7582281241193,
+                        "serviceDate": 1790146800000,
+                        "situationIds": [],
+                        "status": "default",
+                        "totalDistanceAlongTrip": 27730.554060404073,
+                        "vehicleId": "MTS_301"
+                    },
+                    "vehicleId": "MTS_301"
+                },
+                {
+                    "arrivalEnabled": true,
+                    "blockTripSequence": 9,
+                    "departureEnabled": true,
+                    "distanceFromStop": 4546.676677330921,
+                    "frequency": null,
+                    "lastUpdateTime": 1790230740000,
+                    "numberOfStopsAway": 8,
+                    "predicted": true,
+                    "predictedArrivalInterval": null,
+                    "predictedArrivalTime": 1790231580000,
+                    "predictedDepartureInterval": null,
+                    "predictedDepartureTime": 1790231580000,
+                    "routeId": "MTS_30",
+                    "routeLongName": "Old Town  - UTC via Pacific Beach",
+                    "routeShortName": "30",
+                    "scheduledArrivalInterval": null,
+                    "scheduledArrivalTime": 1790232840000,
+                    "scheduledDepartureInterval": null,
+                    "scheduledDepartureTime": 1790232840000,
+                    "serviceDate": 1790146800000,
+                    "situationIds": [],
+                    "status": "default",
+                    "stopId": "MTS_24151",
+                    "stopSequence": 9,
+                    "totalStopsInTrip": 58,
+                    "tripHeadsign": "Old Town",
+                    "tripId": "MTS_19630026",
+                    "tripStatus": {
+                        "activeTripId": "MTS_19630026",
+                        "blockTripSequence": 9,
+                        "closestStop": "MTS_95034",
+                        "closestStopTimeOffset": -18,
+                        "distanceAlongTrip": 137.3219374056498,
+                        "frequency": null,
+                        "lastKnownDistanceAlongTrip": 0,
+                        "lastKnownLocation": {
+                            "lat": 32.868416,
+                            "lon": -117.2145
+                        },
+                        "lastKnownOrientation": 0,
+                        "lastLocationUpdateTime": 1790230740000,
+                        "lastUpdateTime": 1790230740000,
+                        "nextStop": "MTS_11163",
+                        "nextStopTimeOffset": 102,
+                        "orientation": 180.64014966906024,
+                        "phase": "in_progress",
+                        "position": {
+                            "lat": 32.868087859859045,
+                            "lon": -117.21339154261531
+                        },
+                        "predicted": true,
+                        "scheduleDeviation": -1260,
+                        "scheduledDistanceAlongTrip": 137.3219374056498,
+                        "serviceDate": 1790146800000,
+                        "situationIds": [],
+                        "status": "default",
+                        "totalDistanceAlongTrip": 27730.554060404073,
+                        "vehicleId": "MTS_1705"
+                    },
+                    "vehicleId": "MTS_1705"
+                }
+            ],
+            "nearbyStopIds": [
+                "MTS_24150"
+            ],
+            "situationIds": [],
+            "stopId": "MTS_24151"
+        },
+        "references": {
+            "agencies": [
+                {
+                    "disclaimer": "",
+                    "email": "customerfeedback@sdmts.com",
+                    "fareUrl": "",
+                    "id": "MTS",
+                    "lang": "en",
+                    "name": "MTS",
+                    "phone": "619-233-3004",
+                    "privateService": false,
+                    "timezone": "America/Los_Angeles",
+                    "url": "http://www.sdmts.com"
+                },
+                {
+                    "disclaimer": "",
+                    "email": "",
+                    "fareUrl": "",
+                    "id": "NCTD",
+                    "lang": "EN",
+                    "name": "North County Transit District",
+                    "phone": "760-966-6500",
+                    "privateService": false,
+                    "timezone": "America/Los_Angeles",
+                    "url": "http://www.gonctd.com"
+                },
+                {
+                    "disclaimer": "",
+                    "email": "tritontransit@ucsd.edu",
+                    "fareUrl": "",
+                    "id": "UCSD",
+                    "lang": "en",
+                    "name": "Triton Transit",
+                    "phone": "(858) 534-7422",
+                    "privateService": false,
+                    "timezone": "US/Pacific",
+                    "url": "https://tritontransit.ucsd.edu"
+                }
+            ],
+            "routes": [
+                {
+                    "agencyId": "MTS",
+                    "color": "000099",
+                    "description": "",
+                    "id": "MTS_30",
+                    "longName": "Old Town  - UTC via Pacific Beach",
+                    "shortName": "30",
+                    "textColor": "FFFFFF",
+                    "type": 3,
+                    "url": "https://www.sdmts.com/schedules-real-time?fragment=30"
+                },
+                {
+                    "agencyId": "NCTD",
+                    "color": "008C9B",
+                    "description": "",
+                    "id": "NCTD_301",
+                    "longName": "Oceanside - UTC/VA/UCSD",
+                    "shortName": "101",
+                    "textColor": "FFFFFF",
+                    "type": 3,
+                    "url": "http://www.gonctd.com/breeze"
+                },
+                {
+                    "agencyId": "UCSD",
+                    "color": "ffcd00",
+                    "description": "Circles the central campus in a clockwise direction; including connections to regional bus service at the Gilman Transit Center and the UC San Diego Blue Line Trolley at the Central Campus Station.",
+                    "id": "UCSD_1040",
+                    "longName": "Inside Loop",
+                    "shortName": "IL",
+                    "textColor": "",
+                    "type": 3,
+                    "url": ""
+                },
+                {
+                    "agencyId": "UCSD",
+                    "color": "90a7d3",
+                    "description": "Connects the Scripps Institution of Oceanography; Birch Aquarium and the beach at Scripps Seaside Forum to the Central Campus at the Gilman Transit Center; with connections to regional bus services.",
+                    "id": "UCSD_1020",
+                    "longName": "SIO Shuttle",
+                    "shortName": "S",
+                    "textColor": "",
+                    "type": 3,
+                    "url": ""
+                },
+                {
+                    "agencyId": "MTS",
+                    "color": "CC0000",
+                    "description": "",
+                    "id": "MTS_201",
+                    "longName": "Super Loop - Counterclockwise",
+                    "shortName": "201",
+                    "textColor": "FFFFFF",
+                    "type": 3,
+                    "url": "https://www.sdmts.com/schedules-real-time?fragment=201"
+                },
+                {
+                    "agencyId": "UCSD",
+                    "color": "c09338",
+                    "description": "Connects the Central Campus and Mesa residential community to the Clairemont and Convoy shopping area.",
+                    "id": "UCSD_1060",
+                    "longName": "Grocery-Convoy",
+                    "shortName": "GC",
+                    "textColor": "",
+                    "type": 3,
+                    "url": ""
+                },
+                {
+                    "agencyId": "UCSD",
+                    "color": "fc8900",
+                    "description": "Connects the Mesa residential community and UC San Diego Health La Jolla medical facilities; to the main campus and UC San Diego Extension locations via a counter-clockwise loop.",
+                    "id": "UCSD_1050",
+                    "longName": "Mesa Loop",
+                    "shortName": "ML",
+                    "textColor": "",
+                    "type": 3,
+                    "url": ""
+                },
+                {
+                    "agencyId": "UCSD",
+                    "color": "20183d",
+                    "description": "Circles the central campus in a counter-clockwise direction; including connections to regional bus service at the Gilman Transit Center and the UC San Diego Blue Line Trolley at the Central Campus Station.",
+                    "id": "UCSD_1030",
+                    "longName": "Outside Loop",
+                    "shortName": "OL",
+                    "textColor": "",
+                    "type": 3,
+                    "url": ""
+                }
+            ],
+            "situations": [],
+            "stops": [
+                {
+                    "code": "24151",
+                    "direction": "SW",
+                    "id": "MTS_24151",
+                    "lat": 32.871718,
+                    "locationType": 0,
+                    "lon": -117.242206,
+                    "name": "Eighth College / Theatre District (North)",
+                    "routeIds": [
+                        "MTS_30",
+                        "NCTD_301",
+                        "UCSD_1040",
+                        "UCSD_1020"
+                    ],
+                    "wheelchairBoarding": "UNKNOWN"
+                },
+                {
+                    "code": "10772",
+                    "direction": "W",
+                    "id": "MTS_10772",
+                    "lat": 32.877191,
+                    "locationType": 0,
+                    "lon": -117.235708,
+                    "name": "Gilman Transit Center (North)",
+                    "routeIds": [
+                        "MTS_30",
+                        "NCTD_301",
+                        "MTS_201",
+                        "UCSD_1060",
+                        "UCSD_1040",
+                        "UCSD_1050"
+                    ],
+                    "wheelchairBoarding": "UNKNOWN"
+                },
+                {
+                    "code": "95034",
+                    "direction": "S",
+                    "id": "MTS_95034",
+                    "lat": 32.869248,
+                    "locationType": 0,
+                    "lon": -117.213559,
+                    "name": "UTC Transit Center",
+                    "routeIds": [
+                        "MTS_30"
+                    ],
+                    "wheelchairBoarding": "ACCESSIBLE"
+                },
+                {
+                    "code": "11163",
+                    "direction": "NW",
+                    "id": "MTS_11163",
+                    "lat": 32.867815,
+                    "locationType": 0,
+                    "lon": -117.219296,
+                    "name": "Nobel Dr & Regents Rd",
+                    "routeIds": [
+                        "MTS_30",
+                        "NCTD_301"
+                    ],
+                    "wheelchairBoarding": "UNKNOWN"
+                },
+                {
+                    "code": "24150",
+                    "direction": "NE",
+                    "id": "MTS_24150",
+                    "lat": 32.872084,
+                    "locationType": 0,
+                    "lon": -117.241795,
+                    "name": "Eighth College / Theatre District (South)",
+                    "routeIds": [
+                        "MTS_30",
+                        "NCTD_301",
+                        "UCSD_1030",
+                        "UCSD_1020"
+                    ],
+                    "wheelchairBoarding": "UNKNOWN"
+                }
+            ],
+            "trips": [
+                {
+                    "blockId": "MTS_103008",
+                    "directionId": "1",
+                    "id": "MTS_19630025",
+                    "routeId": "MTS_30",
+                    "routeShortName": "",
+                    "serviceId": "MTS_88312-1111100-0",
+                    "shapeId": "MTS_30_1_349",
+                    "timeZone": "",
+                    "tripHeadsign": "Old Town",
+                    "tripShortName": ""
+                },
+                {
+                    "blockId": "MTS_101314",
+                    "directionId": "1",
+                    "id": "MTS_19630026",
+                    "routeId": "MTS_30",
+                    "routeShortName": "",
+                    "serviceId": "MTS_88312-1111100-0",
+                    "shapeId": "MTS_30_1_349",
+                    "timeZone": "",
+                    "tripHeadsign": "Old Town",
+                    "tripShortName": ""
+                }
+            ]
+        }
+    },
+    "text": "OK",
+    "version": 2
+}
