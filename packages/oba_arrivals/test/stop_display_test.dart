@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:oba_arrivals/oba_arrivals.dart';
+import 'package:onebusaway/onebusaway.dart' show Route;
 
 void main() {
   const strings = ObaArrivalsStrings();

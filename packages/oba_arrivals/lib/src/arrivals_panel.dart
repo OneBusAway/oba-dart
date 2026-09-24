@@ -28,6 +28,9 @@ class ObaArrivalsPanel extends StatefulWidget {
   }) : assert(controller != null || (client != null && stopId != null),
             'Pass a controller, or both client and stopId.');
 
+  /// The API client. It must be long-lived: create it once (e.g. in `main`
+  /// or a `State`), reuse it, and close it when done. A new client instance
+  /// reloads the panel.
   final OneBusAwayClient? client;
   final String? stopId;
 

@@ -2,8 +2,10 @@
 library;
 
 /// Apps get the OneBusAway client through this package, so they can depend
-/// on `oba_arrivals` alone.
-export 'package:onebusaway/onebusaway.dart';
+/// on `oba_arrivals` alone. The `Route` model is hidden because it collides
+/// with Flutter's `Route`; import `package:onebusaway/onebusaway.dart` with a
+/// prefix (`as oba`) if you need it.
+export 'package:onebusaway/onebusaway.dart' hide Route;
 
 export 'src/arrivals_controller.dart';
 export 'src/arrivals_panel.dart';
