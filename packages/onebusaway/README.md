@@ -9,10 +9,12 @@ It has no Flutter dependency.
 dependencies:
   onebusaway:
     git:
-      url: <this repository>
+      url: https://github.com/onebusaway/oba-dart.git
       path: packages/onebusaway
-      ref: main # or a tag/commit; pin one for reproducible builds
+      ref: v0.1.0 # pin a release tag
 ```
+
+Requires Dart 3.13.4 or later.
 
 Flutter apps embedding the arrivals panel should depend on `oba_arrivals`
 alone; it re-exports this package.
