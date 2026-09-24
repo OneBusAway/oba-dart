@@ -57,6 +57,10 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
   bool _appActive = true;
   bool _visible = true;
 
+  /// True when a post-frame callback has already been scheduled to apply
+  /// [_syncRunning], so multiple requests within one frame are coalesced.
+  bool _syncScheduled = false;
+
   @override
   void initState() {
     super.initState();
@@ -95,7 +99,7 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
     super.didChangeDependencies();
     // False when a pushed route covers this one, among other cases.
     _visible = TickerMode.valuesOf(context).enabled;
-    _syncRunning();
+    _scheduleSyncRunning();
   }
 
   @override
@@ -117,7 +121,28 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
     }
     _controller = _resolveController();
     _controller.addListener(_onControllerChanged);
-    _syncRunning();
+    _scheduleSyncRunning();
+  }
+
+  /// Applies [_syncRunning] after this frame finishes building, coalescing
+  /// requests raised more than once within the same frame.
+  ///
+  /// [didChangeDependencies] and [didUpdateWidget] run during the build
+  /// phase. Calling [_syncRunning] from there can call
+  /// `ArrivalsController.resume`, which synchronously notifies listeners; if
+  /// the host shares its controller with another widget outside this
+  /// panel's subtree (e.g. a `ListenableBuilder` elsewhere in the tree),
+  /// that notification can call `markNeedsBuild` on a widget the framework
+  /// isn't currently building, which throws. Deferring to a post-frame
+  /// callback runs it once the frame (and any lock on the element tree) is
+  /// over.
+  void _scheduleSyncRunning() {
+    if (_syncScheduled) return;
+    _syncScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncScheduled = false;
+      if (mounted) _syncRunning();
+    });
   }
 
   void _syncRunning() {

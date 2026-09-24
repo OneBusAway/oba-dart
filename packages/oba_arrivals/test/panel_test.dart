@@ -268,4 +268,47 @@ void main() {
     expect(() => controller.addListener(() {}), returnsNormally);
     controller.dispose();
   });
+
+  testWidgets(
+      'resuming a shared host controller on TickerMode re-enable does not '
+      'notify a sibling during the panel\'s build', (tester) async {
+    final controller = ArrivalsController(
+        client: fakeClient((_) async => okResponse()), stopId: 'MTS_24151');
+    late StateSetter setLocalState;
+    var enabled = false;
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: StatefulBuilder(builder: (context, setState) {
+          setLocalState = setState;
+          return Column(
+            children: [
+              ListenableBuilder(
+                listenable: controller,
+                builder: (context, _) => Text(
+                    controller.state.isRefreshing ? 'refreshing' : 'idle'),
+              ),
+              TickerMode(
+                enabled: enabled,
+                child: ObaArrivalsPanel(controller: controller),
+              ),
+            ],
+          );
+        }),
+      ),
+    ));
+    await settle(tester);
+
+    // Re-enabling TickerMode rebuilds only the StatefulBuilder's subtree
+    // (not a fresh pumpWidget), so the panel's didChangeDependencies runs
+    // while the framework's current build target is the panel itself. The
+    // sibling ListenableBuilder must not be notified synchronously from
+    // there.
+    setLocalState(() => enabled = true);
+    await tester.pump();
+    await settle(tester);
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Old Town'), findsOneWidget);
+    controller.dispose();
+  });
 }
