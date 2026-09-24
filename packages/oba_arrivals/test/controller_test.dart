@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:fake_async/fake_async.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:oba_arrivals/oba_arrivals.dart';
@@ -13,12 +14,14 @@ void main() {
 
   ArrivalsController controllerFor(
     FakeAsync async,
-    Future<http.Response> Function(http.Request) handler,
-  ) =>
+    Future<http.Response> Function(http.Request) handler, {
+    void Function(Object error, StackTrace stackTrace)? onError,
+  }) =>
       ArrivalsController(
         client: fakeClient(handler),
         stopId: 'MTS_24151',
         clock: () => deviceStart.add(async.elapsed),
+        onError: onError,
       );
 
   test('resume() loads the stop and arrivals', () {
@@ -137,6 +140,89 @@ void main() {
       expect(c.state.error, isA<ObaApiException>()
           .having((e) => e.kind, 'kind', ObaApiErrorKind.emptyResponse));
       expect(c.state.hasData, isFalse);
+      c.dispose();
+    });
+  });
+
+  test('onError receives each failed fetch with its stack trace', () {
+    fakeAsync((async) {
+      final errors = <(Object, StackTrace)>[];
+      var requests = 0;
+      final c = controllerFor(
+        async,
+        (_) async {
+          requests++;
+          return switch (requests) {
+            1 => http.Response('', 200),
+            2 => okResponse(),
+            _ => http.Response('', 500),
+          };
+        },
+        onError: (e, s) => errors.add((e, s)),
+      );
+      c.resume();
+      async.flushMicrotasks();
+      expect(errors, hasLength(1));
+      expect(errors[0].$1, isA<ObaApiException>()
+          .having((e) => e.kind, 'kind', ObaApiErrorKind.emptyResponse));
+      expect(errors[0].$1, same(c.state.error));
+
+      async.elapse(const Duration(seconds: 30)); // succeeds
+      expect(errors, hasLength(1));
+
+      async.elapse(const Duration(seconds: 30)); // fails with data
+      expect(errors, hasLength(2));
+      expect(errors[1].$1,
+          isA<ObaApiException>().having((e) => e.code, 'code', 500));
+      expect(errors[1].$2, isNot(StackTrace.empty));
+      c.dispose();
+    });
+  });
+
+  test('onError skips a discarded stale failure', () {
+    fakeAsync((async) {
+      final errors = <Object>[];
+      final first = Completer<http.Response>();
+      var requests = 0;
+      final c = controllerFor(
+        async,
+        (_) {
+          requests++;
+          return requests == 1 ? first.future : Future.value(okResponse());
+        },
+        onError: (e, _) => errors.add(e),
+      );
+      c.resume();
+      c.refresh(); // supersedes request 1
+      async.flushMicrotasks();
+      first.complete(http.Response('', 500));
+      async.flushMicrotasks();
+      expect(errors, isEmpty);
+      c.dispose();
+    });
+  });
+
+  test('a throwing onError is reported and does not stop polling', () {
+    fakeAsync((async) {
+      final reported = <FlutterErrorDetails>[];
+      final previous = FlutterError.onError;
+      FlutterError.onError = reported.add;
+      addTearDown(() => FlutterError.onError = previous);
+      var requests = 0;
+      final c = controllerFor(
+        async,
+        (_) async {
+          requests++;
+          return http.Response('', 500);
+        },
+        onError: (_, _) => throw StateError('host bug'),
+      );
+      c.resume();
+      async.flushMicrotasks();
+      expect(c.state.status, ArrivalsStatus.error);
+      expect(reported.single.exception, isA<StateError>());
+      async.elapse(const Duration(seconds: 30));
+      expect(requests, 2);
       c.dispose();
     });
   });

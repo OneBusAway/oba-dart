@@ -314,6 +314,37 @@ void main() {
     expect(stops, ['MTS_24151.json', 'MTS_88986.json']);
   });
 
+  testWidgets('onError reports failures; a new closure does not reload',
+      (tester) async {
+    var requests = 0;
+    final client = fakeClient((_) async {
+      requests++;
+      return http.Response('', 500);
+    });
+    final first = <Object>[];
+    final second = <Object>[];
+    await tester.pumpWidget(host(ObaArrivalsPanel(
+      client: client,
+      stopId: 'MTS_24151',
+      onError: (e, _) => first.add(e),
+    )));
+    await settle(tester);
+    expect(first.single, isA<ObaApiException>());
+
+    await tester.pumpWidget(host(ObaArrivalsPanel(
+      client: client,
+      stopId: 'MTS_24151',
+      onError: (e, _) => second.add(e),
+    )));
+    await settle(tester);
+    expect(requests, 1); // same configuration, no reload
+
+    await tester.tap(find.widgetWithText(TextButton, 'Retry'));
+    await settle(tester);
+    expect(first, hasLength(1));
+    expect(second, hasLength(1)); // the latest callback is used
+  });
+
   testWidgets('lays out without overflow at 200% text scale', (tester) async {
     tester.view.physicalSize = const Size(360 * 3, 800 * 3);
     tester.view.devicePixelRatio = 3;

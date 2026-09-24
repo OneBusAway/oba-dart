@@ -28,7 +28,12 @@ class _ShuttleCardState extends State<ShuttleCard> {
   late ArrivalsController _controller = _controllerFor(_stop);
 
   ArrivalsController _controllerFor(DemoStop stop) =>
-      ArrivalsController(client: widget.client, stopId: stop.id);
+      ArrivalsController(
+        client: widget.client,
+        stopId: stop.id,
+        // A real host would report this to its crash or analytics tool.
+        onError: (error, _) => debugPrint('OBA ${stop.id}: $error'),
+      );
 
   void _selectStop(DemoStop stop) {
     if (stop == _stop) return;

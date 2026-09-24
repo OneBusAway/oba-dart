@@ -73,6 +73,7 @@ class ArrivalsController extends ChangeNotifier {
     required this._client,
     this.minutesAfter = 35,
     this.refreshInterval = const Duration(seconds: 30),
+    this.onError,
     DateTime Function()? clock,
     // package:clock, not DateTime.now, so fake_async / testWidgets can
     // control time.
@@ -83,6 +84,13 @@ class ArrivalsController extends ChangeNotifier {
   final String stopId;
   final int minutesAfter;
   final Duration refreshInterval;
+
+  /// Called for each failed fetch, after [state] records the error, so hosts
+  /// can log or report it (e.g. to Crashlytics or Sentry). The error is
+  /// normally an [ObaException]. Not called for a request superseded by a
+  /// newer one, or after [dispose]. If it throws, the exception goes to
+  /// [FlutterError.reportError] and polling continues.
+  final void Function(Object error, StackTrace stackTrace)? onError;
 
   ArrivalsState _state = const ArrivalsState();
   ArrivalsState get state => _state;
@@ -158,6 +166,7 @@ class ArrivalsController extends ChangeNotifier {
 
     ArrivalsState next;
     Duration? serverOffset;
+    (Object, StackTrace)? failure;
     try {
       final response = await _client.arrivalsAndDepartures.forStop(
         stopId,
@@ -171,7 +180,8 @@ class ArrivalsController extends ChangeNotifier {
         references: response.references,
         updatedAt: response.currentTime,
       );
-    } catch (error) {
+    } catch (error, stackTrace) {
+      failure = (error, stackTrace);
       next = _state.hasData
           ? _state.copyWith(error: error, isRefreshing: false)
           : ArrivalsState(status: ArrivalsStatus.error, error: error);
@@ -180,7 +190,23 @@ class ArrivalsController extends ChangeNotifier {
     if (_disposed || request != _latestRequest) return;
     if (serverOffset != null) _serverOffset = serverOffset;
     _emit(next);
+    if (failure != null) _reportError(failure.$1, failure.$2);
     if (isRunning) _timer = Timer(refreshInterval, () => unawaited(refresh()));
+  }
+
+  void _reportError(Object error, StackTrace stackTrace) {
+    final onError = this.onError;
+    if (onError == null) return;
+    try {
+      onError(error, stackTrace);
+    } catch (exception, stack) {
+      FlutterError.reportError(FlutterErrorDetails(
+        exception: exception,
+        stack: stack,
+        library: 'oba_arrivals',
+        context: ErrorDescription('while calling ArrivalsController.onError'),
+      ));
+    }
   }
 
   void _emit(ArrivalsState state) {

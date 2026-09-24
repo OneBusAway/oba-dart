@@ -21,6 +21,7 @@ class ObaArrivalsPanel extends StatefulWidget {
     this.stopId,
     this.controller,
     this.onArrivalTap,
+    this.onError,
     this.minutesAfter = 35,
     this.maxArrivals,
     this.refreshInterval = const Duration(seconds: 30),
@@ -37,7 +38,7 @@ class ObaArrivalsPanel extends StatefulWidget {
   final String? stopId;
 
   /// Optional host-owned controller. When given, [client], [stopId],
-  /// [minutesAfter] and [refreshInterval] are ignored.
+  /// [minutesAfter], [refreshInterval] and [onError] are ignored.
   ///
   /// The panel calls `ArrivalsController.acquire` while it is visible and
   /// the app is in the foreground, and `release` otherwise, so the
@@ -45,6 +46,12 @@ class ObaArrivalsPanel extends StatefulWidget {
   /// panel never disposes it; the host does.
   final ArrivalsController? controller;
   final void Function(ArrivalAndDeparture arrival)? onArrivalTap;
+
+  /// Called for each failed fetch; see `ArrivalsController.onError`. The
+  /// latest callback is always used, so an inline closure is fine and
+  /// doesn't reload the panel. Ignored when [controller] is given: pass
+  /// `onError` to that controller instead.
+  final void Function(Object error, StackTrace stackTrace)? onError;
   final int minutesAfter;
 
   /// Maximum rows to show; null shows all.
@@ -103,6 +110,7 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
       stopId: widget.stopId!,
       minutesAfter: widget.minutesAfter,
       refreshInterval: widget.refreshInterval,
+      onError: (error, stackTrace) => widget.onError?.call(error, stackTrace),
     );
   }
 

@@ -56,6 +56,26 @@ import 'package:onebusaway/onebusaway.dart' as oba;
 oba.Route? route = response.references.route(arrival.routeId);
 ```
 
+## Errors
+
+The panel shows failures to the user but doesn't log them. Pass `onError`
+to report each failed fetch to your crash or analytics tool:
+
+```dart
+ObaArrivalsPanel(
+  client: client,
+  stopId: 'MTS_24151',
+  onError: (error, stackTrace) =>
+      Sentry.captureException(error, stackTrace: stackTrace),
+)
+```
+
+Errors are normally `ObaException` subtypes. SDMTS answers a rejected API
+key the same way as an unknown stop (`ObaApiException` with kind
+`emptyResponse`), so watch for a spike of those after changing keys. When
+you pass your own controller, give `onError` to the `ArrivalsController`
+instead.
+
 ## Theming
 
 Surfaces, text and fonts come from your `Theme`. Status colors and badge
