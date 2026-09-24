@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Format, analyze, test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      # Installs the Flutter version pinned in mise.toml and caches it.
+      - uses: jdx/mise-action@v4
+
+      - name: Resolve workspace dependencies
+        run: flutter pub get
+
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test demo app
+        run: flutter test
+
+      - name: Test onebusaway
+        working-directory: packages/onebusaway
+        run: dart test
+
+      # Goldens skip themselves off macOS; the goldens job covers them.
+      - name: Test oba_arrivals
+        working-directory: packages/oba_arrivals
+        env:
+          TZ: America/Los_Angeles
+        run: flutter test
+
+  goldens:
+    name: Golden tests (macOS)
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: jdx/mise-action@v4
+
+      - name: Resolve workspace dependencies
+        run: flutter pub get
+
+      # --run-skipped makes the goldens fail, rather than silently skip, if
+      # this job ever stops running on macOS in Pacific time.
+      - name: Run golden tests
+        working-directory: packages/oba_arrivals
+        env:
+          TZ: America/Los_Angeles
+        run: flutter test --tags golden --run-skipped
+
+      - name: Upload golden failures
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: golden-failures
+          path: packages/oba_arrivals/test/golden/failures/
+          if-no-files-found: ignore

@@ -5,9 +5,13 @@ import 'all_arrivals_page.dart';
 import 'demo_stops.dart';
 
 void showArrivalSnackBar(BuildContext context, ArrivalAndDeparture arrival) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    content: Text('${arrival.routeShortName ?? ''} → ${arrival.tripHeadsign ?? ''}'),
-  ));
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        '${arrival.routeShortName ?? ''} → ${arrival.tripHeadsign ?? ''}',
+      ),
+    ),
+  );
 }
 
 /// The Student Life "Shuttle" card, powered by ObaArrivalsPanel.
@@ -27,13 +31,12 @@ class _ShuttleCardState extends State<ShuttleCard> {
   // opening "See all" reuses the card's data instead of fetching again.
   late ArrivalsController _controller = _controllerFor(_stop);
 
-  ArrivalsController _controllerFor(DemoStop stop) =>
-      ArrivalsController(
-        client: widget.client,
-        stopId: stop.id,
-        // A real host would report this to its crash or analytics tool.
-        onError: (error, _) => debugPrint('OBA ${stop.id}: $error'),
-      );
+  ArrivalsController _controllerFor(DemoStop stop) => ArrivalsController(
+    client: widget.client,
+    stopId: stop.id,
+    // A real host would report this to its crash or analytics tool.
+    onError: (error, _) => debugPrint('OBA ${stop.id}: $error'),
+  );
 
   void _selectStop(DemoStop stop) {
     if (stop == _stop) return;
@@ -65,9 +68,12 @@ class _ShuttleCardState extends State<ShuttleCard> {
             child: Row(
               children: [
                 Expanded(
-                  child: Text('SHUTTLE',
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w800)),
+                  child: Text(
+                    'SHUTTLE',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                 ),
                 PopupMenuButton<DemoStop>(
                   tooltip: 'Choose stop',
@@ -96,10 +102,11 @@ class _ShuttleCardState extends State<ShuttleCard> {
                   backgroundColor: theme.colorScheme.secondary,
                   foregroundColor: theme.colorScheme.onSecondary,
                 ),
-                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) =>
-                      AllArrivalsPage(controller: _controller),
-                )),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => AllArrivalsPage(controller: _controller),
+                  ),
+                ),
                 child: const Text('SEE ALL ARRIVALS'),
               ),
             ),

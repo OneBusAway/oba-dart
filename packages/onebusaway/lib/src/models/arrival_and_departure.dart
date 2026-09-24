@@ -36,7 +36,8 @@ class ArrivalAndDeparture {
     return ArrivalAndDeparture(
       routeId: readString(json, 'routeId'),
       tripId: readString(json, 'tripId'),
-      serviceDate: readEpochMs(json, 'serviceDate') ??
+      serviceDate:
+          readEpochMs(json, 'serviceDate') ??
           (throw const ObaFormatException('Missing "serviceDate"')),
       stopId: readString(json, 'stopId'),
       stopSequence: readInt(json, 'stopSequence'),

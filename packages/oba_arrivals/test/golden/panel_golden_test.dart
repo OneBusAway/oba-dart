@@ -15,12 +15,15 @@ import '../support/fixtures.dart';
 Directory materialFontsDir() {
   var dir = File(Platform.resolvedExecutable).parent;
   while (dir.parent.path != dir.path) {
-    final candidate =
-        Directory('${dir.path}/bin/cache/artifacts/material_fonts');
+    final candidate = Directory(
+      '${dir.path}/bin/cache/artifacts/material_fonts',
+    );
     if (candidate.existsSync()) return candidate;
     dir = dir.parent;
   }
-  throw StateError('material_fonts not found above ${Platform.resolvedExecutable}');
+  throw StateError(
+    'material_fonts not found above ${Platform.resolvedExecutable}',
+  );
 }
 
 Future<void> loadFonts() async {
@@ -49,25 +52,32 @@ void main() {
 
   for (final (name, theme) in [
     ('light', ThemeData(colorSchemeSeed: const Color(0xFF182B49))),
-    ('dark', ThemeData(
-        colorSchemeSeed: const Color(0xFF182B49), brightness: Brightness.dark)),
+    (
+      'dark',
+      ThemeData(
+        colorSchemeSeed: const Color(0xFF182B49),
+        brightness: Brightness.dark,
+      ),
+    ),
   ]) {
     testWidgets('panel $name', (tester) async {
       tester.view.physicalSize = const Size(400, 520);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
 
-      await tester.pumpWidget(MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: theme,
-        home: Scaffold(
-          body: ObaArrivalsPanel(
-            client: fakeClient((_) async => okResponse()),
-            stopId: 'MTS_24151',
-            onArrivalTap: (_) {},
+      await tester.pumpWidget(
+        MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: theme,
+          home: Scaffold(
+            body: ObaArrivalsPanel(
+              client: fakeClient((_) async => okResponse()),
+              stopId: 'MTS_24151',
+              onArrivalTap: (_) {},
+            ),
           ),
         ),
-      ));
+      );
       await tester.pump();
       await tester.pump();
 

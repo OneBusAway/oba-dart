@@ -7,7 +7,12 @@ import 'theme.dart';
 ///
 /// [color] and [textColor] are raw GTFS hex strings, as found on `Route`.
 class RouteBadge extends StatelessWidget {
-  const RouteBadge({super.key, required this.label, this.color, this.textColor});
+  const RouteBadge({
+    super.key,
+    required this.label,
+    this.color,
+    this.textColor,
+  });
 
   final String label;
   final String? color;
@@ -17,7 +22,8 @@ class RouteBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = ObaArrivalsTheme.of(context);
     final background = parseHexColor(color) ?? theme.badgeFallbackColor;
-    final foreground = parseHexColor(textColor) ?? contrastingTextColor(background);
+    final foreground =
+        parseHexColor(textColor) ?? contrastingTextColor(background);
     return ExcludeSemantics(
       child: SizedBox.fromSize(
         size: theme.badgeSize,
@@ -29,7 +35,10 @@ class RouteBadge extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Color.alphaBlend(Colors.white.withValues(alpha: 0.18), background),
+                Color.alphaBlend(
+                  Colors.white.withValues(alpha: 0.18),
+                  background,
+                ),
                 background,
               ],
             ),

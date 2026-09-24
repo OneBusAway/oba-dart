@@ -21,16 +21,16 @@ class ObaArrivalsTheme extends ThemeExtension<ObaArrivalsTheme> {
   });
 
   factory ObaArrivalsTheme.light() => const ObaArrivalsTheme(
-        onTime: Color(0xFF16A34A), // green-600
-        late: Color(0xFF7C3AED), // violet-600
-        early: Color(0xFFDC2626), // red-600
-      );
+    onTime: Color(0xFF16A34A), // green-600
+    late: Color(0xFF7C3AED), // violet-600
+    early: Color(0xFFDC2626), // red-600
+  );
 
   factory ObaArrivalsTheme.dark() => const ObaArrivalsTheme(
-        onTime: Color(0xFF4ADE80), // green-400
-        late: Color(0xFFA78BFA), // violet-400
-        early: Color(0xFFF87171), // red-400
-      );
+    onTime: Color(0xFF4ADE80), // green-400
+    late: Color(0xFFA78BFA), // violet-400
+    early: Color(0xFFF87171), // red-400
+  );
 
   static ObaArrivalsTheme of(BuildContext context) {
     final theme = Theme.of(context);
@@ -54,12 +54,12 @@ class ObaArrivalsTheme extends ThemeExtension<ObaArrivalsTheme> {
   final Color badgeFallbackColor;
 
   Color colorFor(ArrivalStatusKind kind, ColorScheme scheme) => switch (kind) {
-        ArrivalStatusKind.onTime => onTime,
-        ArrivalStatusKind.late => late,
-        ArrivalStatusKind.early => early,
-        ArrivalStatusKind.scheduled => scheduled ?? scheme.onSurfaceVariant,
-        ArrivalStatusKind.canceled => canceled ?? scheme.error,
-      };
+    ArrivalStatusKind.onTime => onTime,
+    ArrivalStatusKind.late => late,
+    ArrivalStatusKind.early => early,
+    ArrivalStatusKind.scheduled => scheduled ?? scheme.onSurfaceVariant,
+    ArrivalStatusKind.canceled => canceled ?? scheme.error,
+  };
 
   @override
   ObaArrivalsTheme copyWith({
@@ -71,17 +71,16 @@ class ObaArrivalsTheme extends ThemeExtension<ObaArrivalsTheme> {
     Size? badgeSize,
     double? badgeRadius,
     Color? badgeFallbackColor,
-  }) =>
-      ObaArrivalsTheme(
-        onTime: onTime ?? this.onTime,
-        late: late ?? this.late,
-        early: early ?? this.early,
-        scheduled: scheduled ?? this.scheduled,
-        canceled: canceled ?? this.canceled,
-        badgeSize: badgeSize ?? this.badgeSize,
-        badgeRadius: badgeRadius ?? this.badgeRadius,
-        badgeFallbackColor: badgeFallbackColor ?? this.badgeFallbackColor,
-      );
+  }) => ObaArrivalsTheme(
+    onTime: onTime ?? this.onTime,
+    late: late ?? this.late,
+    early: early ?? this.early,
+    scheduled: scheduled ?? this.scheduled,
+    canceled: canceled ?? this.canceled,
+    badgeSize: badgeSize ?? this.badgeSize,
+    badgeRadius: badgeRadius ?? this.badgeRadius,
+    badgeFallbackColor: badgeFallbackColor ?? this.badgeFallbackColor,
+  );
 
   @override
   ObaArrivalsTheme lerp(ObaArrivalsTheme? other, double t) {
@@ -94,7 +93,11 @@ class ObaArrivalsTheme extends ThemeExtension<ObaArrivalsTheme> {
       canceled: Color.lerp(canceled, other.canceled, t),
       badgeSize: Size.lerp(badgeSize, other.badgeSize, t)!,
       badgeRadius: lerpDouble(badgeRadius, other.badgeRadius, t)!,
-      badgeFallbackColor: Color.lerp(badgeFallbackColor, other.badgeFallbackColor, t)!,
+      badgeFallbackColor: Color.lerp(
+        badgeFallbackColor,
+        other.badgeFallbackColor,
+        t,
+      )!,
     );
   }
 }

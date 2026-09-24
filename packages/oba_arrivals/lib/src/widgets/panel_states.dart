@@ -10,13 +10,13 @@ class PlaceholderBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(radius),
-        ),
-      );
+    width: width,
+    height: height,
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(radius),
+    ),
+  );
 }
 
 class SkeletonRow extends StatelessWidget {
@@ -70,8 +70,9 @@ class PanelMessage extends StatelessWidget {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodyLarge
-                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
           if (action != null) ...[const SizedBox(height: 8), action!],
         ],
@@ -95,9 +96,12 @@ class StaleNotice extends StatelessWidget {
           Icon(Icons.cloud_off, size: 16, color: theme.colorScheme.error),
           const SizedBox(width: 6),
           Expanded(
-            child: Text(message,
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: theme.colorScheme.error)),
+            child: Text(
+              message,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.error,
+              ),
+            ),
           ),
         ],
       ),
