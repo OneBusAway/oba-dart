@@ -1,6 +1,1 @@
 include: package:lints/recommended.yaml
-
-linter:
-  rules:
-    # Can't use initializing formal for private field with non-private parameter
-    prefer_initializing_formals: false

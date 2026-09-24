@@ -27,16 +27,12 @@ class OneBusAwayClient {
         httpClient: client,
         timeout: timeout,
       ),
-      ownsHttpClient: httpClient == null,
+      httpClient == null,
     );
   }
 
-  OneBusAwayClient._(
-    this._transport, {
-    // ignore: prefer_initializing_formals
-    required bool ownsHttpClient,
-  })  : _ownsHttpClient = ownsHttpClient,
-        arrivalsAndDepartures = ArrivalsAndDeparturesResource(_transport);
+  OneBusAwayClient._(this._transport, this._ownsHttpClient)
+      : arrivalsAndDepartures = ArrivalsAndDeparturesResource(_transport);
 
   final Transport _transport;
   final bool _ownsHttpClient;
