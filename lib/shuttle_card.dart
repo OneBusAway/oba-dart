@@ -23,6 +23,30 @@ class ShuttleCard extends StatefulWidget {
 class _ShuttleCardState extends State<ShuttleCard> {
   DemoStop _stop = demoStops.first;
 
+  // One controller feeds both the card and the pushed full-page panel, so
+  // opening "See all" reuses the card's data instead of fetching again.
+  late ArrivalsController _controller = _controllerFor(_stop);
+
+  ArrivalsController _controllerFor(DemoStop stop) =>
+      ArrivalsController(client: widget.client, stopId: stop.id);
+
+  void _selectStop(DemoStop stop) {
+    if (stop == _stop) return;
+    final old = _controller;
+    setState(() {
+      _stop = stop;
+      _controller = _controllerFor(stop);
+    });
+    // Dispose after the panel has released it in this frame's rebuild.
+    WidgetsBinding.instance.addPostFrameCallback((_) => old.dispose());
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -44,7 +68,7 @@ class _ShuttleCardState extends State<ShuttleCard> {
                   tooltip: 'Choose stop',
                   icon: const Icon(Icons.more_vert),
                   initialValue: _stop,
-                  onSelected: (stop) => setState(() => _stop = stop),
+                  onSelected: _selectStop,
                   itemBuilder: (_) => [
                     for (final stop in demoStops)
                       PopupMenuItem(value: stop, child: Text(stop.label)),
@@ -54,8 +78,7 @@ class _ShuttleCardState extends State<ShuttleCard> {
             ),
           ),
           ObaArrivalsPanel(
-            client: widget.client,
-            stopId: _stop.id,
+            controller: _controller,
             maxArrivals: 3,
             onArrivalTap: (a) => showArrivalSnackBar(context, a),
           ),
@@ -70,7 +93,7 @@ class _ShuttleCardState extends State<ShuttleCard> {
                 ),
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                   builder: (_) =>
-                      AllArrivalsPage(client: widget.client, stop: _stop),
+                      AllArrivalsPage(controller: _controller),
                 )),
                 child: const Text('SEE ALL ARRIVALS'),
               ),
