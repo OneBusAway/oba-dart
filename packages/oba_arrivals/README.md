@@ -13,7 +13,7 @@ dependencies:
     git:
       url: https://github.com/onebusaway/oba-dart.git
       path: packages/oba_arrivals
-      ref: v0.1.0 # pin a release tag
+      ref: 0.1.0 # pin a release tag
 ```
 
 Requires Flutter 3.47 or later (Dart 3.13.4 or later). Pub resolves the
