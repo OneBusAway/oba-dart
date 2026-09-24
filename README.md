@@ -10,6 +10,13 @@ embed OneBusAway real-time arrivals in its Flutter Student Life app.
 | `lib/` | Demo app that mimics the Student Life home feed |
 | `docs/superpowers/` | Design spec and implementation plan |
 
+## Embedding in your app
+
+Flutter apps add `oba_arrivals` as a git dependency on this repository. See
+[`packages/oba_arrivals/README.md`](packages/oba_arrivals/README.md) for
+installation, requirements and usage. To call the REST API without Flutter,
+see [`packages/onebusaway/README.md`](packages/onebusaway/README.md).
+
 ## Setup
 
 The toolchain is pinned with [mise](https://mise.jdx.dev): Flutter 3.47.5 /

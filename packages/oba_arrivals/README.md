@@ -11,10 +11,13 @@ below), so depend on this one package:
 dependencies:
   oba_arrivals:
     git:
-      url: <this repository>
+      url: https://github.com/onebusaway/oba-dart.git
       path: packages/oba_arrivals
-      ref: main # or a tag/commit; pin one for reproducible builds
+      ref: v0.1.0 # pin a release tag
 ```
+
+Requires Flutter 3.47 or later (Dart 3.13.4 or later). Pub resolves the
+`onebusaway` package from the same repository automatically.
 
 ## Embed
 
