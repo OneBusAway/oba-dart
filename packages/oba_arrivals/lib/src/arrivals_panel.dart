@@ -193,6 +193,8 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
       children: [
         StopHeader(
           stop: state.stop,
+          stopId: _controller.stopId,
+          isLoading: state.status == ArrivalsStatus.loading,
           references: state.references,
           isRefreshing: state.isRefreshing,
           onRefresh: _controller.refresh,

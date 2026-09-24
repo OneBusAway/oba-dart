@@ -138,6 +138,51 @@ void main() {
     expect(find.text('Stop not found or service unavailable'), findsOneWidget);
   });
 
+  testWidgets('header shimmers only while loading; otherwise names the stop id',
+      (tester) async {
+    final pending = Completer<http.Response>();
+    await tester.pumpWidget(host(ObaArrivalsPanel(
+      client: fakeClient((_) => pending.future),
+      stopId: 'MTS_99999999',
+    )));
+    expect(find.byKey(const ValueKey('oba-header-placeholder')), findsOneWidget);
+    expect(find.text('Stop #99999999'), findsNothing);
+
+    pending.complete(http.Response('', 200)); // error with no data
+    await settle(tester);
+    expect(find.text('Stop not found or service unavailable'), findsOneWidget);
+    expect(find.byKey(const ValueKey('oba-header-placeholder')), findsNothing);
+    expect(find.text('Stop #99999999'), findsOneWidget);
+  });
+
+  testWidgets('loaded without the stop in references shows the stop id title',
+      (tester) async {
+    final json = jsonDecode(arrivalsFixture()) as Map<String, dynamic>;
+    ((json['data'] as Map<String, dynamic>)['references']
+        as Map<String, dynamic>)['stops'] = [];
+    await tester.pumpWidget(host(ObaArrivalsPanel(
+      client: fakeClient((_) async => okResponse(jsonEncode(json))),
+      stopId: 'MTS_24151',
+    )));
+    await settle(tester);
+    expect(find.text('Old Town'), findsOneWidget);
+    expect(find.byKey(const ValueKey('oba-header-placeholder')), findsNothing);
+    expect(find.text('Stop #24151'), findsOneWidget);
+  });
+
+  testWidgets('IL badge from the real fixture has black text', (tester) async {
+    await tester.pumpWidget(host(ObaArrivalsPanel(
+      client: fakeClient((_) async => okResponse()),
+      stopId: 'MTS_24151',
+    )));
+    await settle(tester);
+    final label = tester.widget<Text>(find.descendant(
+      of: find.byType(RouteBadge),
+      matching: find.text('IL'),
+    ));
+    expect(label.style!.color, Colors.black);
+  });
+
   testWidgets('failed refresh keeps rows and shows stale notice', (tester) async {
     var requests = 0;
     await tester.pumpWidget(host(ObaArrivalsPanel(

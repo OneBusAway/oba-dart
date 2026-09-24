@@ -8,14 +8,23 @@ class StopHeader extends StatelessWidget {
   const StopHeader({
     super.key,
     required this.stop,
+    required this.stopId,
+    required this.isLoading,
     required this.references,
     required this.isRefreshing,
     required this.onRefresh,
     required this.strings,
   });
 
-  /// Null while the first request is loading.
+  /// Null until a response names the stop.
   final Stop? stop;
+
+  /// The requested stop id; titles the header when [stop] is null and the
+  /// panel is not loading (an error, or a response without the stop).
+  final String stopId;
+
+  /// True while the first request is in flight; shows a placeholder.
+  final bool isLoading;
   final References references;
   final bool isRefreshing;
   final VoidCallback onRefresh;
@@ -25,6 +34,8 @@ class StopHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final stop = this.stop;
+    final titleStyle =
+        theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 4, 8),
       child: Row(
@@ -32,7 +43,13 @@ class StopHeader extends StatelessWidget {
         children: [
           Expanded(
             child: stop == null
-                ? const _HeaderPlaceholder()
+                ? isLoading
+                    ? const _HeaderPlaceholder(
+                        key: ValueKey('oba-header-placeholder'))
+                    : Text(
+                        strings.stopNumber(stripAgencyPrefix(stopId)),
+                        style: titleStyle,
+                      )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -40,8 +57,7 @@ class StopHeader extends StatelessWidget {
                         stop.name,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleLarge
-                            ?.copyWith(fontWeight: FontWeight.w700),
+                        style: titleStyle,
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -70,7 +86,7 @@ class StopHeader extends StatelessWidget {
 }
 
 class _HeaderPlaceholder extends StatelessWidget {
-  const _HeaderPlaceholder();
+  const _HeaderPlaceholder({super.key});
 
   @override
   Widget build(BuildContext context) {
