@@ -1,0 +1,119 @@
+{
+  "code": 200,
+  "currentTime": 1790228579290,
+  "text": "OK",
+  "version": 2,
+  "data": {
+    "limitExceeded": false,
+    "entry": {
+      "stopId": "MTS_24151",
+      "nearbyStopIds": ["MTS_24150"],
+      "situationIds": [],
+      "arrivalsAndDepartures": [
+        {
+          "arrivalEnabled": true, "departureEnabled": true,
+          "blockTripSequence": 15, "distanceFromStop": 0.0,
+          "frequency": null, "numberOfStopsAway": -1,
+          "predicted": true,
+          "predictedArrivalTime": 1790228400000, "predictedDepartureTime": 1790228400000,
+          "scheduledArrivalTime": 1790228400000, "scheduledDepartureTime": 1790228400000,
+          "routeId": "MTS_30", "routeLongName": "Old Town  - UTC via Pacific Beach",
+          "routeShortName": "30", "serviceDate": 1790146800000, "situationIds": [],
+          "status": "default", "stopId": "MTS_24151", "stopSequence": 40,
+          "totalStopsInTrip": 58, "tripHeadsign": "UTC", "tripId": "MTS_19630023",
+          "tripStatus": null, "vehicleId": "MTS_812"
+        },
+        {
+          "arrivalEnabled": true, "departureEnabled": true,
+          "blockTripSequence": 16, "distanceFromStop": 745.7646433271584,
+          "frequency": null, "numberOfStopsAway": 1,
+          "predicted": true,
+          "predictedArrivalTime": 1790228760000, "predictedDepartureTime": 1790228760000,
+          "scheduledArrivalTime": 1790228760000, "scheduledDepartureTime": 1790228760000,
+          "routeId": "MTS_30", "routeLongName": "Old Town  - UTC via Pacific Beach",
+          "routeShortName": "30", "serviceDate": 1790146800000, "situationIds": [],
+          "status": "default", "stopId": "MTS_24151", "stopSequence": 9,
+          "totalStopsInTrip": 58, "tripHeadsign": "Old Town", "tripId": "MTS_19630024",
+          "tripStatus": {
+            "activeTripId": "MTS_19630024", "blockTripSequence": 16,
+            "phase": "in_progress", "predicted": true, "scheduleDeviation": 0,
+            "serviceDate": 1790146800000, "status": "default", "vehicleId": "MTS_813"
+          },
+          "vehicleId": "MTS_813"
+        },
+        {
+          "arrivalEnabled": true, "departureEnabled": true,
+          "blockTripSequence": 4, "distanceFromStop": 1210.5,
+          "frequency": null, "numberOfStopsAway": 3,
+          "predicted": true,
+          "predictedArrivalTime": 1790228820000, "predictedDepartureTime": 1790228820000,
+          "scheduledArrivalTime": 1790228700000, "scheduledDepartureTime": 1790228700000,
+          "routeId": "UCSD_1040", "routeLongName": "Inside Loop",
+          "routeShortName": "IL", "serviceDate": 1790146800000, "situationIds": [],
+          "status": "default", "stopId": "MTS_24151", "stopSequence": 3,
+          "totalStopsInTrip": 12, "tripHeadsign": "Inside Loop", "tripId": "UCSD_5501",
+          "tripStatus": {
+            "activeTripId": "UCSD_5501", "phase": "in_progress", "predicted": true,
+            "scheduleDeviation": 120, "serviceDate": 1790146800000,
+            "status": "default", "vehicleId": "UCSD_12"
+          },
+          "vehicleId": "UCSD_12"
+        },
+        {
+          "arrivalEnabled": true, "departureEnabled": true,
+          "blockTripSequence": 2, "distanceFromStop": 0.0,
+          "frequency": null, "numberOfStopsAway": 0,
+          "predicted": false,
+          "predictedArrivalTime": 0, "predictedDepartureTime": 0,
+          "scheduledArrivalTime": 1790229000000, "scheduledDepartureTime": 1790229000000,
+          "routeId": "UCSD_1020", "routeLongName": "SIO",
+          "routeShortName": "S", "serviceDate": 1790146800000, "situationIds": [],
+          "status": "default", "stopId": "MTS_24151", "stopSequence": 5,
+          "totalStopsInTrip": 20, "tripHeadsign": "SIO", "tripId": "UCSD_7702",
+          "tripStatus": null, "vehicleId": ""
+        }
+      ]
+    },
+    "references": {
+      "agencies": [
+        {"id": "MTS", "name": "MTS", "url": "http://www.sdmts.com",
+         "timezone": "America/Los_Angeles", "phone": "619-233-3004",
+         "lang": "en", "privateService": false},
+        {"id": "UCSD", "name": "UC San Diego", "url": "https://transportation.ucsd.edu",
+         "timezone": "US/Pacific", "phone": "", "lang": "en", "privateService": false}
+      ],
+      "routes": [
+        {"id": "MTS_30", "agencyId": "MTS", "shortName": "30",
+         "longName": "Old Town  - UTC via Pacific Beach", "description": "",
+         "type": 3, "color": "000099", "textColor": "FFFFFF",
+         "url": "https://www.sdmts.com/schedules-real-time?fragment=30"},
+        {"id": "MTS_201", "agencyId": "MTS", "shortName": "201",
+         "longName": "SuperLoop", "description": "", "type": 3,
+         "color": "E31837", "textColor": "FFFFFF", "url": ""},
+        {"id": "NCTD_301", "agencyId": "NCTD", "shortName": "101",
+         "longName": "Oceanside - UTC", "description": "", "type": 3,
+         "color": "", "textColor": "", "url": ""},
+        {"id": "UCSD_1040", "agencyId": "UCSD", "shortName": "IL",
+         "longName": "Inside Loop", "description": "", "type": 3,
+         "color": "ffcd00", "textColor": "", "url": ""},
+        {"id": "UCSD_1020", "agencyId": "UCSD", "shortName": "S",
+         "longName": "SIO", "description": "", "type": 3,
+         "color": "90a7d3", "textColor": "", "url": ""}
+      ],
+      "stops": [
+        {"id": "MTS_24151", "code": "24151", "direction": "SW",
+         "name": "Eighth College / Theatre District (North)",
+         "lat": 32.871718, "lon": -117.242206, "locationType": 0,
+         "routeIds": ["MTS_30", "NCTD_301", "UCSD_1040", "UCSD_1020"],
+         "wheelchairBoarding": "UNKNOWN"}
+      ],
+      "trips": [
+        {"id": "MTS_19630024", "routeId": "MTS_30", "tripHeadsign": "Old Town",
+         "directionId": "1", "serviceId": "MTS_88312-1111100-0",
+         "blockId": "MTS_103004", "shapeId": "MTS_30_1_349",
+         "routeShortName": "", "timeZone": "", "tripShortName": ""}
+      ],
+      "situations": []
+    }
+  }
+}
