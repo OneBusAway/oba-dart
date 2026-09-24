@@ -86,13 +86,9 @@ class Transport {
       response = await httpClient
           .get(uri, headers: const {'Accept': 'application/json'})
           .timeout(timeout);
-    } on TimeoutException catch (e) {
-      throw ObaNetworkException(e);
-    } on http.ClientException catch (e) {
-      throw ObaNetworkException(e);
     } on Exception catch (e) {
-      // E.g. a TLS HandshakeException or SocketException raised while the
-      // body is read, which some clients don't wrap in ClientException.
+      // TimeoutException, http.ClientException, and anything a client doesn't
+      // wrap (e.g. a TLS HandshakeException raised while the body is read).
       throw ObaNetworkException(e);
     }
     return decode(response);

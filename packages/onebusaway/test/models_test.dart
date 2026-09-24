@@ -1,12 +1,13 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:onebusaway/onebusaway.dart';
 import 'package:onebusaway/src/core/json.dart';
 import 'package:test/test.dart';
 
+import 'support/fixtures.dart';
+
 JsonMap loadFixture(String name) =>
-    jsonDecode(File('test/fixtures/$name').readAsStringSync()) as JsonMap;
+    jsonDecode(fixture(name)) as JsonMap;
 
 void main() {
   final data = loadFixture('arrivals_mts_24151.json')['data'] as JsonMap;

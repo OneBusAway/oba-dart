@@ -1,11 +1,9 @@
-import 'dart:io';
-
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:onebusaway/onebusaway.dart';
 import 'package:test/test.dart';
 
-String fixture(String name) => File('test/fixtures/$name').readAsStringSync();
+import 'support/fixtures.dart';
 
 void main() {
   test('arrivalsAndDepartures.forStop builds the request and parses the entry',

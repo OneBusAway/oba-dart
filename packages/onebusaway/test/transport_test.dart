@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -7,7 +6,7 @@ import 'package:onebusaway/onebusaway.dart';
 import 'package:onebusaway/src/core/transport.dart';
 import 'package:test/test.dart';
 
-String fixture(String name) => File('test/fixtures/$name').readAsStringSync();
+import 'support/fixtures.dart';
 
 Transport transportWith(MockClient client,
         {String base = 'https://realtime.sdmts.com/api/',
