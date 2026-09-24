@@ -8,7 +8,7 @@ import 'package:onebusaway/onebusaway.dart';
 String arrivalsFixture() =>
     File('../onebusaway/test/fixtures/arrivals_mts_24151.json').readAsStringSync();
 
-/// `currentTime` in the fixture: 2026-09-24T04:22:59.290Z.
+/// `currentTime` in the fixture: 2026-09-24T05:42:59.290Z (22:42 PDT).
 final fixtureServerTime =
     DateTime.fromMillisecondsSinceEpoch(1790228579290, isUtc: true);
 

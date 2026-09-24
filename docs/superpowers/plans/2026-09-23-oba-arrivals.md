@@ -557,7 +557,7 @@ git commit -m "Add pub workspace and onebusaway core errors and JSON helpers"
 - [ ] **Step 1: Create the deterministic fixture**
 
 `packages/onebusaway/test/fixtures/arrivals_mts_24151.json`. It has
-`currentTime` 1790228579290 (2026-09-24T04:22:59.290Z) and four arrivals:
+`currentTime` 1790228579290 (2026-09-24T05:42:59.290Z, 22:42 PDT) and four arrivals:
 - Old Town (30): predicted, on time, ETA 4 min.
 - Inside Loop (IL): predicted, 2 min late, ETA 5 min.
 - SIO (S): scheduled only, ETA 8 min.
@@ -2858,7 +2858,7 @@ import 'package:onebusaway/onebusaway.dart';
 String arrivalsFixture() =>
     File('../onebusaway/test/fixtures/arrivals_mts_24151.json').readAsStringSync();
 
-/// `currentTime` in the fixture: 2026-09-24T04:22:59.290Z.
+/// `currentTime` in the fixture: 2026-09-24T05:42:59.290Z (22:42 PDT).
 final fixtureServerTime =
     DateTime.fromMillisecondsSinceEpoch(1790228579290, isUtc: true);
 
@@ -2891,7 +2891,7 @@ import 'package:onebusaway/onebusaway.dart';
 import 'support/fixtures.dart';
 
 void main() {
-  final deviceStart = DateTime.utc(2026, 9, 24, 4, 0); // 23 min behind server
+  final deviceStart = DateTime.utc(2026, 9, 24, 4, 0); // 1 h 43 min behind server
 
   ArrivalsController controllerFor(
     FakeAsync async,

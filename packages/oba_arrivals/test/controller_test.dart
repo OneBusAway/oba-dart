@@ -9,7 +9,7 @@ import 'package:oba_arrivals/oba_arrivals.dart';
 import 'support/fixtures.dart';
 
 void main() {
-  final deviceStart = DateTime.utc(2026, 9, 24, 4, 0); // 23 min behind server
+  final deviceStart = DateTime.utc(2026, 9, 24, 4, 0); // 1 h 43 min behind server
 
   ArrivalsController controllerFor(
     FakeAsync async,
