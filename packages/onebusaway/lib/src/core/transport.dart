@@ -30,7 +30,11 @@ class ObaEnvelope {
 
   ObaListResponse<T> toList<T>(T Function(JsonMap json) parse) =>
       ObaListResponse(
-        list: readList(data, 'list', (item) => parse(asJsonMap(item, 'list[]'))),
+        list: readList(
+          data,
+          'list',
+          (item) => parse(asJsonMap(item, 'list[]')),
+        ),
         references: References.fromJson(readOptMap(data, 'references')),
         currentTime: currentTime,
         version: version,
@@ -48,8 +52,8 @@ class Transport {
     required this.httpClient,
     required this.timeout,
   }) : baseUrl = baseUrl.path.endsWith('/')
-            ? baseUrl
-            : baseUrl.replace(path: '${baseUrl.path}/');
+           ? baseUrl
+           : baseUrl.replace(path: '${baseUrl.path}/');
 
   /// The OBA server root; endpoints live under `{baseUrl}api/where/`.
   final Uri baseUrl;
@@ -112,11 +116,15 @@ class Transport {
     final json = asJsonMap(decoded, 'response');
     final code = readInt(json, 'code');
     if (code != 200) {
-      throw ObaApiException(ObaApiErrorKind.envelope,
-          code: code, text: readOptString(json, 'text'));
+      throw ObaApiException(
+        ObaApiErrorKind.envelope,
+        code: code,
+        text: readOptString(json, 'text'),
+      );
     }
     return ObaEnvelope(
-      currentTime: readEpochMs(json, 'currentTime') ??
+      currentTime:
+          readEpochMs(json, 'currentTime') ??
           (throw const ObaFormatException('Missing "currentTime"')),
       version: readOptInt(json, 'version') ?? 1,
       data: readMap(json, 'data'),

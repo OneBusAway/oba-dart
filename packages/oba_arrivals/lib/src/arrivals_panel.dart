@@ -25,8 +25,10 @@ class ObaArrivalsPanel extends StatefulWidget {
     this.maxArrivals,
     this.refreshInterval = const Duration(seconds: 30),
     this.strings = const ObaArrivalsStrings(),
-  }) : assert(controller != null || (client != null && stopId != null),
-            'Pass a controller, or both client and stopId.');
+  }) : assert(
+         controller != null || (client != null && stopId != null),
+         'Pass a controller, or both client and stopId.',
+       );
 
   /// The API client. It must be long-lived: create it once (e.g. in `main`
   /// or a `State`), reuse it, and close it when done. A new client instance
@@ -115,7 +117,8 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
   @override
   void didUpdateWidget(ObaArrivalsPanel oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final changed = widget.controller != oldWidget.controller ||
+    final changed =
+        widget.controller != oldWidget.controller ||
         (widget.controller == null &&
             (widget.stopId != oldWidget.stopId ||
                 widget.client != oldWidget.client ||
@@ -210,12 +213,13 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
   }
 
   List<Widget> _body(
-      BuildContext context, ArrivalsState state, ObaArrivalsStrings strings) {
+    BuildContext context,
+    ArrivalsState state,
+    ObaArrivalsStrings strings,
+  ) {
     switch (state.status) {
       case ArrivalsStatus.loading:
-        return [
-          for (var i = 0; i < 3; i++) const SkeletonRow(),
-        ];
+        return [for (var i = 0; i < 3; i++) const SkeletonRow()];
       case ArrivalsStatus.error:
         return [
           PanelMessage(
@@ -248,7 +252,8 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
             StaleNotice(
               key: const ValueKey('oba-stale-notice'),
               message: strings.staleNotice(
-                  formatArrivalTime(context, state.updatedAt!)),
+                formatArrivalTime(context, state.updatedAt!),
+              ),
             ),
         ];
     }

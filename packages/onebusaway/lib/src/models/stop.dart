@@ -14,15 +14,19 @@ class Stop {
   });
 
   factory Stop.fromJson(JsonMap json) => Stop(
-        id: readString(json, 'id'),
-        code: readOptString(json, 'code'),
-        name: readString(json, 'name'),
-        lat: readOptDouble(json, 'lat') ?? (throw const ObaFormatException('Missing "lat"')),
-        lon: readOptDouble(json, 'lon') ?? (throw const ObaFormatException('Missing "lon"')),
-        direction: readOptString(json, 'direction'),
-        routeIds: readStringList(json, 'routeIds'),
-        wheelchairBoarding: readOptString(json, 'wheelchairBoarding'),
-      );
+    id: readString(json, 'id'),
+    code: readOptString(json, 'code'),
+    name: readString(json, 'name'),
+    lat:
+        readOptDouble(json, 'lat') ??
+        (throw const ObaFormatException('Missing "lat"')),
+    lon:
+        readOptDouble(json, 'lon') ??
+        (throw const ObaFormatException('Missing "lon"')),
+    direction: readOptString(json, 'direction'),
+    routeIds: readStringList(json, 'routeIds'),
+    wheelchairBoarding: readOptString(json, 'wheelchairBoarding'),
+  );
 
   final String id;
 

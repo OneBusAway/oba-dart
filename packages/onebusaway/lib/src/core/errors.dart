@@ -29,11 +29,11 @@ final class ObaApiException extends ObaException {
 
   @override
   String get message => switch (kind) {
-        ObaApiErrorKind.httpStatus => 'HTTP status $code',
-        ObaApiErrorKind.emptyResponse =>
-          'Empty response (unknown id or rejected API key)',
-        ObaApiErrorKind.envelope => 'OneBusAway error $code: ${text ?? ''}',
-      };
+    ObaApiErrorKind.httpStatus => 'HTTP status $code',
+    ObaApiErrorKind.emptyResponse =>
+      'Empty response (unknown id or rejected API key)',
+    ObaApiErrorKind.envelope => 'OneBusAway error $code: ${text ?? ''}',
+  };
 }
 
 final class ObaNetworkException extends ObaException {

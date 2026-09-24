@@ -31,8 +31,9 @@ class _StudentLifeDemoAppState extends State<StudentLifeDemoApp> {
         foregroundColor: Colors.white,
         centerTitle: true,
       ),
-      scaffoldBackgroundColor:
-          brightness == Brightness.light ? const Color(0xFFE9ECF2) : null,
+      scaffoldBackgroundColor: brightness == Brightness.light
+          ? const Color(0xFFE9ECF2)
+          : null,
     );
   }
 

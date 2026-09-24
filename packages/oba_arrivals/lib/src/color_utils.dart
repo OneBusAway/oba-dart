@@ -23,9 +23,16 @@ Color contrastingTextColor(Color background) {
 
 /// Wayfinder's badge font size: shrink long or multi-word names, 8–24 px.
 double badgeFontSize(String label) {
-  final words = label.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+  final words = label
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((w) => w.isNotEmpty)
+      .toList();
   if (words.isEmpty) return 24;
   final longest = words.map((w) => w.length).reduce(math.max);
-  final size = math.min(24, math.min((90 / longest).round(), (42 / words.length).round()));
+  final size = math.min(
+    24,
+    math.min((90 / longest).round(), (42 / words.length).round()),
+  );
   return math.max(8, size).toDouble();
 }

@@ -34,8 +34,9 @@ class StopHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final stop = this.stop;
-    final titleStyle =
-        theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700);
+    final titleStyle = theme.textTheme.titleLarge?.copyWith(
+      fontWeight: FontWeight.w700,
+    );
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 4, 8),
       child: Row(
@@ -44,12 +45,13 @@ class StopHeader extends StatelessWidget {
           Expanded(
             child: stop == null
                 ? isLoading
-                    ? const _HeaderPlaceholder(
-                        key: ValueKey('oba-header-placeholder'))
-                    : Text(
-                        strings.stopNumber(stripAgencyPrefix(stopId)),
-                        style: titleStyle,
-                      )
+                      ? const _HeaderPlaceholder(
+                          key: ValueKey('oba-header-placeholder'),
+                        )
+                      : Text(
+                          strings.stopNumber(stripAgencyPrefix(stopId)),
+                          style: titleStyle,
+                        )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -63,7 +65,8 @@ class StopHeader extends StatelessWidget {
                       Text(
                         stopSubtitle(stop, references, strings),
                         style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant),
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ),
@@ -92,11 +95,13 @@ class _HeaderPlaceholder extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme.surfaceContainerHighest;
     Widget bar(double width, double height) => Container(
-          width: width,
-          height: height,
-          decoration: BoxDecoration(
-              color: color, borderRadius: BorderRadius.circular(4)),
-        );
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(4),
+      ),
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [bar(220, 22), const SizedBox(height: 8), bar(160, 14)],
