@@ -1,7 +1,7 @@
 # OBA Arrivals for Flutter — Design
 
 Date: 2026-09-23
-Status: Draft for review
+Status: Revised after review (live SDMTS API checked 2026-09-23)
 
 ## Goal
 
@@ -50,8 +50,14 @@ flutter-example/                 # workspace root; also the oba_dart demo app
     └── oba_arrivals/            # Flutter; depends on onebusaway
 ```
 
-Every package's pubspec sets `resolution: workspace`. The Dart SDK
-constraint is `^3.13.0`.
+- The root `pubspec.yaml` (the `oba_dart` app) declares `workspace:`.
+- Only the member packages set `resolution: workspace`.
+- Every pubspec uses the same SDK constraint, `^3.13.4`.
+- `oba_arrivals` depends on `onebusaway` with `path: ../onebusaway`, never a
+  version constraint. That lets a git consumer resolve it without pub.dev.
+- `onebusaway` keeps its `test` dev-dependency constraint loose, so the
+  shared lockfile can still resolve it against the `test_api`/`matcher`
+  versions that `flutter_test` pins.
 
 ## Package 1: `onebusaway` (pure Dart API client)
 
@@ -66,6 +72,9 @@ final client = OneBusAwayClient(
   httpClient: http.Client(),          // optional; injectable for tests/proxies
   timeout: const Duration(seconds: 15), // optional
 );
+// baseUrl is the OBA *server root*, the same value as Wayfinder's
+// PUBLIC_OBA_SERVER_URL. For SDMTS it is https://realtime.sdmts.com/api/,
+// and endpoints live under .../api/api/where/.
 
 final response = await client.arrivalsAndDepartures.forStop(
   'MTS_24151',
@@ -80,30 +89,51 @@ final response = await client.arrivalsAndDepartures.forStop(
 ### Core layer (shared by all endpoints)
 
 - **Transport** builds the request URL,
-  `{baseUrl}where/{method}/{id}.json?key={apiKey}&{params}`. The `id` part is
-  optional and URL-encoded. The transport performs the GET with a timeout and
-  decodes the JSON envelope.
+  `{baseUrl}api/where/{method}[/{id}].json?key={apiKey}&{params}`.
+  - It adds a trailing slash to `baseUrl` if one is missing.
+  - The `id` part is optional and URL-encoded.
+  - It performs the GET under `Future.timeout`. That timeout does not abort
+    the underlying request; this is accepted for v1.
+  - It then decodes the response in the order below.
+- **Decoding order:**
+  1. A non-2xx HTTP status becomes `ObaApiException(kind: httpStatus,
+     code: status)`, and the body is not parsed. For example, a wrong path
+     gives an HTML 404.
+  2. A 2xx status with an empty body becomes `ObaApiException(kind:
+     emptyResponse)`. SDMTS does this for an unknown stop *and* for a
+     rejected key, so the two can't be distinguished.
+  3. A body that isn't JSON becomes `ObaFormatException`.
+  4. An envelope `code` other than 200 becomes `ObaApiException(kind:
+     envelope, code, text)`.
 - **Envelope** fields: `code`, `text`, `currentTime`, `version`, and `data`.
   `data` holds `entry` or `list`, plus `references`, `limitExceeded` and
   `outOfRange`.
 - **Errors** (sealed `ObaException`):
-  - `ObaApiException(code, text)`: the envelope `code` or HTTP status is not
-    200. Examples are an invalid key or an unknown stop (404).
+  - `ObaApiException(kind, code?, text?)`, where `kind` is `httpStatus`,
+    `emptyResponse` or `envelope`.
   - `ObaNetworkException`: socket or TLS failure, or timeout.
-  - `ObaFormatException`: the body is not JSON or a required field is missing.
+  - `ObaFormatException`: the body is not JSON or a required field is
+    missing or has the wrong type.
 - **Responses:**
   - `ObaEntryResponse<T>` has `entry`, `references`, `currentTime` and
     `version`.
   - `ObaListResponse<T>` has `list`, `references`, `currentTime`,
     `limitExceeded` and `outOfRange`.
 - **References** are parsed once into id-keyed maps: `agencies`, `routes`,
-  `stops`, `trips` and `situations`. Lookups are `route(id)`, `stop(id)`,
-  `trip(id)`, `agency(id)` and `situation(id)`, and each returns null when the
-  id is missing.
+  `stops` and `trips`.
+  - Lookups are `route(id)`, `stop(id)`, `trip(id)` and `agency(id)`. Each
+    returns null when the id is missing.
+  - Situations are deferred. Their `summary` and `description` are
+    `{value, lang}` objects that need their own model.
+  - `references.routes` can include routes that don't serve the stop. For
+    example, `MTS_201` appears at `MTS_24151`. Callers filter by
+    `stop.routeIds`.
 - **Parsing helpers** (internal):
   - `readString`, `readInt`, `readBool` and `readList`, which report the
     offending field in `ObaFormatException`.
   - `readEpochMs`, which maps `0` or missing to `null`.
+  - `readString` maps `""` to null for optional fields. SDMTS sends `""` for
+    `textColor` on UCSD routes and for `direction` on some stops.
 
 ### Resources
 
@@ -120,9 +150,10 @@ README documents this recipe.
 
 ### Models (v1)
 
-Models are hand-written immutable classes. Each has a `fromJson` factory and
-value equality. The client ignores unknown fields. Times are `DateTime` (UTC)
-or null.
+Models are hand-written immutable classes with a `fromJson` factory. Value
+equality is added only where tests need it. The client ignores unknown
+fields. Times are `DateTime` (UTC) or null, and `currentTime` is epoch
+milliseconds.
 
 - `StopWithArrivalsAndDepartures`: `stopId`, `arrivalsAndDepartures`,
   `nearbyStopIds`, `situationIds`.
@@ -136,7 +167,8 @@ or null.
   - `vehicleId`, `numberOfStopsAway`, `distanceFromStop`, `status`;
   - `frequency`, `tripStatus`.
 - `TripStatus`: the subset needed now, which is `status`, `phase`,
-  `predicted`, `scheduleDeviation`, `vehicleId` and `activeTripId`.
+  `predicted`, `scheduleDeviation` (seconds), `vehicleId`, `activeTripId` and
+  `serviceDate`.
 - `Stop`: `id`, `code`, `name`, `lat`, `lon`, `direction`, `routeIds`,
   `wheelchairBoarding`.
 - `Route`: `id`, `agencyId`, `shortName`, `longName`, `description`, `type`,
@@ -144,16 +176,22 @@ or null.
 - `Trip`: `id`, `routeId`, `tripHeadsign`, `directionId`, `serviceId`,
   `blockId`, `shapeId`.
 - `Agency`: `id`, `name`, `url`, `timezone`, `phone`.
-- `Situation`: `id`, `summary`, `description`, `severity`, `reason`. This
-  subset is parsed for future use; the v1 UI does not display alerts.
-- `Frequency`: `startTime`, `endTime`, `headway`.
+- `Frequency`: `startTime`, `endTime`, `headway` (**seconds**).
 
 ### Tests
 
-- Fixture JSON captured from `realtime.sdmts.com`: arrivals for a UCSD stop,
-  plus an error envelope and a 404.
-- `MockClient` checks the URL and query construction, envelope decoding,
-  references lookup, error mapping and timeout handling.
+- Fixtures:
+  - arrivals JSON for `MTS_24151`, captured from `realtime.sdmts.com` during
+    service hours so it has predicted and scheduled rows;
+  - a hand-made non-200 envelope;
+  - an empty 200 body;
+  - an HTML 404.
+- `MockClient` tests cover:
+  - URL construction using the real SDMTS root, which must yield
+    `https://realtime.sdmts.com/api/api/where/arrivals-and-departures-for-stop/MTS_24151.json?key=...`;
+  - envelope decoding and references lookup;
+  - each branch of the decoding order;
+  - timeout handling.
 
 ## Package 2: `oba_arrivals` (Flutter UI)
 
@@ -185,14 +223,25 @@ one. If `stopId` changes, the panel reloads.
      - `Stop #{stop.code}`, falling back to the id without its agency prefix;
      - the direction bound, e.g. `Southwest bound`, taken from `stop.direction`
        (N, NE, … → words);
-     - the stop's route short names, sorted and joined with `, `.
+     - the stop's route short names, sorted and joined with `, `. Only routes
+    in `stop.routeIds` count.
+  - An unknown direction code is shown as the code itself. An empty
+    direction is omitted.
    - A refresh icon button that spins while a request is in flight.
 2. **Arrival rows**, separated by dividers:
-   - `RouteBadge`: a rounded rectangle holding the short name. Wayfinder's
-     font-size rule scales long names down.
+   - `RouteBadge`: a 56×64 rounded rectangle holding the short name.
+     - Font size uses Wayfinder's rule: `max(8, min(24, round(90 /
+       longestWordLength), round(42 / wordCount)))`.
+     - Badge text ignores `textScaler`, so large text settings can't
+       overflow the fixed box.
    - The headsign, bold, at most 2 lines.
-   - A subline: `hh:mm AM/PM · {status text}`. The status text uses the status
+   - A subline: `{time} · {status text}`. The status text uses the status
      color.
+     - `{time}` is the predicted arrival when the row is predicted,
+       otherwise the scheduled arrival.
+     - It is formatted in device local time with
+       `MaterialLocalizations.formatTimeOfDay(..., alwaysUse24HourFormat:
+       MediaQuery.alwaysUse24HourFormatOf(context))`. That needs no `intl`.
    - A right column with the ETA label (`now` or `{n}m`) in large bold status
      color, followed by a real-time icon (`Icons.rss_feed`) or a clock icon
      for schedule-only rows.
@@ -209,7 +258,7 @@ one. If `stopId` changes, the panel reloads.
 | Initial load | Header placeholder and 3 skeleton rows |
 | Loaded, no rows | "No arrivals in the next {minutesAfter} minutes" |
 | Loaded | Rows, capped at `maxArrivals` |
-| Error, no data | Message and a Retry button. Invalid key and unknown stop get their own messages |
+| Error, no data | Message and a Retry button. `emptyResponse` shows "Stop not found or service unavailable" |
 | Error, stale data | Keep the rows and show the footer notice |
 
 ### `ArrivalsController` (`ChangeNotifier`)
@@ -217,17 +266,28 @@ one. If `stopId` changes, the panel reloads.
 - Constructor: `(client, stopId, {minutesAfter, refreshInterval, clock})`.
 - It exposes an immutable `ArrivalsState`:
   - `status` (`loading | loaded | error`);
-  - `stop`, `arrivals` (already filtered and sorted), `references`;
+  - `stop`, `rawArrivals` (unfiltered, in server order), `references`;
   - `updatedAt`, `error`, `isRefreshing`.
+- `now()` returns `clock.now() + serverOffset`.
 - `refresh()` fetches now and restarts the poll timer.
-- **Polling:** a `Timer.periodic` runs at `refreshInterval`. It pauses when the
-  app goes to the background (`AppLifecycleListener`) and refreshes on resume.
+- **Polling:** a one-shot `Timer` is scheduled for `refreshInterval` after
+  each response completes, so slow requests never pile up.
+- `pause()` cancels the timer. `resume()` refreshes immediately and restarts
+  polling.
+- The controller has no dependency on `WidgetsBinding`.
 - **Stale responses:** every request gets an incrementing token, and a response
   whose token isn't the latest is discarded.
 - **Clock skew:** the controller stores `serverOffset = response.currentTime -
   clock.now()` and computes "now" as `clock.now() + serverOffset`.
-- **ETA labels:** a 30-second tick in the widget recomputes the labels from
-  the local clock between fetches.
+- **Filtering and ETA labels live in the widget.** The panel computes
+  `visibleArrivals(state.rawArrivals, controller.now())` on every fetch and on
+  a 30-second tick between fetches, so departed rows disappear on time.
+- **Lifecycle:** the panel's `State` owns the lifecycle handling.
+  - An `AppLifecycleListener` calls `pause()` when the app is hidden or
+    paused and `resume()` when it is resumed.
+  - The panel also pauses while `TickerMode.of(context)` is false, which
+    happens when a pushed route covers it. So the demo's feed card stops
+    polling under the full-screen page.
 
 ### Display logic (pure Dart, ported from Wayfinder)
 
@@ -240,14 +300,20 @@ All functions take an explicit `now`.
   - The label is `now` when `eta == 0`, otherwise `{eta}m`.
 - **Deviation:** `delay = predictedMins - scheduledMins`. It applies only when
   the row has a prediction.
-- **Status kind and text:**
-  - `canceled` (from `status == 'CANCELED'` or the trip status) shows the
-    canceled string.
-  - `frequency` trips show `every {headway} min`.
-  - A prediction with `delay > 0` is `late`: `{delay} min late`.
-  - A prediction with `delay < -1` is `early`: `{-delay} min early`.
-  - Any other prediction is `onTime`: `on time`.
-  - No prediction is `scheduled`: `scheduled`.
+- **Status text** is a separate function from **status color**, matching
+  Wayfinder:
+  - Canceled (`tripStatus?.status == 'CANCELED'`): `canceled` text, canceled
+    color.
+  - Frequency-based trips (`frequency != null`), with
+    `headwayMin = floor(headway / 60)`:
+    - `every {headwayMin} min from {startTime}` when `now < startTime`;
+    - `every {headwayMin} min until {endTime}` otherwise.
+  - With a prediction, the text is `{delay} min late` when `delay > 0`,
+    `{-delay} min early` when `delay < 0`, and `on time` otherwise.
+  - With a prediction, the color is late when `delay > 0`, early when
+    `delay < -1`, and on-time otherwise. This deliberately matches Wayfinder:
+    at 1 minute early the text says "1 min early" but the color stays green.
+  - With no prediction, the text is `scheduled` and the color is scheduled.
 - **Filtering** runs in this order:
   - `filterDeparted`: drop rows whose ETA is negative.
   - `collapseLayovers`: drop an arrival row when all of these hold:
@@ -255,14 +321,19 @@ All functions take an explicit `now`.
     - it has a `vehicleId`;
     - another row has `stopSequence == 0`, the same `vehicleId` and
       `serviceDate`, and `blockTripSequence + 1`.
-  - Sort by ETA ascending.
+  - Keep the server's order, as Wayfinder does. There is no client-side
+    sort.
 
 ### Theming
 
 `ObaArrivalsTheme extends ThemeExtension<ObaArrivalsTheme>`:
 
-- `onTime`, `late`, `early`, `scheduled` and `canceled` colors;
-- `badgeSize`, `badgeRadius`, and `badgeFallbackPalette` (8 background colors).
+- `onTime`, `late`, `early` and `canceled` colors;
+- `scheduled`, which is nullable and resolves to
+  `colorScheme.onSurfaceVariant` at build time;
+- `badgeSize`, `badgeRadius`, and `badgeFallbackColor` (default `#374151`,
+  Wayfinder's fallback);
+- `copyWith` and `lerp`.
 
 `ObaArrivalsTheme.light()` and `.dark()` defaults use the colors below. The
 panel picks one based on `Theme.of(context).brightness` unless the host
@@ -274,15 +345,18 @@ registers the extension.
 | Late | violet-600 | violet-400 |
 | Early | red-600 | red-400 |
 | Scheduled | `colorScheme.onSurfaceVariant` | same |
+| Canceled | `colorScheme.error` | same |
 
 Surfaces, text styles and fonts come from the host `Theme`.
 
 Badge colors:
 
-- **Background:** the GTFS `route.color`. When it is missing, a palette entry
-  chosen by a stable hash of the route id.
-- **Text:** the GTFS `route.textColor`. When it is missing, black or white,
-  whichever has the higher WCAG contrast against the background.
+- **Background:** the GTFS `route.color`, which arrives as hex without `#`
+  and may be lowercase. When it is missing, `badgeFallbackColor`.
+- **Text:** the GTFS `route.textColor`. When it is missing or empty, black or
+  white, whichever has the higher WCAG contrast against the background.
+  UCSD routes send `textColor: ""` on light backgrounds, such as IL on
+  `ffcd00`, so this rule matters.
 
 ### Strings
 
@@ -303,11 +377,16 @@ dependency on `gen_l10n`.
 
 - Unit tests for the display logic (ETA, deviation, status, layover collapse,
   departed filter) with fixed times.
-- Controller tests with a fake client and `fake_async`: polling, stale-response
-  drop, error-keeps-data, lifecycle pause and resume, and clock skew.
+- Controller tests with a fake client and `fake_async`: polling reschedules
+  after completion, stale-response drop, error-keeps-data, pause and resume,
+  and clock skew.
 - Widget tests for each state in the States table, `maxArrivals`, the tap
   callback, and the semantics labels.
 - Golden tests for a loaded panel in light and dark themes.
+  - They use a fixed clock, load real fonts rather than Ahem, and are
+    generated on macOS.
+  - They are tagged `golden` so they can be skipped on other operating
+    systems.
 
 ## Demo app: `oba_dart`
 
@@ -317,9 +396,11 @@ dependency on `gen_l10n`.
 - A "Shuttle" card embeds `ObaArrivalsPanel(maxArrivals: 3)` and has a
   "See all arrivals" button. The button pushes a full-screen page with the
   uncapped panel.
-- A stop picker (a menu on the card) switches between a few hardcoded UCSD
-  stops, for example Eighth College / Theatre District. Their stop IDs are
-  confirmed against the live API during implementation.
+- A stop picker (a menu on the card) switches between hardcoded UCSD stops,
+  all verified live:
+  - `MTS_24151`, Eighth College / Theatre District (North);
+  - `MTS_88986`, UCSD Central Campus Trolley;
+  - `MTS_11902`, Gilman Transit Center (South).
 - A light/dark toggle in the app bar.
 - `onArrivalTap` shows a snackbar with the route and headsign.
 - Configuration comes from `--dart-define=OBA_BASE_URL` and
@@ -333,8 +414,34 @@ dependency on `gen_l10n`.
 
 - iOS and Android are the primary targets. macOS is supported for quick
   desktop runs.
-- The web build may hit CORS limits when calling SDMTS directly. The README
-  documents this, and v1 does not work around it.
+- Web: SDMTS returned CORS headers for a localhost origin, so the web build
+  should work against SDMTS. Other OBA servers may not send those headers.
+
+## Verification of git consumption
+
+A throwaway app outside the repo adds `oba_arrivals` as a dependency using
+`git: {url: <local repo path>, path: packages/oba_arrivals}` and must pass
+`flutter pub get` and `flutter build` for one platform. This proves UCSD
+can consume the package.
+
+## Verified live API facts (SDMTS, 2026-09-23)
+
+- The server root is `https://realtime.sdmts.com/api/`, and endpoints live at
+  `/api/api/where/...`.
+- The envelope has `code: 200`, `text: "OK"`, `version: 2`, and
+  `currentTime` in epoch ms.
+- Stop ids are `MTS_<code>`, even for UCSD shuttle stops, and `stop.code` is
+  populated.
+- UCSD routes belong to the `UCSD_` agency:
+  - `UCSD_1040` is IL, `ffcd00`;
+  - `UCSD_1030` is OL, `20183d`;
+  - `UCSD_1010` is R, `6e963b`;
+  - `UCSD_1020` is S, `90a7d3`.
+- UCSD routes have `textColor: ""`. MTS routes have `FFFFFF`.
+- `tripStatus.scheduleDeviation` is in seconds, and `frequency` is usually
+  `null`.
+- An unknown stop and a bad key both return HTTP 200 with an empty body. A
+  wrong path returns an HTML 404.
 
 ## Documentation
 
@@ -348,7 +455,8 @@ dependency on `gen_l10n`.
 
 - Row expansion and trip details.
 - Map, search, favorites, and stop discovery.
-- Displaying service alerts. Situations are parsed but not rendered.
+- Service alerts, including the Situation model.
+- Showing times in the agency's timezone; v1 uses device local time.
 - Loading more arrivals beyond `minutesAfter`.
 - Publishing to pub.dev. UCSD depends on the packages by git path.
 - CI configuration.
