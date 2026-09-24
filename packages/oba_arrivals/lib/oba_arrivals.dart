@@ -1,6 +1,7 @@
 /// Embeddable OneBusAway arrivals and departures panel.
 library;
 
+export 'src/arrivals_controller.dart';
 export 'src/color_utils.dart';
 export 'src/display/arrival_display.dart';
 export 'src/display/arrival_filtering.dart';
