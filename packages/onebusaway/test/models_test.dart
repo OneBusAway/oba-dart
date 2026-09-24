@@ -6,19 +6,24 @@ import 'package:test/test.dart';
 
 import 'support/fixtures.dart';
 
-JsonMap loadFixture(String name) =>
-    jsonDecode(fixture(name)) as JsonMap;
+JsonMap loadFixture(String name) => jsonDecode(fixture(name)) as JsonMap;
 
 void main() {
   final data = loadFixture('arrivals_mts_24151.json')['data'] as JsonMap;
-  final entry = StopWithArrivalsAndDepartures.fromJson(data['entry'] as JsonMap);
+  final entry = StopWithArrivalsAndDepartures.fromJson(
+    data['entry'] as JsonMap,
+  );
   final refs = References.fromJson(data['references'] as JsonMap);
 
   test('entry parses stop id and all arrivals in server order', () {
     expect(entry.stopId, 'MTS_24151');
     expect(entry.nearbyStopIds, ['MTS_24150']);
-    expect(entry.arrivalsAndDepartures.map((a) => a.tripHeadsign),
-        ['UTC', 'Old Town', 'Inside Loop', 'SIO']);
+    expect(entry.arrivalsAndDepartures.map((a) => a.tripHeadsign), [
+      'UTC',
+      'Old Town',
+      'Inside Loop',
+      'SIO',
+    ]);
   });
 
   test('predicted arrival fields', () {
@@ -26,8 +31,10 @@ void main() {
     expect(il.routeId, 'UCSD_1040');
     expect(il.routeShortName, 'IL');
     expect(il.predicted, isTrue);
-    expect(il.predictedArrivalTime,
-        DateTime.fromMillisecondsSinceEpoch(1790228820000, isUtc: true));
+    expect(
+      il.predictedArrivalTime,
+      DateTime.fromMillisecondsSinceEpoch(1790228820000, isUtc: true),
+    );
     expect(il.scheduledArrivalTime!.millisecondsSinceEpoch, 1790228700000);
     expect(il.stopSequence, 3);
     expect(il.totalStopsInTrip, 12);
@@ -48,20 +55,27 @@ void main() {
   });
 
   test('frequency parses headway in seconds', () {
-    final f = Frequency.fromJson(
-        {'startTime': 1790200000000, 'endTime': 1790240000000, 'headway': 600});
+    final f = Frequency.fromJson({
+      'startTime': 1790200000000,
+      'endTime': 1790240000000,
+      'headway': 600,
+    });
     expect(f.headway, 600);
     expect(f.startTime.millisecondsSinceEpoch, 1790200000000);
   });
 
   test('frequency without times is a format error', () {
-    expect(() => Frequency.fromJson({'headway': 600}),
-        throwsA(isA<ObaFormatException>()));
+    expect(
+      () => Frequency.fromJson({'headway': 600}),
+      throwsA(isA<ObaFormatException>()),
+    );
   });
 
   test('stop requires lat coordinate', () {
-    expect(() => Stop.fromJson({'id': 'X', 'name': 'N', 'lon': 1.0}),
-        throwsA(isA<ObaFormatException>()));
+    expect(
+      () => Stop.fromJson({'id': 'X', 'name': 'N', 'lon': 1.0}),
+      throwsA(isA<ObaFormatException>()),
+    );
   });
 
   group('References', () {

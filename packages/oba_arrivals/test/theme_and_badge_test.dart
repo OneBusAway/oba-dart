@@ -28,8 +28,14 @@ void main() {
   test('badgeFontSize follows Wayfinder rule', () {
     expect(badgeFontSize('IL'), 24);
     expect(badgeFontSize('101'), 24);
-    expect(badgeFontSize('Blue Line'), 21); // min(24, round(90/4)=23, round(42/2)=21)
-    expect(badgeFontSize('Supercalifragilistic'), 8); // round(90/20)=5 -> floor 8
+    expect(
+      badgeFontSize('Blue Line'),
+      21,
+    ); // min(24, round(90/4)=23, round(42/2)=21)
+    expect(
+      badgeFontSize('Supercalifragilistic'),
+      8,
+    ); // round(90/20)=5 -> floor 8
   });
 
   group('ObaArrivalsTheme', () {
@@ -38,22 +44,28 @@ void main() {
       expect(ObaArrivalsTheme.dark().late, const Color(0xFFA78BFA));
     });
 
-    testWidgets('of() uses brightness default unless host registers one',
-        (tester) async {
+    testWidgets('of() uses brightness default unless host registers one', (
+      tester,
+    ) async {
       late ObaArrivalsTheme resolved;
       Widget probe(ThemeData theme) => MaterialApp(
-            theme: theme,
-            home: Builder(builder: (context) {
-              resolved = ObaArrivalsTheme.of(context);
-              return const SizedBox();
-            }),
-          );
+        theme: theme,
+        home: Builder(
+          builder: (context) {
+            resolved = ObaArrivalsTheme.of(context);
+            return const SizedBox();
+          },
+        ),
+      );
 
       await tester.pumpWidget(probe(ThemeData(brightness: Brightness.dark)));
       expect(resolved.onTime, const Color(0xFF4ADE80));
 
       const custom = ObaArrivalsTheme(
-          onTime: Colors.teal, late: Colors.orange, early: Colors.pink);
+        onTime: Colors.teal,
+        late: Colors.orange,
+        early: Colors.pink,
+      );
       await tester.pumpWidget(probe(ThemeData(extensions: const [custom])));
       await tester.pumpAndSettle();
       expect(resolved.onTime, Colors.teal);
@@ -62,9 +74,15 @@ void main() {
     test('scheduled and canceled resolve from the color scheme', () {
       final scheme = ColorScheme.fromSeed(seedColor: Colors.blue);
       final theme = ObaArrivalsTheme.light();
-      expect(theme.colorFor(ArrivalStatusKind.scheduled, scheme), scheme.onSurfaceVariant);
+      expect(
+        theme.colorFor(ArrivalStatusKind.scheduled, scheme),
+        scheme.onSurfaceVariant,
+      );
       expect(theme.colorFor(ArrivalStatusKind.canceled, scheme), scheme.error);
-      expect(theme.colorFor(ArrivalStatusKind.late, scheme), const Color(0xFF7C3AED));
+      expect(
+        theme.colorFor(ArrivalStatusKind.late, scheme),
+        const Color(0xFF7C3AED),
+      );
     });
 
     test('lerp and copyWith', () {
@@ -76,31 +94,46 @@ void main() {
   });
 
   group('RouteBadge', () {
-    Finder badgePart(Type type) =>
-        find.descendant(of: find.byType(RouteBadge), matching: find.byType(type));
+    Finder badgePart(Type type) => find.descendant(
+      of: find.byType(RouteBadge),
+      matching: find.byType(type),
+    );
 
     Future<Text> pumpBadge(WidgetTester tester, Widget badge) async {
-      await tester.pumpWidget(MaterialApp(
-        home: MediaQuery(
-          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
-          child: Center(child: badge),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+            child: Center(child: badge),
+          ),
         ),
-      ));
+      );
       return tester.widget<Text>(badgePart(Text));
     }
 
-    testWidgets('UCSD IL badge uses black text on ffcd00 when textColor is empty',
-        (tester) async {
-      final text = await pumpBadge(
-          tester, const RouteBadge(label: 'IL', color: 'ffcd00', textColor: null));
-      expect(text.style!.color, Colors.black);
-      final box = tester.widget<DecoratedBox>(badgePart(DecoratedBox));
-      expect((box.decoration as BoxDecoration).color, const Color(0xFFFFCD00));
-    });
+    testWidgets(
+      'UCSD IL badge uses black text on ffcd00 when textColor is empty',
+      (tester) async {
+        final text = await pumpBadge(
+          tester,
+          const RouteBadge(label: 'IL', color: 'ffcd00', textColor: null),
+        );
+        expect(text.style!.color, Colors.black);
+        final box = tester.widget<DecoratedBox>(badgePart(DecoratedBox));
+        expect(
+          (box.decoration as BoxDecoration).color,
+          const Color(0xFFFFCD00),
+        );
+      },
+    );
 
-    testWidgets('GTFS textColor wins; missing color uses fallback', (tester) async {
+    testWidgets('GTFS textColor wins; missing color uses fallback', (
+      tester,
+    ) async {
       final text = await pumpBadge(
-          tester, const RouteBadge(label: '30', color: null, textColor: 'FFFFFF'));
+        tester,
+        const RouteBadge(label: '30', color: null, textColor: 'FFFFFF'),
+      );
       expect(text.style!.color, const Color(0xFFFFFFFF));
       final box = tester.widget<DecoratedBox>(badgePart(DecoratedBox));
       expect((box.decoration as BoxDecoration).color, const Color(0xFF374151));

@@ -11,18 +11,17 @@ ArrivalAndDeparture a(
   int? totalStopsInTrip = 10,
   int? blockTripSequence,
   String? vehicleId,
-}) =>
-    ArrivalAndDeparture(
-      routeId: 'R',
-      tripId: trip,
-      serviceDate: serviceDate,
-      stopId: 'S',
-      stopSequence: stopSequence,
-      totalStopsInTrip: totalStopsInTrip,
-      blockTripSequence: blockTripSequence,
-      vehicleId: vehicleId,
-      scheduledArrivalTime: now.add(Duration(minutes: minutesFromNow)),
-    );
+}) => ArrivalAndDeparture(
+  routeId: 'R',
+  tripId: trip,
+  serviceDate: serviceDate,
+  stopId: 'S',
+  stopSequence: stopSequence,
+  totalStopsInTrip: totalStopsInTrip,
+  blockTripSequence: blockTripSequence,
+  vehicleId: vehicleId,
+  scheduledArrivalTime: now.add(Duration(minutes: minutesFromNow)),
+);
 
 void main() {
   test('filterDeparted drops negative ETAs and rows without times', () {
@@ -31,36 +30,68 @@ void main() {
       a('now', minutesFromNow: 0),
       a('soon', minutesFromNow: 5),
       ArrivalAndDeparture(
-          routeId: 'R', tripId: 'none', serviceDate: serviceDate, stopId: 'S', stopSequence: 1),
+        routeId: 'R',
+        tripId: 'none',
+        serviceDate: serviceDate,
+        stopId: 'S',
+        stopSequence: 1,
+      ),
     ];
     expect(filterDeparted(rows, now).map((r) => r.tripId), ['now', 'soon']);
   });
 
   group('collapseLayovers', () {
-    final arrivalAtEnd = a('t1',
-        minutesFromNow: 2, stopSequence: 9, blockTripSequence: 4, vehicleId: 'V1');
-    final departureNext = a('t2',
-        minutesFromNow: 6, stopSequence: 0, blockTripSequence: 5, vehicleId: 'V1');
+    final arrivalAtEnd = a(
+      't1',
+      minutesFromNow: 2,
+      stopSequence: 9,
+      blockTripSequence: 4,
+      vehicleId: 'V1',
+    );
+    final departureNext = a(
+      't2',
+      minutesFromNow: 6,
+      stopSequence: 0,
+      blockTripSequence: 5,
+      vehicleId: 'V1',
+    );
 
     test('drops the final-stop arrival when the same vehicle departs next', () {
-      expect(collapseLayovers([arrivalAtEnd, departureNext]).map((r) => r.tripId), ['t2']);
+      expect(
+        collapseLayovers([arrivalAtEnd, departureNext]).map((r) => r.tripId),
+        ['t2'],
+      );
     });
 
     test('keeps it when vehicle differs', () {
-      final other = a('t2',
-          minutesFromNow: 6, stopSequence: 0, blockTripSequence: 5, vehicleId: 'V2');
+      final other = a(
+        't2',
+        minutesFromNow: 6,
+        stopSequence: 0,
+        blockTripSequence: 5,
+        vehicleId: 'V2',
+      );
       expect(collapseLayovers([arrivalAtEnd, other]), hasLength(2));
     });
 
     test('keeps it when block sequence is not +1', () {
-      final later = a('t2',
-          minutesFromNow: 6, stopSequence: 0, blockTripSequence: 6, vehicleId: 'V1');
+      final later = a(
+        't2',
+        minutesFromNow: 6,
+        stopSequence: 0,
+        blockTripSequence: 6,
+        vehicleId: 'V1',
+      );
       expect(collapseLayovers([arrivalAtEnd, later]), hasLength(2));
     });
 
     test('keeps it without a vehicle id', () {
-      final noVehicle =
-          a('t1', minutesFromNow: 2, stopSequence: 9, blockTripSequence: 4);
+      final noVehicle = a(
+        't1',
+        minutesFromNow: 2,
+        stopSequence: 9,
+        blockTripSequence: 4,
+      );
       expect(collapseLayovers([noVehicle, departureNext]), hasLength(2));
     });
   });
@@ -71,7 +102,9 @@ void main() {
       a('gone', minutesFromNow: -2),
       a('early-in-list', minutesFromNow: 1),
     ];
-    expect(visibleArrivals(rows, now).map((r) => r.tripId),
-        ['late-in-list', 'early-in-list']);
+    expect(visibleArrivals(rows, now).map((r) => r.tripId), [
+      'late-in-list',
+      'early-in-list',
+    ]);
   });
 }

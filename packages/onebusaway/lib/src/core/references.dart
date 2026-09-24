@@ -22,12 +22,14 @@ class References {
       String key,
       T Function(JsonMap) parse,
       String Function(T) id,
-    ) =>
-        {
-          for (final item in readList(
-              json, key, (v) => parse(asJsonMap(v, '$key[]'))))
-            id(item): item,
-        };
+    ) => {
+      for (final item in readList(
+        json,
+        key,
+        (v) => parse(asJsonMap(v, '$key[]')),
+      ))
+        id(item): item,
+    };
     return References(
       agencies: index('agencies', Agency.fromJson, (a) => a.id),
       routes: index('routes', Route.fromJson, (r) => r.id),

@@ -8,20 +8,22 @@ import 'package:oba_arrivals/oba_arrivals.dart';
 import 'package:oba_dart/app.dart';
 
 void main() {
-  final fixture = File('packages/onebusaway/test/fixtures/arrivals_mts_24151.json')
-      .readAsStringSync();
+  final fixture = File(
+    'packages/onebusaway/test/fixtures/arrivals_mts_24151.json',
+  ).readAsStringSync();
 
   OneBusAwayClient client(List<String> requested) => OneBusAwayClient(
-        baseUrl: Uri.parse('https://realtime.sdmts.com/api/'),
-        apiKey: 'test',
-        httpClient: MockClient((r) async {
-          requested.add(r.url.pathSegments.last);
-          return http.Response(fixture, 200);
-        }),
-      );
+    baseUrl: Uri.parse('https://realtime.sdmts.com/api/'),
+    apiKey: 'test',
+    httpClient: MockClient((r) async {
+      requested.add(r.url.pathSegments.last);
+      return http.Response(fixture, 200);
+    }),
+  );
 
-  testWidgets('home feed embeds the shuttle panel capped at 3 rows',
-      (tester) async {
+  testWidgets('home feed embeds the shuttle panel capped at 3 rows', (
+    tester,
+  ) async {
     final requested = <String>[];
     await tester.pumpWidget(StudentLifeDemoApp(client: client(requested)));
     await tester.pump();
@@ -33,8 +35,9 @@ void main() {
     expect(requested, ['MTS_24151.json']);
   });
 
-  testWidgets('See all reuses the card controller: no refetch, one poll',
-      (tester) async {
+  testWidgets('See all reuses the card controller: no refetch, one poll', (
+    tester,
+  ) async {
     final requested = <String>[];
     await tester.pumpWidget(StudentLifeDemoApp(client: client(requested)));
     await tester.pump();
@@ -53,8 +56,9 @@ void main() {
     expect(requested, hasLength(2));
   });
 
-  testWidgets('choosing another stop swaps the controller cleanly',
-      (tester) async {
+  testWidgets('choosing another stop swaps the controller cleanly', (
+    tester,
+  ) async {
     final requested = <String>[];
     await tester.pumpWidget(StudentLifeDemoApp(client: client(requested)));
     await tester.pump();

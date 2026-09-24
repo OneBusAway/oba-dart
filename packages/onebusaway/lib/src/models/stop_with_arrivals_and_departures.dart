@@ -16,7 +16,8 @@ class StopWithArrivalsAndDepartures {
           json,
           'arrivalsAndDepartures',
           (item) => ArrivalAndDeparture.fromJson(
-              asJsonMap(item, 'arrivalsAndDepartures[]')),
+            asJsonMap(item, 'arrivalsAndDepartures[]'),
+          ),
         ),
         nearbyStopIds: readStringList(json, 'nearbyStopIds'),
         situationIds: readStringList(json, 'situationIds'),

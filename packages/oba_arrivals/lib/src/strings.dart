@@ -9,8 +9,10 @@ class ObaArrivalsStrings {
   String get onTime => 'on time';
   String get scheduled => 'scheduled';
   String get canceled => 'canceled';
-  String everyMinutesFrom(int minutes, String time) => 'every $minutes min from $time';
-  String everyMinutesUntil(int minutes, String time) => 'every $minutes min until $time';
+  String everyMinutesFrom(int minutes, String time) =>
+      'every $minutes min from $time';
+  String everyMinutesUntil(int minutes, String time) =>
+      'every $minutes min until $time';
 
   String stopNumber(String code) => 'Stop #$code';
 
@@ -34,9 +36,11 @@ class ObaArrivalsStrings {
   String get retry => 'Retry';
   String noArrivals(int minutes) => 'No arrivals in the next $minutes minutes';
   String get stopNotFound => 'Stop not found or service unavailable';
-  String get networkError => "Couldn't reach the transit server. Check your connection.";
+  String get networkError =>
+      "Couldn't reach the transit server. Check your connection.";
   String get loadError => "Couldn't load arrivals.";
-  String staleNotice(String time) => "Couldn't update. Showing results from $time";
+  String staleNotice(String time) =>
+      "Couldn't update. Showing results from $time";
 
   // Accessibility.
   String get arrivingNow => 'arriving now';

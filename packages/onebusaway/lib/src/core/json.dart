@@ -4,7 +4,8 @@ typedef JsonMap = Map<String, Object?>;
 
 Never _wrongType(String key, String expected, Object? value) =>
     throw ObaFormatException(
-        'Expected $expected at "$key", got ${value.runtimeType}');
+      'Expected $expected at "$key", got ${value.runtimeType}',
+    );
 
 String readString(JsonMap json, String key) {
   final value = json[key];

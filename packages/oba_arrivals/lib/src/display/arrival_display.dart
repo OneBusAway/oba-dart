@@ -53,8 +53,14 @@ String statusText(
   if (frequency != null) {
     final headwayMinutes = frequency.headway ~/ 60;
     return now.isBefore(frequency.startTime)
-        ? strings.everyMinutesFrom(headwayMinutes, formatTime(frequency.startTime))
-        : strings.everyMinutesUntil(headwayMinutes, formatTime(frequency.endTime));
+        ? strings.everyMinutesFrom(
+            headwayMinutes,
+            formatTime(frequency.startTime),
+          )
+        : strings.everyMinutesUntil(
+            headwayMinutes,
+            formatTime(frequency.endTime),
+          );
   }
   final delay = delayMinutes(a);
   if (delay == null) return strings.scheduled;

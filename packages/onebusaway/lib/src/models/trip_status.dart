@@ -12,14 +12,14 @@ class TripStatus {
   });
 
   factory TripStatus.fromJson(JsonMap json) => TripStatus(
-        status: readOptString(json, 'status'),
-        phase: readOptString(json, 'phase'),
-        predicted: readBool(json, 'predicted'),
-        scheduleDeviation: readOptInt(json, 'scheduleDeviation') ?? 0,
-        vehicleId: readOptString(json, 'vehicleId'),
-        activeTripId: readOptString(json, 'activeTripId'),
-        serviceDate: readEpochMs(json, 'serviceDate'),
-      );
+    status: readOptString(json, 'status'),
+    phase: readOptString(json, 'phase'),
+    predicted: readBool(json, 'predicted'),
+    scheduleDeviation: readOptInt(json, 'scheduleDeviation') ?? 0,
+    vehicleId: readOptString(json, 'vehicleId'),
+    activeTripId: readOptString(json, 'activeTripId'),
+    serviceDate: readEpochMs(json, 'serviceDate'),
+  );
 
   /// e.g. `default` or `CANCELED`.
   final String? status;

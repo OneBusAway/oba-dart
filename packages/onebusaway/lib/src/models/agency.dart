@@ -10,12 +10,12 @@ class Agency {
   });
 
   factory Agency.fromJson(JsonMap json) => Agency(
-        id: readString(json, 'id'),
-        name: readString(json, 'name'),
-        url: readOptString(json, 'url'),
-        timezone: readOptString(json, 'timezone'),
-        phone: readOptString(json, 'phone'),
-      );
+    id: readString(json, 'id'),
+    name: readString(json, 'name'),
+    url: readOptString(json, 'url'),
+    timezone: readOptString(json, 'timezone'),
+    phone: readOptString(json, 'phone'),
+  );
 
   final String id;
   final String name;

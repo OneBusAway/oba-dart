@@ -10,19 +10,18 @@ ArrivalAndDeparture arrival({
   bool predicted = false,
   Frequency? frequency,
   TripStatus? tripStatus,
-}) =>
-    ArrivalAndDeparture(
-      routeId: 'R',
-      tripId: 'T',
-      serviceDate: DateTime.utc(2026, 9, 24),
-      stopId: 'S',
-      stopSequence: 1,
-      scheduledArrivalTime: scheduled,
-      predictedArrivalTime: predictedTime,
-      predicted: predicted,
-      frequency: frequency,
-      tripStatus: tripStatus,
-    );
+}) => ArrivalAndDeparture(
+  routeId: 'R',
+  tripId: 'T',
+  serviceDate: DateTime.utc(2026, 9, 24),
+  stopId: 'S',
+  stopSequence: 1,
+  scheduledArrivalTime: scheduled,
+  predictedArrivalTime: predictedTime,
+  predicted: predicted,
+  frequency: frequency,
+  tripStatus: tripStatus,
+);
 
 String fmt(DateTime d) => '${d.hour}:${d.minute.toString().padLeft(2, '0')}';
 
@@ -33,7 +32,10 @@ void main() {
   group('minutesUntil', () {
     test('uses predicted time when predicted, flooring to minutes', () {
       final a = arrival(
-          scheduled: t(13, 51), predictedTime: t(13, 53, 59), predicted: true);
+        scheduled: t(13, 51),
+        predictedTime: t(13, 53, 59),
+        predicted: true,
+      );
       expect(minutesUntil(a, now), 3); // 13:53 - 13:50
     });
 
@@ -57,28 +59,41 @@ void main() {
 
   group('status', () {
     ArrivalAndDeparture withDelay(int minutes) => arrival(
-        scheduled: t(14, 0),
-        predictedTime: t(14, 0).add(Duration(minutes: minutes)),
-        predicted: true);
+      scheduled: t(14, 0),
+      predictedTime: t(14, 0).add(Duration(minutes: minutes)),
+      predicted: true,
+    );
 
     test('late', () {
       expect(delayMinutes(withDelay(4)), 4);
       expect(statusKind(withDelay(4)), ArrivalStatusKind.late);
-      expect(statusText(withDelay(4), now, strings, formatTime: fmt), '4 min late');
+      expect(
+        statusText(withDelay(4), now, strings, formatTime: fmt),
+        '4 min late',
+      );
     });
 
     test('1 min early: early text but on-time color (matches Wayfinder)', () {
-      expect(statusText(withDelay(-1), now, strings, formatTime: fmt), '1 min early');
+      expect(
+        statusText(withDelay(-1), now, strings, formatTime: fmt),
+        '1 min early',
+      );
       expect(statusKind(withDelay(-1)), ArrivalStatusKind.onTime);
     });
 
     test('2 min early: early text and early color', () {
-      expect(statusText(withDelay(-2), now, strings, formatTime: fmt), '2 min early');
+      expect(
+        statusText(withDelay(-2), now, strings, formatTime: fmt),
+        '2 min early',
+      );
       expect(statusKind(withDelay(-2)), ArrivalStatusKind.early);
     });
 
     test('on time', () {
-      expect(statusText(withDelay(0), now, strings, formatTime: fmt), 'on time');
+      expect(
+        statusText(withDelay(0), now, strings, formatTime: fmt),
+        'on time',
+      );
       expect(statusKind(withDelay(0)), ArrivalStatusKind.onTime);
     });
 
@@ -91,10 +106,11 @@ void main() {
 
     test('canceled via tripStatus wins over everything', () {
       final a = arrival(
-          scheduled: t(14, 0),
-          predictedTime: t(14, 5),
-          predicted: true,
-          tripStatus: const TripStatus(status: 'CANCELED'));
+        scheduled: t(14, 0),
+        predictedTime: t(14, 5),
+        predicted: true,
+        tripStatus: const TripStatus(status: 'CANCELED'),
+      );
       expect(isCanceled(a), isTrue);
       expect(statusKind(a), ArrivalStatusKind.canceled);
       expect(statusText(a, now, strings, formatTime: fmt), 'canceled');
@@ -102,20 +118,43 @@ void main() {
 
     test('frequency: headway seconds -> minutes, from/until', () {
       final before = arrival(
-          scheduled: t(14, 0),
-          frequency: Frequency(startTime: t(14, 0), endTime: t(18, 0), headway: 600));
-      expect(statusText(before, now, strings, formatTime: fmt), 'every 10 min from 14:00');
+        scheduled: t(14, 0),
+        frequency: Frequency(
+          startTime: t(14, 0),
+          endTime: t(18, 0),
+          headway: 600,
+        ),
+      );
+      expect(
+        statusText(before, now, strings, formatTime: fmt),
+        'every 10 min from 14:00',
+      );
       final during = arrival(
-          scheduled: t(14, 0),
-          frequency: Frequency(startTime: t(13, 0), endTime: t(18, 0), headway: 450));
-      expect(statusText(during, now, strings, formatTime: fmt), 'every 7 min until 18:00');
+        scheduled: t(14, 0),
+        frequency: Frequency(
+          startTime: t(13, 0),
+          endTime: t(18, 0),
+          headway: 450,
+        ),
+      );
+      expect(
+        statusText(during, now, strings, formatTime: fmt),
+        'every 7 min until 18:00',
+      );
     });
   });
 
   test('displayTime prefers predicted when predicted', () {
-    expect(displayTime(arrival(scheduled: t(14, 0), predictedTime: t(14, 2), predicted: true)),
-        t(14, 2));
-    expect(displayTime(arrival(scheduled: t(14, 0), predictedTime: t(14, 2))), t(14, 0));
+    expect(
+      displayTime(
+        arrival(scheduled: t(14, 0), predictedTime: t(14, 2), predicted: true),
+      ),
+      t(14, 2),
+    );
+    expect(
+      displayTime(arrival(scheduled: t(14, 0), predictedTime: t(14, 2))),
+      t(14, 0),
+    );
   });
 
   test('etaLabel', () {

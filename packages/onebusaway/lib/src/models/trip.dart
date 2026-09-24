@@ -12,14 +12,14 @@ class Trip {
   });
 
   factory Trip.fromJson(JsonMap json) => Trip(
-        id: readString(json, 'id'),
-        routeId: readString(json, 'routeId'),
-        tripHeadsign: readOptString(json, 'tripHeadsign'),
-        directionId: readOptString(json, 'directionId'),
-        serviceId: readOptString(json, 'serviceId'),
-        blockId: readOptString(json, 'blockId'),
-        shapeId: readOptString(json, 'shapeId'),
-      );
+    id: readString(json, 'id'),
+    routeId: readString(json, 'routeId'),
+    tripHeadsign: readOptString(json, 'tripHeadsign'),
+    directionId: readOptString(json, 'directionId'),
+    serviceId: readOptString(json, 'serviceId'),
+    blockId: readOptString(json, 'blockId'),
+    shapeId: readOptString(json, 'shapeId'),
+  );
 
   final String id;
   final String routeId;

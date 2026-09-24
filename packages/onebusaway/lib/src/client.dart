@@ -32,7 +32,7 @@ class OneBusAwayClient {
   }
 
   OneBusAwayClient._(this._transport, this._ownsHttpClient)
-      : arrivalsAndDepartures = ArrivalsAndDeparturesResource(_transport);
+    : arrivalsAndDepartures = ArrivalsAndDeparturesResource(_transport);
 
   final Transport _transport;
   final bool _ownsHttpClient;

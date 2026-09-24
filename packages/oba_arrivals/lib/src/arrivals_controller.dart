@@ -48,16 +48,15 @@ class ArrivalsState {
     ArrivalsStatus? status,
     Object? error,
     bool? isRefreshing,
-  }) =>
-      ArrivalsState(
-        status: status ?? this.status,
-        stop: stop,
-        rawArrivals: rawArrivals,
-        references: references,
-        updatedAt: updatedAt,
-        error: error ?? this.error,
-        isRefreshing: isRefreshing ?? this.isRefreshing,
-      );
+  }) => ArrivalsState(
+    status: status ?? this.status,
+    stop: stop,
+    rawArrivals: rawArrivals,
+    references: references,
+    updatedAt: updatedAt,
+    error: error ?? this.error,
+    isRefreshing: isRefreshing ?? this.isRefreshing,
+  );
 }
 
 /// Fetches arrivals for one stop and polls while running.
@@ -200,12 +199,14 @@ class ArrivalsController extends ChangeNotifier {
     try {
       onError(error, stackTrace);
     } catch (exception, stack) {
-      FlutterError.reportError(FlutterErrorDetails(
-        exception: exception,
-        stack: stack,
-        library: 'oba_arrivals',
-        context: ErrorDescription('while calling ArrivalsController.onError'),
-      ));
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: exception,
+          stack: stack,
+          library: 'oba_arrivals',
+          context: ErrorDescription('while calling ArrivalsController.onError'),
+        ),
+      );
     }
   }
 

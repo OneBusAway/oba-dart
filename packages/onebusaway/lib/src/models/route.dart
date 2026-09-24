@@ -14,16 +14,16 @@ class Route {
   });
 
   factory Route.fromJson(JsonMap json) => Route(
-        id: readString(json, 'id'),
-        agencyId: readString(json, 'agencyId'),
-        shortName: readOptString(json, 'shortName'),
-        longName: readOptString(json, 'longName'),
-        description: readOptString(json, 'description'),
-        type: readOptInt(json, 'type'),
-        color: readOptString(json, 'color'),
-        textColor: readOptString(json, 'textColor'),
-        url: readOptString(json, 'url'),
-      );
+    id: readString(json, 'id'),
+    agencyId: readString(json, 'agencyId'),
+    shortName: readOptString(json, 'shortName'),
+    longName: readOptString(json, 'longName'),
+    description: readOptString(json, 'description'),
+    type: readOptInt(json, 'type'),
+    color: readOptString(json, 'color'),
+    textColor: readOptString(json, 'textColor'),
+    url: readOptString(json, 'url'),
+  );
 
   final String id;
   final String agencyId;

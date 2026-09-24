@@ -40,7 +40,8 @@ class ArrivalRow extends StatelessWidget {
     final predicted = hasPrediction(arrival);
     String format(DateTime t) => formatArrivalTime(context, t);
 
-    final label = arrival.routeShortName ??
+    final label =
+        arrival.routeShortName ??
         route?.shortName ??
         stripAgencyPrefix(arrival.routeId);
     final headsign = arrival.tripHeadsign ?? route?.longName ?? '';
@@ -84,17 +85,25 @@ class ArrivalRow extends StatelessWidget {
                       headsign,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w700),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text.rich(
-                      TextSpan(children: [
-                        if (time != null) TextSpan(text: '${format(time)} · '),
-                        TextSpan(text: status, style: TextStyle(color: color)),
-                      ]),
+                      TextSpan(
+                        children: [
+                          if (time != null)
+                            TextSpan(text: '${format(time)} · '),
+                          TextSpan(
+                            text: status,
+                            style: TextStyle(color: color),
+                          ),
+                        ],
+                      ),
                       style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant),
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -110,16 +119,23 @@ class ArrivalRow extends StatelessWidget {
                       Text(
                         etaLabel(eta, strings),
                         style: theme.textTheme.titleLarge?.copyWith(
-                            color: color, fontWeight: FontWeight.w700),
+                          color: color,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       const SizedBox(width: 2),
-                      Icon(predicted ? Icons.rss_feed : Icons.schedule,
-                          size: 16, color: color),
+                      Icon(
+                        predicted ? Icons.rss_feed : Icons.schedule,
+                        size: 16,
+                        color: color,
+                      ),
                     ],
                   ),
                   if (tap != null)
-                    Icon(Icons.chevron_right,
-                        color: theme.colorScheme.onSurfaceVariant),
+                    Icon(
+                      Icons.chevron_right,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                 ],
               ),
             ],

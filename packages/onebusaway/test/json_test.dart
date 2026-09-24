@@ -11,8 +11,13 @@ void main() {
     test('throws ObaFormatException naming the field when missing', () {
       expect(
         () => readString({}, 'name'),
-        throwsA(isA<ObaFormatException>()
-            .having((e) => e.message, 'message', contains('"name"'))),
+        throwsA(
+          isA<ObaFormatException>().having(
+            (e) => e.message,
+            'message',
+            contains('"name"'),
+          ),
+        ),
       );
     });
 
@@ -24,8 +29,10 @@ void main() {
     });
 
     test('optional: wrong type throws', () {
-      expect(() => readOptString({'a': 3}, 'a'),
-          throwsA(isA<ObaFormatException>()));
+      expect(
+        () => readOptString({'a': 3}, 'a'),
+        throwsA(isA<ObaFormatException>()),
+      );
     });
   });
 
@@ -45,8 +52,10 @@ void main() {
       expect(readBool({}, 'a'), isFalse);
       expect(readBool({}, 'a', defaultValue: true), isTrue);
       expect(readBool({'a': true}, 'a'), isTrue);
-      expect(() => readBool({'a': 'yes'}, 'a'),
-          throwsA(isA<ObaFormatException>()));
+      expect(
+        () => readBool({'a': 'yes'}, 'a'),
+        throwsA(isA<ObaFormatException>()),
+      );
     });
   });
 
@@ -65,16 +74,35 @@ void main() {
 
   group('collections', () {
     test('readList maps items and treats missing as empty', () {
-      expect(readList({'a': [1, 2]}, 'a', (v) => (v as int) * 2), [2, 4]);
+      expect(
+        readList(
+          {
+            'a': [1, 2],
+          },
+          'a',
+          (v) => (v as int) * 2,
+        ),
+        [2, 4],
+      );
       expect(readList({}, 'a', (v) => v), isEmpty);
     });
 
     test('readStringList', () {
-      expect(readStringList({'ids': ['A', 'B']}, 'ids'), ['A', 'B']);
+      expect(
+        readStringList({
+          'ids': ['A', 'B'],
+        }, 'ids'),
+        ['A', 'B'],
+      );
     });
 
     test('readMap requires an object', () {
-      expect(readMap({'m': {'x': 1}}, 'm'), {'x': 1});
+      expect(
+        readMap({
+          'm': {'x': 1},
+        }, 'm'),
+        {'x': 1},
+      );
       expect(() => readMap({'m': []}, 'm'), throwsA(isA<ObaFormatException>()));
       expect(readOptMap({}, 'm'), isNull);
     });

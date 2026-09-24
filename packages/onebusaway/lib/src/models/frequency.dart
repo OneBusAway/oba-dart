@@ -9,10 +9,10 @@ class Frequency {
   });
 
   factory Frequency.fromJson(JsonMap json) => Frequency(
-        startTime: _requireTime(json, 'startTime'),
-        endTime: _requireTime(json, 'endTime'),
-        headway: readInt(json, 'headway'),
-      );
+    startTime: _requireTime(json, 'startTime'),
+    endTime: _requireTime(json, 'endTime'),
+    headway: readInt(json, 'headway'),
+  );
 
   static DateTime _requireTime(JsonMap json, String key) =>
       readEpochMs(json, key) ??

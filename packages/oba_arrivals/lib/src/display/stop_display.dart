@@ -11,10 +11,10 @@ String stripAgencyPrefix(String id) {
 /// Short names of routes that serve [stop], sorted. References can include
 /// routes that don't serve the stop, so only `stop.routeIds` count.
 List<String> routeShortNamesForStop(Stop stop, References refs) => [
-      for (final id in stop.routeIds)
-        if (refs.route(id) case final route?)
-          route.shortName ?? stripAgencyPrefix(route.id),
-    ]..sort();
+  for (final id in stop.routeIds)
+    if (refs.route(id) case final route?)
+      route.shortName ?? stripAgencyPrefix(route.id),
+]..sort();
 
 /// `Stop #24151 · Southwest bound · 101, 30, IL, S`
 String stopSubtitle(Stop stop, References refs, ObaArrivalsStrings strings) {
