@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -136,6 +137,68 @@ void main() {
       expect(c.state.error, isA<ObaApiException>()
           .having((e) => e.kind, 'kind', ObaApiErrorKind.emptyResponse));
       expect(c.state.hasData, isFalse);
+      c.dispose();
+    });
+  });
+
+  test('the error state never flips to loading on a background poll', () {
+    fakeAsync((async) {
+      var requests = 0;
+      final c = controllerFor(async, (_) async {
+        requests++;
+        return requests <= 2 ? http.Response('', 200) : okResponse();
+      });
+      final statuses = <ArrivalsStatus>[];
+      c.addListener(() => statuses.add(c.state.status));
+      c.resume();
+      async.flushMicrotasks();
+      expect(c.state.status, ArrivalsStatus.error);
+
+      statuses.clear();
+      c.addListener(() {
+        if (c.state.isRefreshing) {
+          expect(c.state.error, isNotNull); // message stays visible
+        }
+      });
+      async.elapse(const Duration(seconds: 30)); // background poll fails
+      expect(requests, 2);
+      expect(statuses, isNot(contains(ArrivalsStatus.loading)));
+      expect(statuses, [ArrivalsStatus.error, ArrivalsStatus.error]);
+      expect(c.state.status, ArrivalsStatus.error);
+      expect(c.state.isRefreshing, isFalse);
+
+      statuses.clear();
+      c.refresh(); // Retry, now succeeding
+      expect(c.state.status, ArrivalsStatus.error);
+      expect(c.state.isRefreshing, isTrue);
+      async.flushMicrotasks();
+      expect(statuses, isNot(contains(ArrivalsStatus.loading)));
+      expect(c.state.status, ArrivalsStatus.loaded);
+      expect(c.state.error, isNull);
+      c.dispose();
+    });
+  });
+
+  test('a stale response does not move the server clock offset', () {
+    fakeAsync((async) {
+      final first = Completer<http.Response>();
+      var requests = 0;
+      final c = controllerFor(async, (_) {
+        requests++;
+        return requests == 1 ? first.future : Future.value(okResponse());
+      });
+      c.resume();
+      async.flushMicrotasks();
+      c.refresh(); // supersedes request 1
+      async.flushMicrotasks();
+      expect(c.now(), fixtureServerTime);
+
+      // Request 1 answers late with a server time an hour later.
+      final json = jsonDecode(arrivalsFixture()) as Map<String, dynamic>;
+      json['currentTime'] = (json['currentTime'] as int) + 3600 * 1000;
+      first.complete(okResponse(jsonEncode(json)));
+      async.flushMicrotasks();
+      expect(c.now(), fixtureServerTime);
       c.dispose();
     });
   });

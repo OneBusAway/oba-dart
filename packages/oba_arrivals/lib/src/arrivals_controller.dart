@@ -12,7 +12,9 @@ enum ArrivalsStatus {
   /// failed and the data is stale.
   loaded,
 
-  /// No data and the last request failed.
+  /// No data and the last request failed. Stays `error` (with
+  /// `ArrivalsState.isRefreshing` set) while a retry or poll is in flight;
+  /// it never goes back to [loading].
   error,
 }
 
@@ -100,9 +102,7 @@ class ArrivalsController extends ChangeNotifier {
     final request = ++_latestRequest;
     _emit(
       ArrivalsState(
-        status: _state.status == ArrivalsStatus.error
-            ? ArrivalsStatus.loading
-            : _state.status,
+        status: _state.status,
         stop: _state.stop,
         rawArrivals: _state.rawArrivals,
         references: _state.references,
@@ -113,12 +113,13 @@ class ArrivalsController extends ChangeNotifier {
     );
 
     ArrivalsState next;
+    Duration? serverOffset;
     try {
       final response = await _client.arrivalsAndDepartures.forStop(
         stopId,
         minutesAfter: minutesAfter,
       );
-      _serverOffset = response.currentTime.difference(_clock());
+      serverOffset = response.currentTime.difference(_clock());
       next = ArrivalsState(
         status: ArrivalsStatus.loaded,
         stop: response.references.stop(response.entry.stopId),
@@ -140,6 +141,7 @@ class ArrivalsController extends ChangeNotifier {
     }
 
     if (_disposed || request != _latestRequest) return;
+    if (serverOffset != null) _serverOffset = serverOffset;
     _emit(next);
     if (_running) _timer = Timer(refreshInterval, () => unawaited(refresh()));
   }

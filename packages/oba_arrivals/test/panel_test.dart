@@ -105,6 +105,39 @@ void main() {
     expect(find.text('Old Town'), findsOneWidget);
   });
 
+  testWidgets('error state keeps message and Retry across a background poll',
+      (tester) async {
+    var requests = 0;
+    final second = Completer<http.Response>();
+    await tester.pumpWidget(host(ObaArrivalsPanel(
+      client: fakeClient((_) {
+        requests++;
+        return requests == 1 ? Future.value(http.Response('', 200)) : second.future;
+      }),
+      stopId: 'MTS_99999999',
+    )));
+    await settle(tester);
+    expect(find.text('Stop not found or service unavailable'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 30)); // poll starts, in flight
+    expect(requests, 2);
+    expect(find.byKey(const ValueKey('oba-skeleton-row')), findsNothing);
+    expect(find.text('Stop not found or service unavailable'), findsOneWidget);
+    expect(find.widgetWithText(TextButton, 'Retry'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('oba-refresh')),
+        matching: find.byType(CircularProgressIndicator),
+      ),
+      findsOneWidget,
+    );
+
+    second.complete(http.Response('', 200));
+    await settle(tester);
+    expect(find.byKey(const ValueKey('oba-skeleton-row')), findsNothing);
+    expect(find.text('Stop not found or service unavailable'), findsOneWidget);
+  });
+
   testWidgets('failed refresh keeps rows and shows stale notice', (tester) async {
     var requests = 0;
     await tester.pumpWidget(host(ObaArrivalsPanel(
