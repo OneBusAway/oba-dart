@@ -118,3 +118,7 @@ TZ=America/Los_Angeles flutter test --tags golden --update-goldens
 ```
 
 Goldens are skipped unless the tests run on macOS in US Pacific time.
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE).

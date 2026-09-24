@@ -63,3 +63,7 @@ Every endpoint uses the same core, so adding one never changes the transport:
    the new files from `lib/onebusaway.dart`.
 4. Add a fixture captured from a real server to `test/fixtures/`, plus a
    `MockClient` test.
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE).
