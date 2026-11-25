@@ -104,6 +104,9 @@ class SurveyService extends ObaChangeNotifier {
   Object? _lastError;
   DateTime? _lastFetch;
 
+  /// The region [_all] was fetched for.
+  int? _fetchedRegionId;
+
   List<Survey> get allSurveys => List.unmodifiable(_all);
 
   /// Surveys active now.
@@ -126,6 +129,16 @@ class SurveyService extends ObaChangeNotifier {
   /// [lastError].
   Future<void> fetchSurveys({bool force = false}) async {
     if (_isLoading) return;
+    final regionId = _regionId();
+    if (regionId != _fetchedRegionId) {
+      // The region changed: its surveys are not this region's, and their
+      // answers would go to the wrong server. Drop them and skip the
+      // cooldown.
+      _fetchedRegionId = regionId;
+      _all = [];
+      _visible = [];
+      _lastFetch = null;
+    }
     final last = _lastFetch;
     if (!force &&
         _all.isNotEmpty &&
@@ -146,6 +159,9 @@ class SurveyService extends ObaChangeNotifier {
       final response = await obaco.getSurveys(
         userId: userData.surveyUserIdentifier,
       );
+      // An answer for a region the rider has since left is dropped; the
+      // next fetch asks the new region.
+      if (_regionId() != regionId) return;
       _all = List.of(response.surveys);
       final now = clock.now();
       _visible = _all.where((s) => s.isActive(now)).toList();

@@ -5,15 +5,17 @@ import 'package:flutter/foundation.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 import 'package:obakit_core/obakit_core.dart' as core show Route;
 
+import '../../widgets/loader.dart';
 import 'map_logic.dart';
 
 /// Loads the stops for the map's visible area. Owned by the map view's
-/// State and disposed with it.
+/// State and disposed with it (a request still in flight then finishes
+/// without notifying).
 ///
 /// Call [onCameraIdle] whenever the camera settles (the view debounces it
 /// by [ObaMapLogic.stopsRequestDebounce]). Stops accumulate in a cache so
 /// panning back is instant; [stops] is what to draw.
-class StopsLoader extends ChangeNotifier {
+class StopsLoader extends ChangeNotifier with ObaDisposeSafeNotifier {
   StopsLoader({
     required this.client,
     this.maxMarkers = 300,

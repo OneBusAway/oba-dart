@@ -121,13 +121,21 @@ class DeepLinkRouter {
     caseSensitive: false,
   );
 
-  /// Parses [uri], or returns null when it is not a link this app handles.
+  /// Parses [uri], or returns null when it is not a link this app handles
+  /// (including one whose percent-encoding is not valid UTF-8).
   DeepLink? parse(Uri uri) {
-    if (uri.scheme.toLowerCase() == scheme.toLowerCase()) {
-      return _parseScheme(uri);
-    }
-    if (uri.scheme == 'http' || uri.scheme == 'https') {
-      return parseTripLink(uri) ?? _parseStopPath(uri);
+    try {
+      if (uri.scheme.toLowerCase() == scheme.toLowerCase()) {
+        return _parseScheme(uri);
+      }
+      if (uri.scheme == 'http' || uri.scheme == 'https') {
+        return parseTripLink(uri) ?? _parseStopPath(uri);
+      }
+    } on FormatException {
+      // `Uri.queryParameters` and `Uri.decodeComponent` throw on malformed
+      // escapes such as `%FF`. Links come from outside the app.
+    } on ArgumentError {
+      // Same, for an illegal percent-encoding.
     }
     return null;
   }

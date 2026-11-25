@@ -66,12 +66,17 @@ class ObaNavigatorScope extends InheritedWidget {
 
 /// Builds a full-screen [PageRoute] for an SDK route. Its settings carry
 /// the [ObaRoute] (`settings.arguments`) and its id (`settings.name`).
+///
+/// The `ObaScope` at [scopeContext] is read now, not in the route's builder:
+/// the builder runs again long after the push, when the pushing widget (a
+/// departure row, say) may already be gone.
 Route<T> obaPageRoute<T>(ObaRoute route, {BuildContext? scopeContext}) {
+  final wrap = scopeContext == null ? null : ObaScope.capture(scopeContext);
   return MaterialPageRoute<T>(
     settings: RouteSettings(name: route.id, arguments: route),
     builder: (context) {
       final page = ObaRouteBuilder.build(context, route);
-      return scopeContext == null ? page : ObaScope.rewrap(scopeContext, page);
+      return wrap == null ? page : wrap(page);
     },
   );
 }

@@ -182,12 +182,16 @@ class StopDeparturesLoader extends ChangeNotifier with ObaDisposeSafeNotifier {
         error: e,
       );
     }
+    // A request from before a region change is no longer tracked: the same
+    // stop may be in flight again for the new region, and that entry is not
+    // this request's to remove.
+    if (isDisposed || generation != _generation) return;
     _inFlight.remove(stopId);
-    if (!isDisposed && generation == _generation && _wanted.contains(stopId)) {
+    if (_wanted.contains(stopId)) {
       _states[stopId] = result;
       notifyListeners();
     }
-    if (!isDisposed) _pump();
+    _pump();
   }
 
   void _onClientsChanged() {

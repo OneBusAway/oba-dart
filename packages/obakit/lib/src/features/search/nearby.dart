@@ -175,6 +175,25 @@ class NearbyDeparturesController extends ChangeNotifier
     await _loadStops(c);
   }
 
+  /// Forgets the stops, routes and departures and loads them again around
+  /// the current centre. For a region change: the old region's stop ids
+  /// mean nothing to the new region's server, and the centre has not moved,
+  /// so [setCenter] alone would keep them.
+  void reset() {
+    if (isDisposed) return;
+    _generation++;
+    _fetchedCenter = null;
+    _stops = const [];
+    _routes.clear();
+    _loaded.clear();
+    _stopsLoaded = false;
+    _loadingStops = false;
+    _error = null;
+    notifyListeners();
+    final c = _center;
+    if (c != null) unawaited(_loadStops(c));
+  }
+
   Future<void> _loadStops(Coordinate c) async {
     final api = client();
     if (api == null) return;
@@ -351,6 +370,7 @@ class _NearbyStopsSectionState extends State<NearbyStopsSection>
   ObaMapCoordinator? _map;
   Listenable? _location;
   Listenable? _core;
+  Listenable? _clients;
   NearbyCenterSource? _source;
   Timer? _timer;
 
@@ -371,6 +391,8 @@ class _NearbyStopsSectionState extends State<NearbyStopsSection>
       _location = ObaListenableAdapter(app.core.locationListenable)
         ..addListener(_updateCenter);
       _core = ObaListenableAdapter(app.core)..addListener(_onCoreChanged);
+      _clients = ObaListenableAdapter(app.core.clientsListenable)
+        ..addListener(_onClientsChanged);
     }
     final map = ObaMapCoordinator.maybeOf(context);
     if (!identical(map, _map)) {
@@ -393,9 +415,17 @@ class _NearbyStopsSectionState extends State<NearbyStopsSection>
     if (mounted) setState(() {});
   }
 
+  /// The region (and so the server) changed: the stops listed belong to the
+  /// old one.
+  void _onClientsChanged() {
+    _controller?.reset();
+    _updateCenter();
+  }
+
   void _detach() {
     _location?.removeListener(_updateCenter);
     _core?.removeListener(_onCoreChanged);
+    _clients?.removeListener(_onClientsChanged);
     _controller?.removeListener(_onChanged);
     _controller?.dispose();
   }

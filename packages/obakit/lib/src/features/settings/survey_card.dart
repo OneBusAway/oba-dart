@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../widgets/frame.dart';
 import '../../widgets/heading.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
@@ -56,7 +57,11 @@ class _ObaSurveyCardState extends State<ObaSurveyCard> {
     super.didChangeDependencies();
     if (!_fetchStarted) {
       _fetchStarted = true;
-      _service.fetchSurveys();
+      // The fetch notifies the service's listeners at once (another card
+      // already on screen, say), so never start it mid-build.
+      obaRunWhenSafe(() {
+        if (mounted) _service.fetchSurveys();
+      });
     }
   }
 

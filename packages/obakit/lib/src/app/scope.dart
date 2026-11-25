@@ -83,6 +83,32 @@ class ObaScope extends StatelessWidget {
     );
   }
 
+  /// Like [rewrap], but reads the scope at [context] now and returns the
+  /// wrapper to apply later. For a pushed route: its builder runs again
+  /// whenever the route's state changes (a page pushed above it, or popped),
+  /// by which time the widget that pushed it may be gone and its context
+  /// can no longer be searched.
+  ///
+  /// Navigation from the wrapped page calls the scope's newest
+  /// `onNavigate` while [context] is still mounted, and the one captured
+  /// here after that.
+  static Widget Function(Widget child) capture(BuildContext context) {
+    final scope = context.getInheritedWidgetOfExactType<_ObaScopeData>();
+    if (scope == null) return (child) => child;
+    final application = scope.application;
+    final captured = scope.onNavigate;
+    bool onNavigate(BuildContext pageContext, ObaRoute route) {
+      final latest = context.mounted ? onNavigateOf(context) : captured;
+      return latest?.call(pageContext, route) ?? false;
+    }
+
+    return (child) => ObaScope(
+      application: application,
+      onNavigate: onNavigate,
+      child: child,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget result = _ObaScopeData(

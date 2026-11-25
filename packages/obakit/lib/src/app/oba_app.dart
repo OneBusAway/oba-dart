@@ -109,7 +109,12 @@ class _ObaAppState extends State<ObaApp> {
       switch (handler.resolve(uri)) {
         case OpenRouteAction(:final route, :final switchToRegion):
           if (switchToRegion != null) {
-            widget.application.core.regions.setCurrentRegion(switchToRegion);
+            // A manual choice, like the region picker: with automatic
+            // selection left on, the next location fix would switch back
+            // and the page just opened would ask the wrong server.
+            final regions = widget.application.core.regions;
+            regions.automaticallySelectRegion = false;
+            regions.setCurrentRegion(switchToRegion);
           }
           shell.navigator.push(route);
         case UnknownRegionAction():
