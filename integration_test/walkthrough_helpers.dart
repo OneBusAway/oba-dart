@@ -260,7 +260,11 @@ class Walkthrough {
     if (find.text(l10n.onboardingRegionTitle).evaluate().isNotEmpty) {
       await shot('03_onboarding_region');
       final use = find.text(l10n.onboardingRegionUse('Puget Sound'));
-      if (use.evaluate().isEmpty) {
+      if (find.text(l10n.onboardingRegionTitle).evaluate().isEmpty) {
+        // A location fix arrived while the screenshot was taken and the
+        // region was chosen automatically.
+        note('region step finished on its own');
+      } else if (use.evaluate().isEmpty) {
         note('region step did not suggest Puget Sound');
         await tapText('Puget Sound');
       } else {
