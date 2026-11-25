@@ -259,47 +259,6 @@ void main() {
     expect(b.userData.appLaunchCount, 2);
   });
 
-  test('region time zone resolves when enabled', () async {
-    final app = ObaCoreApplication(config());
-    await app.start();
-    addTearDown(app.dispose);
-    app.regions.setCurrentRegion(regionNamed('Puget Sound'));
-    expect(app.regionTimeZone, isNull);
-    app.settings.showRegionTimeZone = true;
-    await Future<void>.delayed(Duration.zero);
-    await Future<void>.delayed(Duration.zero);
-    expect(app.regionTimeZone, 'America/Los_Angeles');
-    app.settings.showRegionTimeZone = false;
-    await Future<void>.delayed(Duration.zero);
-    expect(app.regionTimeZone, isNull);
-  });
-
-  test('unrelated settings changes do not refetch the time zone', () async {
-    final app = ObaCoreApplication(config());
-    await app.start();
-    addTearDown(app.dispose);
-    app.regions.setCurrentRegion(regionNamed('Puget Sound'));
-    app.settings.showRegionTimeZone = true;
-    await Future<void>.delayed(Duration.zero);
-    await Future<void>.delayed(Duration.zero);
-    int coverageRequests() => http.requests
-        .where((r) => r.url.path.contains('agencies-with-coverage'))
-        .length;
-    expect(coverageRequests(), 1);
-    app.settings.compactMode = true;
-    app.settings.mapType = MapType.satellite;
-    app.settings.debugMode = true;
-    await Future<void>.delayed(Duration.zero);
-    expect(coverageRequests(), 1);
-    expect(app.regionTimeZone, 'America/Los_Angeles');
-  });
-
-  test('preferredTimeZone picks the most common, ties alphabetically', () {
-    expect(ObaCoreApplication.preferredTimeZone(['B', 'A', 'B']), 'B');
-    expect(ObaCoreApplication.preferredTimeZone(['B', 'A']), 'A');
-    expect(ObaCoreApplication.preferredTimeZone([]), isNull);
-  });
-
   test('analytics follows the reporting setting', () async {
     final analytics = NoopAnalytics();
     final app = ObaCoreApplication(

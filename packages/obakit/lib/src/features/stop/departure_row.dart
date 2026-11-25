@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../widgets/text_scale.dart';
+import '../../widgets/heading.dart';
 import '../../l10n/l10n.dart';
 import '../../theme/oba_theme.dart';
 import '../../widgets/rows.dart';
-import 'stop_format.dart';
+import '../../widgets/departure_format.dart';
 
 /// An action offered for a departure (overflow menu, long press, and a
 /// screen-reader custom action).
@@ -51,14 +53,7 @@ Future<void> showObaActionSheet(
         children: [
           Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 8),
-            child: Semantics(
-              container: true,
-              header: true,
-              child: Text(
-                title,
-                style: Theme.of(sheetContext).textTheme.titleMedium,
-              ),
-            ),
+            child: ObaHeading(title),
           ),
           for (final a in actions)
             ListTile(
@@ -126,7 +121,7 @@ class ObaDepartureRow extends StatelessWidget {
     final scheme = theme.colorScheme;
     final oba = ObaTheme.of(context);
     final route = references.route(arrival.routeId);
-    final routeName = routeLabel(arrival, references);
+    final routeName = routeLabel(arrival, route);
     final headsign = arrival.tripHeadsign ?? route?.longName ?? routeName;
     final status = DepartureStatusInfo.of(context, arrival);
     final minutes = arrival.minutesUntil(now) ?? 0;
@@ -137,7 +132,7 @@ class ObaDepartureRow extends StatelessWidget {
         : null;
     final past = style == ObaDepartureRowStyle.past;
     final muted = scheme.onSurfaceVariant;
-    final large = MediaQuery.textScalerOf(context).scale(10) >= 15;
+    final large = obaIsLargeText(context);
 
     final badge = ObaRouteBadge(
       label: routeName,
@@ -145,7 +140,7 @@ class ObaDepartureRow extends StatelessWidget {
       textColor: route?.textColor,
     );
     final headsignText = Text(
-      headsign,
+      obaBidiIsolate(context, headsign),
       style: theme.textTheme.titleMedium?.copyWith(color: past ? muted : null),
     );
     final details = Wrap(
@@ -183,7 +178,7 @@ class ObaDepartureRow extends StatelessWidget {
                   alignment: PlaceholderAlignment.middle,
                   child: Padding(
                     padding: const EdgeInsetsDirectional.only(end: 4),
-                    child: Icon(Icons.sensors, size: 16, color: status.color),
+                    child: Icon(obaRealTimeIcon, size: 16, color: status.color),
                   ),
                 ),
               TextSpan(text: countdownText(l10n, minutes)),

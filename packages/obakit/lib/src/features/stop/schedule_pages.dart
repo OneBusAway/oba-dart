@@ -2,14 +2,15 @@ import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../app/polling.dart';
+import '../../widgets/loader.dart';
+import '../../widgets/heading.dart';
 import '../../app/application.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
 import '../../widgets/rows.dart';
 import '../../widgets/sheet_page.dart';
 import '../../widgets/states.dart';
-import 'route_stops_page.dart' show ObaLoader;
-import 'stop_format.dart';
 
 DateTime _day(DateTime d) => DateTime(d.year, d.month, d.day);
 
@@ -137,11 +138,7 @@ List<Widget> _hourRows(List<DateTime> times, DateTime now) {
 
 Widget _heading(BuildContext context, String text) => Padding(
   padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 4),
-  child: Semantics(
-    container: true,
-    header: true,
-    child: Text(text, style: Theme.of(context).textTheme.titleMedium),
-  ),
+  child: ObaHeading(text),
 );
 
 /// A stop's full-day schedule (iOS `ScheduleForStopView`): a date picker,
@@ -184,7 +181,7 @@ class _StopSchedulePageState extends State<StopSchedulePage> {
     final date = _date;
     return ObaLoader(() {
       final client = _app?.core.restClient;
-      if (client == null) throw StateError('no region');
+      if (client == null) throw const ObaNoRegionException();
       return client.schedules.forStop(widget.stopId, date: date);
     });
   }
@@ -223,12 +220,7 @@ class _StopSchedulePageState extends State<StopSchedulePage> {
     ];
     if (r == null || _loader.loading) {
       slivers.add(
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: _loader.error != null
-              ? ObaErrorState(error: _loader.error, onRetry: _loader.load)
-              : const ObaLoadingState(),
-        ),
+        ObaLoadingOrErrorSliver(error: _loader.error, onRetry: _loader.load),
       );
     } else if (routes.isEmpty || selected == null) {
       slivers.add(
@@ -248,13 +240,9 @@ class _StopSchedulePageState extends State<StopSchedulePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Semantics(
-                  container: true,
-                  header: true,
-                  child: Text(
-                    l10n.stopSchedRoute,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
+                ObaHeading(
+                  l10n.stopSchedRoute,
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
                 const SizedBox(height: 4),
                 Wrap(
@@ -363,7 +351,7 @@ class _RouteSchedulePageState extends State<RouteSchedulePage> {
     final date = _date;
     return ObaLoader(() {
       final client = _app?.core.restClient;
-      if (client == null) throw StateError('no region');
+      if (client == null) throw const ObaNoRegionException();
       return client.schedules.forRoute(widget.routeId, date: date);
     });
   }
@@ -415,12 +403,7 @@ class _RouteSchedulePageState extends State<RouteSchedulePage> {
       );
       if (r == null || _loader.loading) {
         slivers.add(
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: _loader.error != null
-                ? ObaErrorState(error: _loader.error, onRetry: _loader.load)
-                : const ObaLoadingState(),
-          ),
+          ObaLoadingOrErrorSliver(error: _loader.error, onRetry: _loader.load),
         );
       } else if (dir == null || dir.tripIds.isEmpty) {
         slivers.add(
@@ -456,13 +439,9 @@ class _RouteSchedulePageState extends State<RouteSchedulePage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (dirs.length > 1) ...[
-            Semantics(
-              container: true,
-              header: true,
-              child: Text(
-                l10n.stopSchedDirection,
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
+            ObaHeading(
+              l10n.stopSchedDirection,
+              style: Theme.of(context).textTheme.titleSmall,
             ),
             const SizedBox(height: 4),
             Wrap(
@@ -504,7 +483,7 @@ class _RouteSchedulePageState extends State<RouteSchedulePage> {
   }
 
   String _stopName(BuildContext context, (String, Stop?) s) {
-    final name = s.$2?.name ?? s.$1;
+    final name = obaBidiIsolate(context, s.$2?.name ?? s.$1);
     return s.$1 == widget.stopId
         ? context.obaL10n.stopSchedYourStop(name)
         : name;

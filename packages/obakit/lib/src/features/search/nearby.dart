@@ -5,15 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 import 'package:obakit_core/obakit_core.dart' as core show Route;
 
+import '../../widgets/loader.dart';
+import '../../widgets/text_scale.dart';
 import '../../app/application.dart';
 import '../../app/location_holder.dart';
 import '../../app/scope.dart';
 import '../../features/map/map_coordinator.dart';
 import '../../features/map/map_logic.dart';
 import '../../l10n/l10n.dart';
+import '../../l10n/strings_bridge.dart';
 import '../../navigation/oba_navigator.dart';
 import '../../navigation/oba_route.dart';
 import '../../platform/listenable_adapter.dart';
+import '../../widgets/departure_format.dart';
+import '../../widgets/visibility.dart';
 import '../../widgets/feed_card.dart';
 import '../../widgets/memo.dart';
 import '../../widgets/rows.dart';
@@ -55,7 +60,8 @@ enum NearbyCenterSource {
 /// movement, arrivals for at most [stopLimit] stops (fetched together, one
 /// notification per round), each again only once older than
 /// [NearbyDepartures.staleAfter], and only while [visible].
-class NearbyDeparturesController extends ChangeNotifier {
+class NearbyDeparturesController extends ChangeNotifier
+    with ObaDisposeSafeNotifier {
   NearbyDeparturesController({
     required this.client,
     this.stopLimit = NearbyDepartures.stopLimit,
@@ -78,13 +84,11 @@ class NearbyDeparturesController extends ChangeNotifier {
   List<Stop> _stops = const [];
   final Map<String, core.Route> _routes = {};
   final Map<String, (List<ArrivalAndDeparture>, DateTime)> _loaded = {};
-  final Set<String> _inFlight = {};
   bool _loadingStops = false;
   bool _stopsLoaded = false;
   Object? _error;
   Duration _serverOffset = Duration.zero;
   bool _visible = false;
-  bool _disposed = false;
   int _generation = 0;
   Future<void>? _arrivalsTask;
 
@@ -180,24 +184,24 @@ class NearbyDeparturesController extends ChangeNotifier {
     notifyListeners();
     try {
       final response = await api.stops.forLocation(c, radius: radiusMeters);
-      if (_disposed || generation != _generation) return;
+      if (isDisposed || generation != _generation) return;
       _routes.addAll(response.references.routes);
       _stops = nearestStops(response.list, c, limit: stopLimit);
       _pruneToStops();
       _error = null;
       _stopsLoaded = true;
     } catch (e) {
-      if (_disposed || generation != _generation) return;
+      if (isDisposed || generation != _generation) return;
       _error = e;
       _fetchedCenter = null;
       _stopsLoaded = true;
     } finally {
-      if (!_disposed && generation == _generation) {
+      if (!isDisposed && generation == _generation) {
         _loadingStops = false;
         notifyListeners();
       }
     }
-    if (!_disposed && generation == _generation) await loadIfNeeded();
+    if (!isDisposed && generation == _generation) await loadIfNeeded();
   }
 
   /// Keeps memory bounded as the centre moves (the map centre can wander
@@ -233,46 +237,40 @@ class NearbyDeparturesController extends ChangeNotifier {
   /// Fetches departures for the stops with none or stale ones, all due
   /// stops at once. Does nothing while hidden.
   Future<void> loadIfNeeded() {
-    if (!_visible || _disposed) return Future.value();
+    if (!_visible || isDisposed) return Future.value();
     return _arrivalsTask ??= _loadArrivals().whenComplete(
       () => _arrivalsTask = null,
     );
   }
 
   Future<void> _loadArrivals() async {
-    while (!_disposed && _visible) {
+    while (!isDisposed && _visible) {
       final started = clock.now();
       final due = [
         for (final s in _stops)
-          if (!_inFlight.contains(s.id) && _isDue(s.id, started)) s.id,
+          if (_isDue(s.id, started)) s.id,
       ];
       if (due.isEmpty) return;
       final api = client();
       if (api == null) return;
-      _inFlight.addAll(due);
       var failed = false;
-      final List<ObaEntryResponse<StopWithArrivalsAndDepartures>?> responses;
-      try {
-        responses = await Future.wait([
-          for (final id in due)
-            api.arrivalsAndDepartures
-                .forStop(
-                  id,
-                  minutesBefore: 0,
-                  minutesAfter: NearbyDepartures.minutesAfter,
-                )
-                .then<ObaEntryResponse<StopWithArrivalsAndDepartures>?>(
-                  (r) => r,
-                  onError: (Object _) {
-                    failed = true;
-                    return null;
-                  },
-                ),
-        ]);
-      } finally {
-        _inFlight.removeAll(due);
-      }
-      if (_disposed) return;
+      final responses = await Future.wait([
+        for (final id in due)
+          api.arrivalsAndDepartures
+              .forStop(
+                id,
+                minutesBefore: 0,
+                minutesAfter: NearbyDepartures.minutesAfter,
+              )
+              .then<ObaEntryResponse<StopWithArrivalsAndDepartures>?>(
+                (r) => r,
+                onError: (Object _) {
+                  failed = true;
+                  return null;
+                },
+              ),
+      ]);
+      if (isDisposed) return;
       var changed = false;
       for (var i = 0; i < due.length; i++) {
         final response = responses[i];
@@ -292,60 +290,6 @@ class NearbyDeparturesController extends ChangeNotifier {
       if (failed) return;
     }
   }
-
-  @override
-  void notifyListeners() {
-    if (!_disposed) super.notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
-  }
-}
-
-// -- Visibility -------------------------------------------------------------------
-
-/// Tracks whether the widget is visible (not covered by a pushed route, not
-/// in an off-screen tab) and the app is in the foreground.
-mixin _VisibilityTracking<T extends StatefulWidget> on State<T>
-    implements WidgetsBindingObserver {
-  bool _appActive = true;
-  bool _tickerEnabled = true;
-
-  bool get isShown => _appActive && _tickerEnabled;
-
-  void onVisibilityChanged();
-
-  void initVisibility() {
-    final lifecycle = WidgetsBinding.instance.lifecycleState;
-    _appActive = lifecycle == null || _isActive(lifecycle);
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  void disposeVisibility() => WidgetsBinding.instance.removeObserver(this);
-
-  void updateTickerVisibility() {
-    // A hidden IndexedStack child (a host's tab) keeps its tickers but
-    // reports itself through Visibility.of.
-    final enabled =
-        TickerMode.valuesOf(context).enabled && Visibility.of(context);
-    if (enabled == _tickerEnabled) return;
-    _tickerEnabled = enabled;
-    onVisibilityChanged();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    final active = _isActive(state);
-    if (active == _appActive) return;
-    _appActive = active;
-    onVisibilityChanged();
-  }
-
-  static bool _isActive(AppLifecycleState s) =>
-      s == AppLifecycleState.resumed || s == AppLifecycleState.inactive;
 }
 
 // -- Home section and card -----------------------------------------------------------
@@ -401,7 +345,7 @@ class NearbyStopsSection extends StatefulWidget {
 }
 
 class _NearbyStopsSectionState extends State<NearbyStopsSection>
-    with WidgetsBindingObserver, _VisibilityTracking {
+    with ObaVisibilityAware<NearbyStopsSection> {
   ObaApplication? _app;
   NearbyDeparturesController? _controller;
   ObaMapCoordinator? _map;
@@ -409,12 +353,6 @@ class _NearbyStopsSectionState extends State<NearbyStopsSection>
   Listenable? _core;
   NearbyCenterSource? _source;
   Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    initVisibility();
-  }
 
   @override
   void didChangeDependencies() {
@@ -440,7 +378,6 @@ class _NearbyStopsSectionState extends State<NearbyStopsSection>
       _map = map;
       _map?.addListener(_updateCenter);
     }
-    updateTickerVisibility();
     _updateCenter();
     _syncVisible();
   }
@@ -468,18 +405,17 @@ class _NearbyStopsSectionState extends State<NearbyStopsSection>
     _timer?.cancel();
     _map?.removeListener(_updateCenter);
     _detach();
-    disposeVisibility();
     super.dispose();
   }
 
   @override
-  void onVisibilityChanged() => _syncVisible();
+  void onVisibilityChanged(bool visible) => _syncVisible();
 
   void _syncVisible() {
     final c = _controller;
     if (c == null) return;
-    c.visible = isShown;
-    if (isShown) {
+    c.visible = isVisible;
+    if (isVisible) {
       _timer ??= Timer.periodic(widget.refreshInterval, (_) {
         _controller?.loadIfNeeded();
         if (mounted) setState(() {});
@@ -676,16 +612,13 @@ class NearbyDepartureTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.obaL10n;
     final theme = Theme.of(context);
-    final display = DepartureDisplay.of(context, arrival, now);
-    final routeName =
-        arrival.routeShortName ??
-        route?.shortName ??
-        route?.longName ??
-        arrival.routeId;
+    final status = DepartureStatusInfo.of(context, arrival);
+    final minutes = arrival.minutesUntil(now) ?? 0;
+    final routeName = routeLabel(arrival, route);
     final headsign = arrival.tripHeadsign ?? route?.longName ?? '';
     final distance = distanceMeters == null
         ? null
-        : formatDistance(context, distanceMeters!);
+        : context.obaFormatters.distance(distanceMeters!);
     final subtitle = [
       l10n.searchNearbyStopFrom(stop.name),
       ?distance,
@@ -693,8 +626,8 @@ class NearbyDepartureTile extends StatelessWidget {
     final sentence = l10n.searchNearbyDepartureLabel(
       routeName,
       headsign,
-      display.etaSpoken,
-      display.status,
+      etaA11y(l10n, arrival, minutes),
+      status.a11y,
       [stop.name, ?distance].join(', '),
     );
     void open() => ObaNavigator.of(context).push(StopRoute(stop.id));
@@ -711,17 +644,13 @@ class NearbyDepartureTile extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (display.isRealTime)
+            if (status.isRealTime)
               Padding(
                 padding: const EdgeInsetsDirectional.only(end: 4),
-                child: Icon(
-                  Icons.rss_feed,
-                  size: 16,
-                  color: display.statusColor,
-                ),
+                child: Icon(obaRealTimeIcon, size: 16, color: status.color),
               ),
             Text(
-              display.eta,
+              countdownText(l10n, minutes),
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
@@ -729,10 +658,8 @@ class NearbyDepartureTile extends StatelessWidget {
           ],
         ),
         Text(
-          display.status,
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: display.statusColor,
-          ),
+          status.label,
+          style: theme.textTheme.labelMedium?.copyWith(color: status.color),
         ),
       ],
     );
@@ -741,7 +668,7 @@ class NearbyDepartureTile extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          headsign.isEmpty ? routeName : headsign,
+          obaBidiIsolate(context, headsign.isEmpty ? routeName : headsign),
           style: theme.textTheme.titleSmall,
         ),
         Text(
@@ -754,7 +681,7 @@ class NearbyDepartureTile extends StatelessWidget {
     );
     // At large text sizes the countdown moves under the text instead of
     // squeezing it.
-    final large = MediaQuery.textScalerOf(context).scale(16) > 24;
+    final large = obaIsLargeText(context);
     final content = large
         ? Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -822,31 +749,62 @@ class _LocationPrompt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.obaL10n;
-    if (!available) {
-      return _InlineMessage(text: l10n.searchNearbyLocationUnavailable);
-    }
-    return switch (permission) {
-      // No spinner: the first fix may never come (indoors, emulator).
-      LocationPermissionStatus.whileInUse || LocationPermissionStatus.always =>
-        _InlineMessage(text: l10n.searchNearbyLocating),
-      LocationPermissionStatus.deniedForever => _InlineMessage(
-        text: l10n.searchNearbyLocationDenied,
-      ),
-      LocationPermissionStatus.serviceDisabled => _InlineMessage(
-        text: l10n.searchNearbyLocationServicesOff,
-      ),
-      LocationPermissionStatus.denied => _InlineMessage(
-        text: l10n.searchNearbyLocationDenied,
-        actionLabel: l10n.searchNearbyLocationButton,
-        onAction: onRequest,
-      ),
-      LocationPermissionStatus.notDetermined => _InlineMessage(
-        text: l10n.searchNearbyLocationPrompt,
-        actionLabel: l10n.searchNearbyLocationButton,
-        onAction: onRequest,
-      ),
-    };
+    final m = _locationMessage(
+      l10n,
+      available: available,
+      permission: permission,
+    );
+    return _InlineMessage(
+      text: m.text,
+      actionLabel: m.canAsk ? l10n.searchNearbyLocationButton : null,
+      onAction: m.canAsk ? onRequest : null,
+    );
   }
+}
+
+/// What to tell the rider while there is no location to search around,
+/// for the Nearby section and page alike. [canAsk] when asking for
+/// permission could help.
+({String text, IconData icon, bool canAsk}) _locationMessage(
+  ObaLocalizations l10n, {
+  required bool available,
+  required LocationPermissionStatus permission,
+}) {
+  if (!available) {
+    return (
+      text: l10n.searchNearbyLocationUnavailable,
+      icon: Icons.location_off_outlined,
+      canAsk: false,
+    );
+  }
+  return switch (permission) {
+    // No spinner: the first fix may never come (indoors, emulator).
+    LocationPermissionStatus.whileInUse || LocationPermissionStatus.always => (
+      text: l10n.searchNearbyLocating,
+      icon: Icons.my_location,
+      canAsk: false,
+    ),
+    LocationPermissionStatus.serviceDisabled => (
+      text: l10n.searchNearbyLocationServicesOff,
+      icon: Icons.location_disabled,
+      canAsk: false,
+    ),
+    LocationPermissionStatus.deniedForever => (
+      text: l10n.searchNearbyLocationDenied,
+      icon: Icons.location_disabled,
+      canAsk: false,
+    ),
+    LocationPermissionStatus.denied => (
+      text: l10n.searchNearbyLocationDenied,
+      icon: Icons.my_location,
+      canAsk: true,
+    ),
+    LocationPermissionStatus.notDetermined => (
+      text: l10n.searchNearbyLocationPrompt,
+      icon: Icons.my_location,
+      canAsk: true,
+    ),
+  };
 }
 
 class _InlineMessage extends StatelessWidget {
@@ -1033,14 +991,12 @@ class _NearbyStopsPageState extends State<NearbyStopsPage> {
       ];
     } else if (stops == null) {
       slivers = [
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: _error != null && !_loading
-              ? ObaErrorState(
-                  message: searchErrorText(context, _error!),
-                  onRetry: _load,
-                )
-              : const ObaLoadingState(),
+        ObaLoadingOrErrorSliver(
+          error: _loading ? null : _error,
+          errorMessage: _error == null
+              ? null
+              : searchErrorText(context, _error!),
+          onRetry: _load,
         ),
       ];
     } else if (stops.isEmpty) {
@@ -1082,7 +1038,7 @@ class _NearbyStopsPageState extends State<NearbyStopsPage> {
                   stop: s.stop,
                   routes: [for (final id in s.stop.routeIds) ?_routes[id]],
                   extraDetails: l10n.searchNearbyDistance(
-                    formatDistance(context, s.distanceMeters),
+                    context.obaFormatters.distance(s.distanceMeters),
                   ),
                 ),
             ],
@@ -1153,36 +1109,20 @@ class _NearbyStopsPageState extends State<NearbyStopsPage> {
 
   Widget _locationState(BuildContext context) {
     final l10n = context.obaL10n;
-    final permission = _app!.core.locationPermission;
-    if (!_app!.core.isLocationAvailable) {
-      return ObaEmptyState(
-        icon: Icons.location_off_outlined,
-        title: l10n.searchNearbyLocationUnavailable,
-      );
-    }
-    return switch (permission) {
-      LocationPermissionStatus.whileInUse ||
-      LocationPermissionStatus.always => ObaEmptyState(
-        icon: Icons.my_location,
-        title: l10n.searchNearbyLocating,
-      ),
-      LocationPermissionStatus.serviceDisabled => ObaEmptyState(
-        icon: Icons.location_disabled,
-        title: l10n.searchNearbyLocationServicesOff,
-      ),
-      LocationPermissionStatus.deniedForever => ObaEmptyState(
-        icon: Icons.location_disabled,
-        title: l10n.searchNearbyLocationDenied,
-      ),
-      LocationPermissionStatus.denied ||
-      LocationPermissionStatus.notDetermined => ObaEmptyState(
-        icon: Icons.my_location,
-        title: l10n.searchNearbyLocationPrompt,
-        action: FilledButton(
-          onPressed: _requestLocation,
-          child: Text(l10n.searchNearbyLocationButton),
-        ),
-      ),
-    };
+    final m = _locationMessage(
+      l10n,
+      available: _app!.core.isLocationAvailable,
+      permission: _app!.core.locationPermission,
+    );
+    return ObaEmptyState(
+      icon: m.icon,
+      title: m.text,
+      action: m.canAsk
+          ? FilledButton(
+              onPressed: _requestLocation,
+              child: Text(l10n.searchNearbyLocationButton),
+            )
+          : null,
+    );
   }
 }

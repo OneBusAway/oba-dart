@@ -1,37 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
+import '../../widgets/heading.dart';
+import '../../widgets/link_opener.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
 import '../../navigation/oba_navigator.dart';
 import '../../navigation/oba_route.dart';
 import '../../widgets/states.dart';
 import 'departure_row.dart';
-import 'stop_format.dart';
-
-/// Shows [message] in a snack bar (when there is a messenger) and
-/// announces it to screen readers.
-void stopNotify(BuildContext context, String message) {
-  ScaffoldMessenger.maybeOf(context)
-    ?..hideCurrentSnackBar()
-    ..showSnackBar(SnackBar(content: Text(message)));
-  obaAnnounce(context, message);
-}
-
-/// Opens [uri] outside the app; tells the rider when that fails.
-Future<void> stopLaunch(BuildContext context, Uri uri) async {
-  var ok = false;
-  try {
-    ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-  } catch (_) {
-    ok = false;
-  }
-  if (!ok && context.mounted) {
-    stopNotify(context, context.obaL10n.stopPageCannotOpen);
-  }
-}
 
 /// Opens walking (or, in bike mode, cycling) directions to [destination]
 /// with the maps app chosen in Settings, asking first when set to "ask
@@ -66,7 +44,7 @@ Future<void> openStopDirections(
     ),
   );
   if (choice == null || !context.mounted) return;
-  await stopLaunch(
+  await obaOpenLink(
     context,
     walkingDirectionsUrl(
       choice,
@@ -91,7 +69,7 @@ Future<void> stopShare(BuildContext context, Uri uri, {String? subject}) async {
     );
   } catch (_) {
     if (context.mounted) {
-      stopNotify(context, context.obaL10n.stopPageCannotOpen);
+      obaNotify(context, context.obaL10n.commonCantOpenLink);
     }
   }
 }
@@ -109,7 +87,7 @@ Future<void> toggleStopAlarm(
   try {
     if (existing != null) {
       await core.alarms.removeAlarm(existing);
-      if (context.mounted) stopNotify(context, l10n.stopAlarmRemoved);
+      if (context.mounted) obaNotify(context, l10n.stopAlarmRemoved);
       return;
     }
     final choices = alarmLeadTimeChoices(arrival.minutesUntil(now) ?? 0);
@@ -134,17 +112,17 @@ Future<void> toggleStopAlarm(
       minutesBefore: minutes,
       title: arrival.routeAndHeadsign(),
     );
-    if (context.mounted) stopNotify(context, l10n.stopAlarmSet(minutes));
+    if (context.mounted) obaNotify(context, l10n.stopAlarmSet(minutes));
   } on AlarmUnavailableException catch (e) {
     if (!context.mounted) return;
-    stopNotify(
+    obaNotify(
       context,
       e.reason == AlarmUnavailableReason.permissionDenied
           ? l10n.stopAlarmPermissionDenied
           : l10n.stopAlarmFailed,
     );
   } catch (_) {
-    if (context.mounted) stopNotify(context, l10n.stopAlarmFailed);
+    if (context.mounted) obaNotify(context, l10n.stopAlarmFailed);
   }
 }
 
@@ -167,14 +145,7 @@ class _AlarmPicker extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 8),
-            child: Semantics(
-              container: true,
-              header: true,
-              child: Text(
-                l10n.stopAlarmPickerTitle,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
+            child: ObaHeading(l10n.stopAlarmPickerTitle),
           ),
           Expanded(
             child: RadioGroup<int>(
@@ -205,7 +176,6 @@ List<ObaDepartureAction> departureActions(
   ArrivalAndDeparture arrival, {
   required DateTime now,
   Stop? stop,
-  bool includeShowTrip = true,
   bool? hasAlarm,
 }) {
   final app = ObaScope.of(context);
@@ -219,12 +189,11 @@ List<ObaDepartureAction> departureActions(
       ? null
       : DeepLinkRouter.tripShareUrl(region: region, arrival: arrival);
   return [
-    if (includeShowTrip)
-      ObaDepartureAction(
-        label: l10n.stopRowShowTrip,
-        icon: Icons.directions_bus_outlined,
-        onSelected: () => nav.push(TripRoute(TripRef.fromArrival(arrival))),
-      ),
+    ObaDepartureAction(
+      label: l10n.stopRowShowTrip,
+      icon: Icons.directions_bus_outlined,
+      onSelected: () => nav.push(TripRoute(TripRef.fromArrival(arrival))),
+    ),
     if (hasAlarm || core.alarms.canCreateAlarm(arrival, now))
       ObaDepartureAction(
         label: hasAlarm ? l10n.stopRowRemoveAlarm : l10n.stopRowAddAlarm,

@@ -3,6 +3,7 @@ import 'package:oba_arrivals/oba_arrivals.dart' show parseHexColor;
 import 'package:obakit_core/obakit_core.dart' hide Route;
 import 'package:obakit_core/obakit_core.dart' as core show Route;
 
+import 'heading.dart';
 import '../app/scope.dart';
 import '../platform/listenable_adapter.dart';
 import '../l10n/l10n.dart';
@@ -26,7 +27,6 @@ class ObaSectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 8, 4),
       child: Wrap(
@@ -34,13 +34,7 @@ class ObaSectionHeader extends StatelessWidget {
         crossAxisAlignment: WrapCrossAlignment.center,
         spacing: 8,
         children: [
-          // A container of its own: otherwise the heading merges with the
-          // text below it (an empty state's message) into one node.
-          Semantics(
-            container: true,
-            header: true,
-            child: Text(title, style: theme.textTheme.titleMedium),
-          ),
+          ObaHeading(title),
           if (actionLabel != null && onAction != null)
             TextButton(
               onPressed: onAction,

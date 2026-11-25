@@ -435,7 +435,14 @@ class Walkthrough {
     } else {
       note('no earlier-departures toggle at 1_75403');
     }
-    // Departure types.
+    // Departure types. Rows are built lazily, so the controls above the
+    // list only exist while scrolled into view: go back to the top first.
+    // (Jump, not drag: dragging down at the top would lower the sheet.)
+    tester
+        .state<ScrollableState>(find.byType(Scrollable).last)
+        .position
+        .jumpTo(0);
+    await seconds(1);
     await tap(find.byTooltip(l10n.stopPageDepartureTypes), settle: 1);
     await shot('24_stop_departure_types');
     await tapText(l10n.stopPageFilterRealtime, settle: 2);

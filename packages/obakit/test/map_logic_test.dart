@@ -39,12 +39,6 @@ void main() {
       expect(ObaMapLogic.shouldLoadStops(_box(0, 0, justIn)), isTrue);
       expect(ObaMapLogic.shouldLoadStops(_box(0, 0, justOut)), isFalse);
     });
-
-    test('labels need a closer zoom than pins', () {
-      final b = _box(47.6, -122.3, 0.005);
-      expect(ObaMapLogic.shouldLoadStops(b), isTrue);
-      expect(ObaMapLogic.shouldShowStopLabels(b), isFalse);
-    });
   });
 
   group('bounds to request', () {
@@ -101,13 +95,6 @@ void main() {
   });
 
   group('marker diffing', () {
-    test('diff reports added, removed and kept ids', () {
-      final d = ObaMapLogic.diff(['a', 'b'], ['b', 'c']);
-      expect(d.added, {'c'});
-      expect(d.removed, {'a'});
-      expect(d.kept, {'b'});
-    });
-
     test('the cache rebuilds only changed markers', () {
       final cache = StopMarkerCache<String>();
       final a = _stop('a', 1, 1);

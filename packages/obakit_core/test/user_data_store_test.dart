@@ -64,7 +64,7 @@ void main() {
       expect(notifications, before);
     });
 
-    test('update keeps group and order; pin and favourite', () {
+    test('update keeps group and order; pin', () {
       final g = store.addGroup('G');
       final a = stopBookmark('1_1', name: 'A');
       store.addBookmark(a, groupId: g.id);
@@ -73,9 +73,7 @@ void main() {
       expect(stored.name, 'Renamed');
       expect(stored.groupId, g.id);
       store.setPinned(a.id, true);
-      store.setFavorite(a.id, true);
-      expect(store.pinnedBookmarks.single.id, a.id);
-      expect(store.favoritedBookmarks.single.id, a.id);
+      expect(store.findBookmark(a.id)!.isPinned, isTrue);
       expect(reload().findBookmark(a.id)!.isPinned, isTrue);
     });
 
@@ -91,7 +89,7 @@ void main() {
       expect(notifications, before);
     });
 
-    test('duplicates, region filter, search, stop lookup', () {
+    test('region filter, search, stop lookup', () {
       final route = const StoredRoute(
         id: '1_10',
         shortName: '10',
@@ -110,8 +108,6 @@ void main() {
           stop: storedStop(id: '0_9', name: 'Elm'),
         ),
       );
-      expect(store.isDuplicate(stopBookmark('1_1', name: 'Home')), isTrue);
-      expect(store.isDuplicate(stopBookmark('1_1', name: 'Other')), isFalse);
       expect(store.bookmarksInRegion(1).single.id, a.id);
       expect(store.bookmarksInRegion(null), isEmpty);
       expect(store.findBookmarks('  capitol ').single.id, a.id);
@@ -153,7 +149,7 @@ void main() {
         'stop': {'id': 's', 'lat': 1, 'lon': 2},
       });
       expect(minimal.name, '');
-      expect(minimal.isFavorite, isFalse);
+      expect(minimal.isPinned, isFalse);
       expect(() => Bookmark.fromJson({'id': 'x'}), throwsFormatException);
     });
 
@@ -164,12 +160,6 @@ void main() {
         42,
       ]);
       expect(reload().bookmarks, hasLength(1));
-    });
-
-    test('bookmarksByStopId keeps the last per stop', () {
-      final a = stopBookmark('1_1', name: 'first');
-      final b = stopBookmark('1_1', name: 'second');
-      expect(bookmarksByStopId([a, b])['1_1']!.name, 'second');
     });
   });
 
@@ -276,7 +266,6 @@ void main() {
   group('stop preferences', () {
     test('keyed by region and stop, with defaults', () {
       expect(store.stopPreferences(1, '1_1'), const StopPreferences());
-      expect(store.hasStopPreferences(1, '1_1'), isFalse);
       final prefs = const StopPreferences(sortType: StopSort.route)
           .toggleRouteHidden('1_10');
       store.setStopPreferences(1, '1_1', prefs);
@@ -349,19 +338,20 @@ void main() {
       store.incrementAppLaunchCount();
       final id = store.surveyUserIdentifier;
       expect(reload().surveyUserIdentifier, id);
-      store.markSurveyForLater(7, id);
-      expect(store.isSurveyMarkedForLater(7, id), isTrue);
-      expect(store.shouldShowSurveyLater(7, id), isFalse);
+      store.markSurveyForLater(7);
+      expect(store.isSurveyMarkedForLater(7), isTrue);
+      expect(store.shouldShowSurveyLater(7), isFalse);
       for (var i = 0; i < 3; i++) {
         store.incrementAppLaunchCount();
       }
-      expect(store.shouldShowSurveyLater(7, id), isTrue);
+      expect(store.shouldShowSurveyLater(7), isTrue);
       store.incrementAppLaunchCount();
-      expect(store.shouldShowSurveyLater(7, id), isFalse);
-      store.markSurveyCompleted(7, id);
-      expect(store.isSurveyCompleted(7, id), isTrue);
-      expect(store.isSurveyMarkedForLater(7, id), isFalse);
-      expect(store.isSurveyCompleted(7, 'other'), isFalse);
+      expect(store.shouldShowSurveyLater(7), isFalse);
+      store.markSurveyCompleted(7);
+      expect(store.isSurveyCompleted(7), isTrue);
+      expect(store.isSurveyMarkedForLater(7), isFalse);
+      store.surveyUserIdentifier = 'other';
+      expect(store.isSurveyCompleted(7), isFalse);
     });
 
     test('flags and reminder date persist', () {

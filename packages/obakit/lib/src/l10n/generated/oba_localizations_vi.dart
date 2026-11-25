@@ -40,15 +40,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
   String get commonErrorTitle => 'Đã xảy ra lỗi';
 
   @override
-  String get commonEmptyTitle => 'Chưa có gì ở đây';
-
-  @override
-  String get commonComingSoon => 'Sắp ra mắt';
-
-  @override
-  String get commonComingSoonBody => 'Màn hình này chưa khả dụng.';
-
-  @override
   String get commonOffline =>
       'Có vẻ bạn đang ngoại tuyến. Hãy kiểm tra kết nối và thử lại.';
 
@@ -145,9 +136,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
   String get mapVehicle => 'Phương tiện';
 
   @override
-  String get mapSelectedStop => 'Đã chọn';
-
-  @override
   String get mapBookmarkedStop => 'Đã đánh dấu';
 
   @override
@@ -176,18 +164,7 @@ class ObaLocalizationsVi extends ObaLocalizations {
   String get mapTypeHybrid => 'Kết hợp';
 
   @override
-  String get mapShowScale => 'Hiển thị thước tỷ lệ';
-
-  @override
   String get mapShowHeading => 'Hiển thị hướng';
-
-  @override
-  String get mapShowStopLabels => 'Hiển thị nhãn điểm dừng';
-
-  @override
-  String mapPlaceAt(String lat, String lon) {
-    return 'Vị trí tại $lat, $lon';
-  }
 
   @override
   String get directionN => 'Hướng Bắc';
@@ -474,9 +451,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
 
   @override
   String get stopPageGoogleMaps => 'Google Maps';
-
-  @override
-  String get stopPageCannotOpen => 'Không thể mở liên kết đó.';
 
   @override
   String stopPageTransfer(String route, String headsign, String time) {
@@ -1131,10 +1105,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
       'Hiển thị hướng bạn đang quay mặt trên bản đồ.';
 
   @override
-  String get settingsStopLabelsHelp =>
-      'Hiển thị tên tuyến bên cạnh các điểm dừng trên bản đồ.';
-
-  @override
   String get settingsWalkingDirections => 'Chỉ đường đi bộ';
 
   @override
@@ -1170,13 +1140,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
   String get settingsFilterScheduled => 'Chỉ theo lịch trình';
 
   @override
-  String get settingsRegionTimeZone => 'Hiển thị giờ theo múi giờ của khu vực';
-
-  @override
-  String get settingsRegionTimeZoneHelp =>
-      'Giờ hiển thị dùng múi giờ của khu vực vận tải, kèm ghi chú khi khác với thiết bị của bạn.';
-
-  @override
   String get settingsSectionAccessibility => 'Trợ năng';
 
   @override
@@ -1185,13 +1148,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
   @override
   String get settingsReducedColorsHelp =>
       'Hiển thị huy hiệu tuyến theo một kiểu trung tính duy nhất.';
-
-  @override
-  String get settingsCompactMode => 'Trang điểm dừng và chuyến đi dạng gọn';
-
-  @override
-  String get settingsCompactModeHelp =>
-      'Thu hẹp khoảng cách để hiển thị được nhiều nội dung hơn trên màn hình.';
 
   @override
   String get settingsSectionWalking => 'Tốc độ đi bộ';
@@ -1431,7 +1387,7 @@ class ObaLocalizationsVi extends ObaLocalizations {
   String get moreFareDontShowAgain => 'Tiếp tục và không hiển thị lại';
 
   @override
-  String get moreCantOpenLink => 'Không thể mở liên kết đó.';
+  String get commonCantOpenLink => 'Không thể mở liên kết đó.';
 
   @override
   String get regionPickerAutomatic => 'Tự động chọn khu vực';
@@ -1818,57 +1774,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
   String get dataUpdated => 'Đã cập nhật';
 
   @override
-  String get bookmarksEtaNow => 'Bây giờ';
-
-  @override
-  String bookmarksEtaMinutes(int minutes) {
-    return '$minutes phút';
-  }
-
-  @override
-  String bookmarksEtaSemantic(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: 'sau $minutes phút',
-      one: 'sau $minutes phút',
-      zero: 'bây giờ',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get bookmarksStatusOnTime => 'Đúng giờ';
-
-  @override
-  String bookmarksStatusLate(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: 'Trễ $minutes phút',
-      one: 'Trễ $minutes phút',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String bookmarksStatusEarly(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: 'Sớm $minutes phút',
-      one: 'Sớm $minutes phút',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get bookmarksStatusScheduled => 'Theo lịch';
-
-  @override
-  String get bookmarksStatusCanceled => 'Đã hủy';
-
-  @override
   String bookmarksDepartureRoute(String route, String headsign) {
     return 'Tuyến $route đi $headsign';
   }
@@ -1980,11 +1885,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
   }
 
   @override
-  String bookmarksStopLine(String name, String details) {
-    return '$name, $details';
-  }
-
-  @override
   String get bookmarksEditorNameLabel => 'Tên dấu trang';
 
   @override
@@ -2044,9 +1944,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
 
   @override
   String get bookmarksManageGroupsHeader => 'Nhóm';
-
-  @override
-  String get bookmarksManageBookmarksHeader => 'Dấu trang';
 
   @override
   String get bookmarksManageAddGroup => 'Thêm nhóm';
@@ -2164,9 +2061,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
       'Không thể xóa lời nhắc. Hãy kiểm tra kết nối và thử lại.';
 
   @override
-  String get alarmsOpen => 'Mở chuyến đi';
-
-  @override
   String get alertsEmptyTitle => 'Không có cảnh báo dịch vụ';
 
   @override
@@ -2254,9 +2148,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
   String get alertsDetailStops => 'Điểm dừng';
 
   @override
-  String get alertsDetailAgencies => 'Cơ quan vận tải';
-
-  @override
   String get alertsDetailLearnMore => 'Tìm hiểu thêm';
 
   @override
@@ -2266,9 +2157,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
   String alertsDetailUpdated(String date) {
     return 'Phát hành $date';
   }
-
-  @override
-  String get alertsCouldNotOpen => 'Không thể mở liên kết đó.';
 
   @override
   String get agenciesEmptyTitle => 'Không có cơ quan vận tải';
@@ -2498,9 +2386,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
   String get searchNearbyLoadingDepartures => 'Đang tải các chuyến khởi hành';
 
   @override
-  String get searchNearbyUpdated => 'Đã cập nhật các chuyến khởi hành lân cận';
-
-  @override
   String searchNearbyStopsCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -2549,56 +2434,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
 
   @override
   String get searchNearbyCardTitle => 'Chuyến khởi hành gần bạn';
-
-  @override
-  String searchEtaMinutes(int minutes) {
-    return '$minutes phút';
-  }
-
-  @override
-  String get searchEtaNow => 'Bây giờ';
-
-  @override
-  String searchEtaMinutesSpoken(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: 'sau $minutes phút',
-      one: 'sau $minutes phút',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get searchEtaNowSpoken => 'đang khởi hành';
-
-  @override
-  String get searchStatusOnTime => 'Đúng giờ';
-
-  @override
-  String searchStatusLate(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: 'Trễ $minutes phút',
-      one: 'Trễ $minutes phút',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String searchStatusEarly(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: 'Sớm $minutes phút',
-      one: 'Sớm $minutes phút',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get searchStatusScheduled => 'Theo lịch';
 
   @override
   String get searchExplorePlanTrip => 'Lên kế hoạch chuyến đi';
@@ -2797,54 +2632,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
       'Các điểm dừng đã đánh dấu sẽ hiển thị ở đây.';
 
   @override
-  String get coreDirectionNameN => 'Bắc';
-
-  @override
-  String get coreDirectionNameNE => 'Đông Bắc';
-
-  @override
-  String get coreDirectionNameE => 'Đông';
-
-  @override
-  String get coreDirectionNameSE => 'Đông Nam';
-
-  @override
-  String get coreDirectionNameS => 'Nam';
-
-  @override
-  String get coreDirectionNameSW => 'Tây Nam';
-
-  @override
-  String get coreDirectionNameW => 'Tây';
-
-  @override
-  String get coreDirectionNameNW => 'Tây Bắc';
-
-  @override
-  String get coreDirectionAbbrN => 'B';
-
-  @override
-  String get coreDirectionAbbrNE => 'ĐB';
-
-  @override
-  String get coreDirectionAbbrE => 'Đ';
-
-  @override
-  String get coreDirectionAbbrSE => 'ĐN';
-
-  @override
-  String get coreDirectionAbbrS => 'N';
-
-  @override
-  String get coreDirectionAbbrSW => 'TN';
-
-  @override
-  String get coreDirectionAbbrW => 'T';
-
-  @override
-  String get coreDirectionAbbrNW => 'TB';
-
-  @override
   String get coreDirectionBoundN => 'Hướng Bắc';
 
   @override
@@ -2869,30 +2656,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
   String get coreDirectionBoundNW => 'Hướng TB';
 
   @override
-  String get coreRouteTypeLightRail => 'Đường sắt nhẹ';
-
-  @override
-  String get coreRouteTypeSubway => 'Tàu điện ngầm';
-
-  @override
-  String get coreRouteTypeRail => 'Tàu hỏa';
-
-  @override
-  String get coreRouteTypeBus => 'Xe buýt';
-
-  @override
-  String get coreRouteTypeFerry => 'Phà';
-
-  @override
-  String get coreRouteTypeCableCar => 'Xe cáp treo';
-
-  @override
-  String get coreRouteTypeGondola => 'Cáp treo gondola';
-
-  @override
-  String get coreRouteTypeFunicular => 'Đường sắt leo núi';
-
-  @override
   String coreStopCodeNumeric(String code) {
     return 'Điểm dừng #$code';
   }
@@ -2900,60 +2663,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
   @override
   String coreStopCodeNonNumeric(String code) {
     return 'Điểm dừng: \'$code\'';
-  }
-
-  @override
-  String coreStopId(String code) {
-    return 'ID điểm dừng: $code';
-  }
-
-  @override
-  String coreRoutesLabel(String routes) {
-    return 'Tuyến: $routes';
-  }
-
-  @override
-  String coreRoutesLabelPlusMore(String routes, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'Tuyến: $routes, + $count tuyến khác',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String coreMapRoutesOverflow(String routes) {
-    return '$routes…';
-  }
-
-  @override
-  String coreSearchPlaceholder(String region) {
-    return 'Tìm kiếm tại $region';
-  }
-
-  @override
-  String get coreNow => 'BÂY GIỜ';
-
-  @override
-  String coreShortMinutes(int minutes) {
-    return '$minutes ph';
-  }
-
-  @override
-  String get coreOneMinute => 'Một phút';
-
-  @override
-  String get coreOneMinuteAgo => 'Một phút trước';
-
-  @override
-  String coreMinutes(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes phút',
-    );
-    return '$_temp0';
   }
 
   @override
@@ -2986,92 +2695,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
   }
 
   @override
-  String coreUpdatedAt(String ago) {
-    return 'Đã cập nhật: $ago';
-  }
-
-  @override
-  String get coreScheduledNotRealTime => 'Theo lịch/không phải thời gian thực';
-
-  @override
-  String coreArrivedMinAgo(int minutes) {
-    return 'Đã đến cách đây $minutes phút';
-  }
-
-  @override
-  String coreDepartedMinAgo(int minutes) {
-    return 'Đã khởi hành cách đây $minutes phút';
-  }
-
-  @override
-  String get coreArrivingNow => 'Đang đến';
-
-  @override
-  String get coreDepartingNow => 'Đang khởi hành';
-
-  @override
-  String coreArrivesInMin(int minutes) {
-    return 'Sẽ đến sau $minutes phút';
-  }
-
-  @override
-  String coreDepartsInMin(int minutes) {
-    return 'Sẽ khởi hành sau $minutes phút';
-  }
-
-  @override
-  String coreArrivedLate(int minutes) {
-    return 'đã đến trễ $minutes phút';
-  }
-
-  @override
-  String coreArrivedEarly(int minutes) {
-    return 'đã đến sớm $minutes phút';
-  }
-
-  @override
-  String get coreArrivedOnTime => 'đã đến đúng giờ';
-
-  @override
-  String coreDepartedLate(int minutes) {
-    return 'đã khởi hành trễ $minutes phút';
-  }
-
-  @override
-  String coreDepartedEarly(int minutes) {
-    return 'đã khởi hành sớm $minutes phút';
-  }
-
-  @override
-  String get coreDepartedOnTime => 'đã khởi hành đúng giờ';
-
-  @override
-  String coreArrivesLate(int minutes) {
-    return 'sẽ đến trễ $minutes phút';
-  }
-
-  @override
-  String coreArrivesEarly(int minutes) {
-    return 'sẽ đến sớm $minutes phút';
-  }
-
-  @override
-  String get coreArrivesOnTime => 'sẽ đến đúng giờ';
-
-  @override
-  String coreDepartsLate(int minutes) {
-    return 'sẽ khởi hành trễ $minutes phút';
-  }
-
-  @override
-  String coreDepartsEarly(int minutes) {
-    return 'sẽ khởi hành sớm $minutes phút';
-  }
-
-  @override
-  String get coreDepartsOnTime => 'sẽ khởi hành đúng giờ';
-
-  @override
   String coreMeters(String value) {
     return '$value m';
   }
@@ -3089,17 +2712,6 @@ class ObaLocalizationsVi extends ObaLocalizations {
   @override
   String coreMiles(String value) {
     return '$value mi';
-  }
-
-  @override
-  String coreAlarmMinutes(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes phút',
-      one: '$minutes phút',
-    );
-    return '$_temp0';
   }
 
   @override

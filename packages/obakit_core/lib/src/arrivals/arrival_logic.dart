@@ -269,23 +269,6 @@ List<ArrivalAndDeparture> arrivalsMatchingTripKey(
   ),
 );
 
-/// Arrivals bucketed by trip-bookmark key, each bucket soonest first.
-Map<TripBookmarkKey, List<ArrivalAndDeparture>> groupArrivalsByTripKey(
-  Iterable<ArrivalAndDeparture> arrivals, {
-  References? references,
-}) {
-  final out = <TripBookmarkKey, List<ArrivalAndDeparture>>{};
-  for (final a in arrivals) {
-    final key = TripBookmarkKey.fromArrival(
-      a,
-      routeShortName:
-          a.routeShortName ?? references?.route(a.routeId)?.shortName,
-    );
-    out.putIfAbsent(key, () => []).add(a);
-  }
-  return {for (final e in out.entries) e.key: sortByTime(e.value)};
-}
-
 /// Compares strings so embedded numbers sort numerically and letters
 /// case-insensitively: `2 < 10 < 10X < A Line` (an approximation of Apple's
 /// `localizedStandardCompare`).

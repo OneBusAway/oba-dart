@@ -1,19 +1,15 @@
+// Departure text shared by every list of departures (stop page, trip
+// page, bookmarks, nearby): status, countdown, spoken ETA and route label.
+
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
+import 'package:obakit_core/obakit_core.dart' as core show Route;
 
-import '../../l10n/l10n.dart';
-import '../../theme/oba_theme.dart';
+import '../l10n/l10n.dart';
+import '../theme/oba_theme.dart';
 
-/// A local time of day ("10:42 AM"), honouring the 24-hour setting.
-String obaClockTime(BuildContext context, DateTime time) =>
-    MaterialLocalizations.of(context).formatTimeOfDay(
-      TimeOfDay.fromDateTime(time.toLocal()),
-      alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
-    );
-
-/// A date ("Tue, Nov 25, 2026").
-String obaDate(BuildContext context, DateTime date) =>
-    MaterialLocalizations.of(context).formatMediumDate(date);
+/// Marks a live (real-time) countdown, next to the minutes.
+const IconData obaRealTimeIcon = Icons.sensors;
 
 /// How a departure is doing against its schedule, shown with an icon and
 /// text (never colour alone).
@@ -96,17 +92,6 @@ String? occupancyLabel(ObaLocalizations l10n, OccupancyStatus? o) =>
       _ => null,
     };
 
-/// Filled "people" icons for an occupancy level (1-3), or 0 when unknown.
-int occupancyLevel(OccupancyStatus? o) => switch (o) {
-  OccupancyStatus.empty || OccupancyStatus.manySeatsAvailable => 1,
-  OccupancyStatus.fewSeatsAvailable || OccupancyStatus.standingRoomOnly => 2,
-  OccupancyStatus.crushedStandingRoomOnly ||
-  OccupancyStatus.full ||
-  OccupancyStatus.notAcceptingPassengers ||
-  OccupancyStatus.notBoardable => 3,
-  _ => 0,
-};
-
 /// The short countdown ("NOW", "5 min", "3 min ago").
 String countdownText(ObaLocalizations l10n, int minutes) {
   if (minutes == 0) return l10n.stopRowNow;
@@ -128,9 +113,11 @@ String etaA11y(ObaLocalizations l10n, ArrivalAndDeparture a, int minutes) {
       : l10n.stopRowA11yArrives(minutes);
 }
 
-/// The route's short name for display, falling back to the arrival's.
-String routeLabel(ArrivalAndDeparture a, References references) =>
-    references.route(a.routeId)?.shortName ??
+/// The route's short name for display: the route's, then the arrival's,
+/// then the route's long name, then its id without the agency prefix.
+/// [route] comes from the response's references.
+String routeLabel(ArrivalAndDeparture a, core.Route? route) =>
+    route?.shortName ??
     a.routeShortName ??
-    references.route(a.routeId)?.longName ??
-    a.routeId;
+    route?.longName ??
+    agencyLocalId(a.routeId);

@@ -36,7 +36,7 @@ Requires Dart 3.13.4 or later.
 | Regions | `RegionsService` | `RegionsService` |
 | User data | `UserDataStore`, `Bookmark`, `BookmarkGroup`, `TripBookmarkKey`, `StoredStop`, `StoredRoute`, `RecentStop`, `RecentPlace`, `StopPreferences`, `StoredAlarm` | `UserDataStore`, `Bookmark*`, `StopPreferences` |
 | Settings | `ObaSettings`, `WalkingSpeedPreset`, `MapType`, `WalkingDirectionsProvider` | `UserDataStore` settings, `FeatureFlags`, map settings |
-| Arrivals | `cleanArrivals`, `filterTerminalDuplicates`, `groupArrivalsByRoute`, `filterByArrivalDepartureFilter`, `ArrivalDepartureLogic` extension, `WalkTime`, `partitionByWalkTime`, `walkTimeDividerIndex` | `ArrivalDeparture+Deduplication`, `GroupedArrivalDeparture`, `WalkTimeInfo`, `StopPageListBuilder` |
+| Arrivals | `cleanArrivals`, `filterTerminalDuplicates`, `groupArrivalsByRoute`, `filterByArrivalDepartureFilter`, `ArrivalDepartureLogic` extension, `WalkTime`, `walkTimeDividerIndex` | `ArrivalDeparture+Deduplication`, `GroupedArrivalDeparture`, `WalkTimeInfo`, `StopPageListBuilder` |
 | Geometry | `distanceBetween`, `nearestStops`, `nearest` | `Stop+Distance` |
 | Formatting | `ObaFormatters`, `ObaCoreStrings`, `alarmLeadTimeChoices` | `Formatters`, `AlarmTimePickerManager` |
 | Deep links | `DeepLinkRouter`, sealed `DeepLink`, `TripDeepLink` | `URLSchemeRouter`, `AppLinksRouter`, `ArrivalDepartureDeepLink` |
@@ -85,7 +85,9 @@ After `start()`:
   Read them on every use instead of caching them.
 - `app.userData`, `app.settings`: persisted state.
 - `app.search`, `app.alarms`, `app.problemReports`, `app.surveys`,
-  `app.alerts`, `app.deepLinks`, `app.formatters`.
+  `app.alerts`, `app.deepLinks`. `ObaFormatters` formats times, distances
+  and labels (English by default; pass an `ObaCoreStrings` subclass to
+  localise).
 - Location is demand-driven (`app.locationService`). `start()` never
   subscribes to the provider's position stream. A consumer that needs live
   location calls `app.acquireLocation()` and gets a `LocationLease`; the

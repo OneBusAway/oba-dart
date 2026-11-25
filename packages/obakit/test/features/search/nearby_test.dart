@@ -73,7 +73,10 @@ void main() {
     );
     expect(
       semantics.label,
-      startsWith('49 to Downtown Seattle Broadway, in 5 minutes, 3 min late.'),
+      startsWith(
+        '49 to Downtown Seattle Broadway, arrives in 5 minutes, '
+        'live tracking, 3 min late.',
+      ),
     );
 
     await tester.tap(find.byType(NearbyDepartureTile).first);

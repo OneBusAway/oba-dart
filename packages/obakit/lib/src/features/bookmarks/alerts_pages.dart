@@ -2,19 +2,19 @@ import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../widgets/heading.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
 import '../../navigation/oba_navigator.dart';
 import '../../navigation/oba_route.dart';
-import '../../navigation/presentation.dart';
 import '../../platform/listenable_adapter.dart';
 import '../../theme/oba_theme.dart';
 import '../../widgets/rows.dart';
 import '../../widgets/sheet_page.dart';
 import '../../widgets/states.dart';
 import 'alerts_loader.dart';
-import 'url_opener.dart';
-import 'visibility.dart';
+import '../../widgets/link_opener.dart';
+import '../../widgets/visibility.dart';
 
 String _severityLabel(ObaLocalizations l10n, AlertSeverity s) => switch (s) {
   AlertSeverity.info => l10n.alertsSeverityInfo,
@@ -147,7 +147,6 @@ class _AlertsListPageState extends State<AlertsListPage> {
     final l10n = context.obaL10n;
     final app = ObaScope.of(context);
     final loader = _loader!;
-    final embedded = ObaPresentation.of(context) == ObaPresentation.embedded;
     return ListenableBuilder(
       listenable: Listenable.merge([loader, app.core.userData.listenable]),
       builder: (context, _) {
@@ -174,13 +173,6 @@ class _AlertsListPageState extends State<AlertsListPage> {
           title: l10n.titleAlerts,
           actions: [markButton, refresh],
           slivers: [
-            if (embedded)
-              SliverToBoxAdapter(
-                child: Wrap(
-                  alignment: WrapAlignment.end,
-                  children: [markButton, refresh],
-                ),
-              ),
             if (loader.isLoading)
               const SliverFillRemaining(
                 hasScrollBody: false,
@@ -256,7 +248,7 @@ class AlertDetailPage extends StatefulWidget {
 
   final AlertDetailRoute route;
 
-  /// Replaces `url_launcher`.
+  /// Overrides the [ObaLinkOpenerScope] opener for this page.
   final ObaUrlOpener? urlOpener;
 
   @override
@@ -273,19 +265,13 @@ class _AlertDetailPageState extends State<AlertDetailPage> {
     });
   }
 
-  Future<void> _open(Uri uri) async {
-    final ok = await (widget.urlOpener ?? defaultUrlOpener)(uri);
-    if (!ok && mounted) {
-      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-        SnackBar(content: Text(context.obaL10n.alertsCouldNotOpen)),
-      );
-    }
-  }
+  Future<void> _open(Uri uri) =>
+      obaOpenLink(context, uri, opener: widget.urlOpener);
 
   String _dateTime(BuildContext context, DateTime t) {
-    final m = MaterialLocalizations.of(context);
-    final local = t.toLocal();
-    return '${m.formatMediumDate(local)} ${m.formatTimeOfDay(TimeOfDay.fromDateTime(local), alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context))}';
+    final date = MaterialLocalizations.of(context)
+        .formatMediumDate(t.toLocal());
+    return '$date ${obaClockTime(context, t)}';
   }
 
   @override
@@ -307,14 +293,7 @@ class _AlertDetailPageState extends State<AlertDetailPage> {
         primary: true,
         padding: const EdgeInsets.all(16),
         children: [
-          Semantics(
-            container: true,
-            header: true,
-            child: Text(
-              _title(l10n, alert),
-              style: theme.textTheme.headlineSmall,
-            ),
-          ),
+          ObaHeading(_title(l10n, alert), style: theme.textTheme.headlineSmall),
           const SizedBox(height: 8),
           Row(
             children: [
@@ -368,9 +347,9 @@ class _AlertDetailPageState extends State<AlertDetailPage> {
                 children: [
                   for (final r in routes)
                     ActionChip(
-                      label: Text(r.split('_').last),
+                      label: Text(agencyLocalId(r)),
                       tooltip: l10n.bookmarksDepartureRouteOnly(
-                        r.split('_').last,
+                        agencyLocalId(r),
                       ),
                       onPressed: () => navigator.push<void>(RouteStopsRoute(r)),
                     ),
@@ -385,8 +364,8 @@ class _AlertDetailPageState extends State<AlertDetailPage> {
                 children: [
                   for (final s in stops)
                     ActionChip(
-                      label: Text(s.split('_').last),
-                      tooltip: l10n.stopCode(s.split('_').last),
+                      label: Text(agencyLocalId(s)),
+                      tooltip: l10n.stopCode(agencyLocalId(s)),
                       onPressed: () => navigator.push<void>(StopRoute(s)),
                     ),
                 ],
@@ -411,11 +390,7 @@ class _AlertDetailPageState extends State<AlertDetailPage> {
 
   Widget _heading(BuildContext context, String text) => Padding(
     padding: const EdgeInsets.only(top: 20, bottom: 4),
-    child: Semantics(
-      container: true,
-      header: true,
-      child: Text(text, style: Theme.of(context).textTheme.titleMedium),
-    ),
+    child: ObaHeading(text),
   );
 }
 

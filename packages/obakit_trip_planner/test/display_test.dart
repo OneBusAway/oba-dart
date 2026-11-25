@@ -43,6 +43,10 @@ void main() {
       );
       expect(
         DistanceUnits.forLocale(const Locale('en', 'GB')),
+        DistanceUnits.imperial,
+      );
+      expect(
+        DistanceUnits.forLocale(const Locale('fr', 'FR')),
         DistanceUnits.metric,
       );
       expect(DistanceUnits.forLocale(const Locale('es')), DistanceUnits.metric);

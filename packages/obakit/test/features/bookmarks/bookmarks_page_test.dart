@@ -283,4 +283,38 @@ void main() {
       await unmount(tester);
     });
   });
+
+  group('embedded header actions appear exactly once', () {
+    const refresh = 'Refresh departures';
+
+    testWidgets('without a header: at the top of the list', (tester) async {
+      env = await arrivalsEnv();
+      await env.pumpPage(
+        tester,
+        const BookmarksPage(),
+        presentation: ObaPresentation.embedded,
+      );
+      expect(find.byTooltip(refresh), findsOneWidget);
+      expect(find.byType(ObaSheetHeader), findsNothing);
+    });
+
+    testWidgets('with the compact header: in the header only', (tester) async {
+      env = await arrivalsEnv();
+      await env.pumpPage(
+        tester,
+        ObaPresentationScope.embedded(
+          showsHeader: true,
+          child: const Material(child: BookmarksPage()),
+        ),
+      );
+      expect(find.byTooltip(refresh), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(ObaSheetHeader),
+          matching: find.byTooltip(refresh),
+        ),
+        findsOneWidget,
+      );
+    });
+  });
 }

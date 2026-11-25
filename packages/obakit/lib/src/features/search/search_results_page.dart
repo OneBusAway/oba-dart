@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 import 'package:obakit_core/obakit_core.dart' as core show Route;
 
+import '../../widgets/heading.dart';
 import '../../app/scope.dart';
 import '../../features/map/map_coordinator.dart';
 import '../../features/map/map_logic.dart';
 import '../../l10n/l10n.dart';
+import '../../l10n/strings_bridge.dart';
 import '../../navigation/oba_navigator.dart';
 import '../../navigation/oba_route.dart';
 import '../../widgets/rows.dart';
@@ -117,14 +119,12 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
     final List<Widget> slivers;
     if (result == null) {
       slivers = [
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: _error != null && !_loading
-              ? ObaErrorState(
-                  message: searchErrorText(context, _error!),
-                  onRetry: _load,
-                )
-              : const ObaLoadingState(),
+        ObaLoadingOrErrorSliver(
+          error: _loading ? null : _error,
+          errorMessage: _error == null
+              ? null
+              : searchErrorText(context, _error!),
+          onRetry: _load,
         ),
       ];
     } else if (result.isEmpty) {
@@ -143,13 +143,9 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 0),
-            child: Semantics(
-              container: true,
-              header: true,
-              child: Text(
-                l10n.searchResultsHeading(result.count, widget.request.query),
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
+            child: ObaHeading(
+              l10n.searchResultsHeading(result.count, widget.request.query),
+              style: Theme.of(context).textTheme.titleSmall,
             ),
           ),
         ),
@@ -314,8 +310,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                     ?p.subtitle,
                     if (here != null)
                       l10n.searchNearbyDistance(
-                        formatDistance(
-                          context,
+                        context.obaFormatters.distance(
                           distanceBetween(here, p.coordinate),
                         ),
                       ),

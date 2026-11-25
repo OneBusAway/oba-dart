@@ -3,12 +3,13 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show OrdinalSortKey;
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_map/flutter_map.dart' as fm;
 import 'package:latlong2/latlong.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
-import 'package:url_launcher/url_launcher.dart';
 
+import '../../widgets/link_opener.dart';
+import '../../widgets/frame.dart';
+import '../../widgets/visibility.dart';
 import '../../app/application.dart';
 import '../../app/location_holder.dart';
 import '../../app/map_config.dart';
@@ -112,7 +113,7 @@ class ObaMapView extends StatefulWidget {
 }
 
 class _ObaMapViewState extends State<ObaMapView>
-    with SingleTickerProviderStateMixin
+    with SingleTickerProviderStateMixin, ObaVisibilityAware<ObaMapView>
     implements ObaMapCameraDelegate {
   final fm.MapController _map = fm.MapController();
   late ObaApplication _app;
@@ -130,9 +131,14 @@ class _ObaMapViewState extends State<ObaMapView>
   bool _initialized = false;
   Region? _region;
 
-  /// Whether the map has ever been visible. Until then no tiles or stops
-  /// load (a host's hidden tab).
+  /// Whether the map has ever been visible ([ObaVisibilityAware]). Until
+  /// then no tiles or stops load (a host's hidden tab).
   bool _everShown = false;
+
+  @override
+  void onVisibilityChanged(bool visible) {
+    if (visible && !_everShown) setState(() => _everShown = true);
+  }
 
   /// True until the camera has been placed on the rider's first fix (or
   /// someone moved it): with no saved camera the map opens on the region,
@@ -154,11 +160,6 @@ class _ObaMapViewState extends State<ObaMapView>
       _region = _app.core.currentRegion;
       _app.core.regions.currentRegionListenable.addListener(_onRegionChanged);
       _app.core.locationListenable.addListener(_onLocationChanged);
-    }
-    if (!_everShown &&
-        TickerMode.valuesOf(context).enabled &&
-        Visibility.of(context)) {
-      _everShown = true;
     }
   }
 
@@ -300,17 +301,9 @@ class _ObaMapViewState extends State<ObaMapView>
     );
   }
 
-  void _whenSafe(VoidCallback fn) {
-    final phase = SchedulerBinding.instance.schedulerPhase;
-    if (phase == SchedulerPhase.persistentCallbacks ||
-        phase == SchedulerPhase.midFrameMicrotasks) {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        if (mounted) fn();
-      });
-    } else {
-      fn();
-    }
-  }
+  void _whenSafe(VoidCallback fn) => obaRunWhenSafe(() {
+    if (mounted) fn();
+  });
 
   @override
   void moveTo(Coordinate center, {double? zoom}) => _whenSafe(() {
@@ -399,13 +392,8 @@ class _ObaMapViewState extends State<ObaMapView>
       coordinate: c,
       id: 'dropped-${c.lat.toStringAsFixed(5)},${c.lon.toStringAsFixed(5)}',
     );
-    _coordinator.showPlace(
-      ObaMapMarker(
-        coordinate: c,
-        label: l10n.mapDroppedPin,
-        kind: ObaMapMarkerKind.place,
-      ),
-    );
+    // The place page draws the pin as its own overlay, so the page below
+    // keeps its overlay (a stop's route shapes) and gets it back on pop.
     ObaNavigator.of(context).push(PlaceRoute(place, isDroppedPin: true));
   }
 
@@ -1075,7 +1063,7 @@ class _Attribution extends StatelessWidget {
       child: url == null
           ? Padding(padding: const EdgeInsets.all(6), child: text)
           : InkWell(
-              onTap: () => launchUrl(Uri.parse(url)),
+              onTap: () => obaOpenLink(context, Uri.parse(url)),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: 48, minWidth: 48),
                 child: Padding(

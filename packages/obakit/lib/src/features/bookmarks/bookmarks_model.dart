@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../widgets/loader.dart';
 import '../../app/application.dart';
 import '../../platform/listenable_adapter.dart';
 import 'departures_loader.dart';
@@ -12,7 +13,7 @@ import 'departures_loader.dart';
 /// region's). With [limit] set, only the bookmarks a compact list shows are
 /// kept (every pinned one, then the newest; see [selectHomeBookmarks]) and
 /// only their stops are fetched.
-class BookmarksModel extends ChangeNotifier {
+class BookmarksModel extends ChangeNotifier with ObaDisposeSafeNotifier {
   BookmarksModel(this.app, {this.limit, StopDeparturesLoader? loader})
     : loader = loader ?? StopDeparturesLoader(app) {
     _sources = Listenable.merge([
@@ -28,7 +29,6 @@ class BookmarksModel extends ChangeNotifier {
   final StopDeparturesLoader loader;
   late final Listenable _sources;
   bool _active = false;
-  bool _disposed = false;
   List<Bookmark> _bookmarks = const [];
 
   /// The bookmarks to show, in storage order of the current region (or the
@@ -62,15 +62,9 @@ class BookmarksModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    _disposed = true;
     _sources.removeListener(_onSourceChanged);
     loader.removeListener(notifyListeners);
     loader.dispose();
     super.dispose();
-  }
-
-  @override
-  void notifyListeners() {
-    if (!_disposed) super.notifyListeners();
   }
 }

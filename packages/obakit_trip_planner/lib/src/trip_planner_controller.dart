@@ -73,12 +73,6 @@ class TripPlannerState {
   bool get isLoading => status == TripPlannerStatus.loading;
   List<Itinerary> get itineraries => plan?.itineraries ?? const [];
 
-  Itinerary? get selectedItinerary {
-    final index = selectedIndex;
-    if (index == null || index < 0 || index >= itineraries.length) return null;
-    return itineraries[index];
-  }
-
   TripPlannerState copyWith({
     Object? origin = _unset,
     Object? destination = _unset,

@@ -17,6 +17,7 @@ import '../navigation/oba_route.dart';
 import '../navigation/presentation.dart';
 import '../navigation/sheet_controller.dart';
 import '../theme/oba_theme.dart';
+import '../widgets/frame.dart';
 import 'sheet_navigator.dart';
 
 /// The map-panel experience (iOS `MapPanelRootView`): a full-screen map
@@ -298,9 +299,7 @@ class _SheetMapPadding extends ChangeNotifier
     );
     if (next == _value) return;
     _value = next;
-    final phase = SchedulerBinding.instance.schedulerPhase;
-    if (phase == SchedulerPhase.persistentCallbacks ||
-        phase == SchedulerPhase.midFrameMicrotasks) {
+    if (obaIsMidFrame) {
       if (_notifyScheduled) return;
       _notifyScheduled = true;
       SchedulerBinding.instance.addPostFrameCallback((_) {

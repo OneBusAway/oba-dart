@@ -511,6 +511,33 @@ void main() {
       await ObaTestEnv.settle(tester);
       expect(shell.coordinator.overlay.isEmpty, isTrue);
     });
+
+    testWidgets('a dropped pin leaves the page below its overlay', (
+      tester,
+    ) async {
+      final shell = await pumpShell(tester);
+      shell.navigator.push(const _OverlayRoute());
+      await ObaTestEnv.settle(tester);
+      await tester.longPressAt(const Offset(195, 200));
+      await ObaTestEnv.settle(tester);
+      expect(shell.routeStack.last, isA<PlaceRoute>());
+      expect(
+        shell.coordinator.overlay.markers.single.kind,
+        ObaMapMarkerKind.place,
+      );
+      // The pin's own page offers "Remove pin"; it just closes the page.
+      final remove = find.text('Remove pin');
+      await tester.ensureVisible(remove);
+      await ObaTestEnv.settle(tester);
+      tester
+          .widget<ObaListRow>(
+            find.ancestor(of: remove, matching: find.byType(ObaListRow)),
+          )
+          .onTap!();
+      await ObaTestEnv.settle(tester);
+      expect(shell.routeStack.last, isA<_OverlayRoute>());
+      expect(shell.coordinator.overlay.markers.single.label, 'Here');
+    });
   });
 }
 
@@ -542,7 +569,7 @@ class _OverlayRoute extends ObaCustomRoute {
         ObaMapMarker(coordinate: Coordinate(47.6, -122.3), label: 'Here'),
       ],
     ),
-    child: ObaComingSoonPage(title: 'Overlay'),
+    child: ObaSheetPage(title: 'Overlay', slivers: []),
   );
 }
 

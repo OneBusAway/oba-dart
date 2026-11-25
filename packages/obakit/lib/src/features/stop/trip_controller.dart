@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:clock/clock.dart';
 import 'package:flutter/widgets.dart';
 import 'package:obakit_core/obakit_core.dart';
 
+import '../../widgets/loader.dart';
+import '../../app/polling.dart';
 import '../../navigation/oba_route.dart';
-import 'stop_arrivals_controller.dart';
 
 /// A snapshot of a trip page's data.
 @immutable
@@ -48,7 +48,8 @@ class TripState {
 /// Fetches and polls `trip-details` and, when the trip was opened from a
 /// stop, `arrival-and-departure-for-stop` (iOS `TripViewController`'s
 /// data loading).
-class TripController extends ChangeNotifier implements ObaPollable {
+class TripController extends ChangeNotifier
+    with ObaDisposeSafeNotifier, ObaPollingController {
   TripController({
     required this.trip,
     required this._client,
@@ -57,39 +58,15 @@ class TripController extends ChangeNotifier implements ObaPollable {
 
   final TripRef trip;
   final OneBusAwayClient? Function() _client;
+  @override
   final Duration refreshInterval;
 
   TripState _state = const TripState();
   TripState get state => _state;
 
-  Duration _offset = Duration.zero;
-  Timer? _timer;
-  int _holders = 0;
-  int _generation = 0;
-  bool _disposed = false;
-
-  DateTime now() => clock.now().add(_offset);
-
   @override
-  void acquire() {
-    _holders++;
-    if (_holders == 1 && !_disposed) unawaited(refresh());
-  }
-
-  @override
-  void release() {
-    if (_disposed || _holders == 0) return;
-    _holders--;
-    if (_holders == 0) {
-      _timer?.cancel();
-      _timer = null;
-    }
-  }
-
   Future<void> refresh() async {
-    _timer?.cancel();
-    _timer = null;
-    final generation = ++_generation;
+    final generation = beginFetch();
     _emit(_state.copyWith(isRefreshing: true));
     final client = _client();
     TripState next;
@@ -115,12 +92,12 @@ class TripController extends ChangeNotifier implements ObaPollable {
               // The arrival is optional; the stop list stands alone.
               .catchError((Object _) => null),
       ]);
-      if (_disposed || generation != _generation) return;
+      if (!isCurrent(generation)) return;
       final details = results[0]! as ObaEntryResponse<TripDetails>;
       final arrival = results.length > 1
           ? results[1] as ObaEntryResponse<ArrivalAndDeparture>?
           : null;
-      _offset = details.currentTime.difference(clock.now());
+      updateServerTime(details.currentTime);
       next = TripState(
         details: details.entry,
         arrival: arrival?.entry,
@@ -130,28 +107,19 @@ class TripController extends ChangeNotifier implements ObaPollable {
         updatedAt: details.currentTime,
       );
     } catch (e) {
-      if (_disposed || generation != _generation) return;
+      if (!isCurrent(generation)) return;
       next = _state.hasData
           ? _state.copyWith(error: e, isRefreshing: false)
           : TripState(error: e);
     }
     _emit(next);
-    if (_holders > 0 && !_disposed) {
-      _timer = Timer(refreshInterval, () => unawaited(refresh()));
-    }
+    scheduleNextPoll();
   }
 
   void _emit(TripState s) {
-    if (_disposed) return;
+    if (isDisposed) return;
     _state = s;
     notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    _disposed = true;
-    _timer?.cancel();
-    super.dispose();
   }
 }
 

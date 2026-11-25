@@ -409,19 +409,8 @@ class Region {
 
   /// Great-circle (haversine) distance in metres to the centre of
   /// [serviceRect].
-  double distanceFrom(double lat, double lon) {
-    const earthRadius = 6371008.8;
-    final c = centerCoordinate;
-    double rad(double d) => d * math.pi / 180;
-    final dLat = rad(c.lat - lat);
-    final dLon = rad(c.lon - lon);
-    final a =
-        math.pow(math.sin(dLat / 2), 2) +
-        math.cos(rad(lat)) *
-            math.cos(rad(c.lat)) *
-            math.pow(math.sin(dLon / 2), 2);
-    return 2 * earthRadius * math.asin(math.sqrt(a));
-  }
+  double distanceFrom(double lat, double lon) =>
+      Coordinate(lat, lon).distanceTo(centerCoordinate);
 
   @override
   bool operator ==(Object other) =>

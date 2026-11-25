@@ -14,10 +14,6 @@ abstract final class ObaMapLogic {
   /// `MapRegionManager.requiredHeightToShowStops`).
   static const double requiredHeightToShowStops = 40000;
 
-  /// Above this visible height pins lose their labels (iOS
-  /// `requiredHeightToShowExtraStopData`).
-  static const double requiredHeightToShowStopLabels = 5000;
-
   /// How long the camera must rest before stops load (iOS
   /// `stopsRequestDebounceInterval`).
   static const Duration stopsRequestDebounce = Duration(milliseconds: 250);
@@ -48,9 +44,6 @@ abstract final class ObaMapLogic {
   /// Whether stops load for a camera showing [bounds].
   static bool shouldLoadStops(RegionRect bounds) =>
       visibleMapRectHeight(bounds) <= requiredHeightToShowStops;
-
-  static bool shouldShowStopLabels(RegionRect bounds) =>
-      visibleMapRectHeight(bounds) <= requiredHeightToShowStopLabels;
 
   /// The `stops-for-location` request for [bounds], or null when zoomed out
   /// too far.
@@ -85,20 +78,16 @@ abstract final class ObaMapLogic {
     required int max,
     RegionRect? within,
   }) {
-    final candidates = [
-      for (final s in stops)
-        if (within == null || within.contains(s.lat, s.lon)) s,
-    ];
-    double d(Stop s) {
-      final dy = s.lat - center.lat;
-      final dx = (s.lon - center.lon) * math.cos(center.lat * math.pi / 180);
-      return dx * dx + dy * dy;
-    }
-
     // Always nearest first: the accessible "Stops on the map" list reads
     // in this order.
-    candidates.sort((a, b) => d(a).compareTo(d(b)));
-    return candidates.length <= max ? candidates : candidates.sublist(0, max);
+    return nearestStops(
+      [
+        for (final s in stops)
+          if (within == null || within.contains(s.lat, s.lon)) s,
+      ],
+      center,
+      limit: max,
+    );
   }
 
   /// Grows [r] by [factor] of its size on every side.
@@ -128,17 +117,6 @@ abstract final class ObaMapLogic {
       maxLat: maxLat!,
       minLon: minLon!,
       maxLon: maxLon!,
-    );
-  }
-
-  /// Compares two id sets.
-  static StopDiff diff(Iterable<String> previous, Iterable<String> next) {
-    final before = previous.toSet();
-    final after = next.toSet();
-    return StopDiff(
-      added: after.difference(before),
-      removed: before.difference(after),
-      kept: after.intersection(before),
     );
   }
 }
@@ -174,21 +152,6 @@ class StopsRequest {
   int get hashCode => Object.hash(center, latSpan, lonSpan);
 }
 
-@immutable
-class StopDiff {
-  const StopDiff({
-    required this.added,
-    required this.removed,
-    required this.kept,
-  });
-
-  final Set<String> added;
-  final Set<String> removed;
-  final Set<String> kept;
-
-  bool get isEmpty => added.isEmpty && removed.isEmpty;
-}
-
 /// What a stop pin looks like. Two equal specs draw the same pin, so the
 /// marker can be reused.
 @immutable
@@ -198,7 +161,6 @@ class StopMarkerSpec {
     required this.routeType,
     this.isBookmarked = false,
     this.isSelected = false,
-    this.showsLabel = false,
     this.compact = false,
   });
 
@@ -211,7 +173,6 @@ class StopMarkerSpec {
   final RouteType routeType;
   final bool isBookmarked;
   final bool isSelected;
-  final bool showsLabel;
 
   String get id => stop.id;
 
@@ -226,7 +187,6 @@ class StopMarkerSpec {
       other.routeType == routeType &&
       other.isBookmarked == isBookmarked &&
       other.isSelected == isSelected &&
-      other.showsLabel == showsLabel &&
       other.compact == compact;
 
   @override
@@ -238,7 +198,6 @@ class StopMarkerSpec {
     routeType,
     isBookmarked,
     isSelected,
-    showsLabel,
     compact,
   );
 }
@@ -274,6 +233,4 @@ class StopMarkerCache<T> {
     _entries.removeWhere((id, _) => !seen.contains(id));
     return out;
   }
-
-  void clear() => _entries.clear();
 }

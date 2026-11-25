@@ -256,12 +256,6 @@ class UserDataStore extends ObaChangeNotifier {
   /// All bookmarks, in storage order.
   List<Bookmark> get bookmarks => List.unmodifiable(_bookmarks);
 
-  List<Bookmark> get favoritedBookmarks =>
-      _bookmarks.where((b) => b.isFavorite).toList();
-
-  List<Bookmark> get pinnedBookmarks =>
-      _bookmarks.where((b) => b.isPinned).toList();
-
   /// Bookmarks in [groupId] (null: ungrouped), by `sortOrder`.
   List<Bookmark> bookmarksInGroup(String? groupId) =>
       _sorted(_bookmarks.where((b) => b.groupId == groupId));
@@ -287,10 +281,6 @@ class UserDataStore extends ObaChangeNotifier {
     final q = text.trim();
     return _bookmarks.where((b) => b.matchesQuery(q)).toList();
   }
-
-  /// Whether an equivalent bookmark (same name, stop, route...) exists.
-  bool isDuplicate(Bookmark bookmark) =>
-      _bookmarks.any((b) => b.isEquivalentTo(bookmark));
 
   /// Adds [bookmark] (or moves it, when one with its id exists) into
   /// [groupId] at [index] (default: the end). Both the destination and the
@@ -355,12 +345,6 @@ class UserDataStore extends ObaChangeNotifier {
     final b = findBookmark(bookmarkId);
     if (b == null || b.isPinned == isPinned) return;
     updateBookmark(b.copyWith(isPinned: isPinned));
-  }
-
-  void setFavorite(String bookmarkId, bool isFavorite) {
-    final b = findBookmark(bookmarkId);
-    if (b == null || b.isFavorite == isFavorite) return;
-    updateBookmark(b.copyWith(isFavorite: isFavorite));
   }
 
   /// Deletes a bookmark and renumbers the rest of its group.
@@ -511,9 +495,6 @@ class UserDataStore extends ObaChangeNotifier {
       _stopPreferences[stopPreferencesKey(regionId, stopId)] ??
       const StopPreferences();
 
-  bool hasStopPreferences(int regionId, String stopId) =>
-      _stopPreferences.containsKey(stopPreferencesKey(regionId, stopId));
-
   void setStopPreferences(
     int regionId,
     String stopId,
@@ -646,12 +627,18 @@ class UserDataStore extends ObaChangeNotifier {
     notifyListeners();
   }
 
-  bool isSurveyCompleted(int surveyId, String userId) => _completedSurveys.any(
-    (c) => c.surveyId == surveyId && c.userId == userId,
-  );
+  // Survey marks belong to the current [surveyUserIdentifier].
+
+  bool isSurveyCompleted(int surveyId) {
+    final userId = surveyUserIdentifier;
+    return _completedSurveys.any(
+      (c) => c.surveyId == surveyId && c.userId == userId,
+    );
+  }
 
   /// Marks completed, and clears any "later" mark.
-  void markSurveyCompleted(int surveyId, String userId) {
+  void markSurveyCompleted(int surveyId) {
+    final userId = surveyUserIdentifier;
     _completedSurveys = [
       ..._completedSurveys.where(
         (c) => !(c.surveyId == surveyId && c.userId == userId),
@@ -665,10 +652,10 @@ class UserDataStore extends ObaChangeNotifier {
     notifyListeners();
   }
 
-  bool isSurveyMarkedForLater(int surveyId, String userId) =>
-      _surveysForLater.any((s) => s.surveyId == surveyId && s.userId == userId);
+  bool isSurveyMarkedForLater(int surveyId) => _laterMark(surveyId) != null;
 
-  void markSurveyForLater(int surveyId, String userId) {
+  void markSurveyForLater(int surveyId) {
+    final userId = surveyUserIdentifier;
     _surveysForLater = [
       ..._surveysForLater.where(
         (s) => !(s.surveyId == surveyId && s.userId == userId),
@@ -684,13 +671,18 @@ class UserDataStore extends ObaChangeNotifier {
   }
 
   /// True on every third launch after the survey was marked for later.
-  bool shouldShowSurveyLater(int surveyId, String userId) {
-    final mark = _surveysForLater
-        .where((s) => s.surveyId == surveyId && s.userId == userId)
-        .firstOrNull;
+  bool shouldShowSurveyLater(int surveyId) {
+    final mark = _laterMark(surveyId);
     if (mark == null) return false;
     final since = appLaunchCount - mark.launchCountWhenMarked;
     return since > 0 && since % 3 == 0;
+  }
+
+  SurveyForLater? _laterMark(int surveyId) {
+    final userId = surveyUserIdentifier;
+    return _surveysForLater
+        .where((s) => s.surveyId == surveyId && s.userId == userId)
+        .firstOrNull;
   }
 
   // -- Persistence --------------------------------------------------------------

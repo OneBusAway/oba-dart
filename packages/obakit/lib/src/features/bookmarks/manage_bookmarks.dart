@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../widgets/heading.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
 import '../../platform/listenable_adapter.dart';
@@ -176,24 +177,13 @@ class ManageBookmarksPage extends StatelessWidget {
   Future<void> _deleteGroup(BuildContext context, BookmarkGroup group) async {
     final l10n = context.obaL10n;
     final store = ObaScope.of(context).core.userData;
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.bookmarksManageDeleteGroup),
-        content: Text(l10n.bookmarksManageDeleteGroupBody(group.name)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(l10n.commonCancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(l10n.bookmarksActionDelete),
-          ),
-        ],
-      ),
+    final ok = await obaConfirm(
+      context,
+      title: l10n.bookmarksManageDeleteGroup,
+      message: l10n.bookmarksManageDeleteGroupBody(group.name),
+      confirmLabel: l10n.bookmarksActionDelete,
     );
-    if (ok == true) store.deleteGroup(group.id);
+    if (ok) store.deleteGroup(group.id);
   }
 }
 
@@ -206,11 +196,7 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) => SliverToBoxAdapter(
     child: Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 4),
-      child: Semantics(
-        container: true,
-        header: true,
-        child: Text(title, style: Theme.of(context).textTheme.titleMedium),
-      ),
+      child: ObaHeading(title),
     ),
   );
 }

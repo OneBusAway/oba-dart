@@ -477,7 +477,7 @@ void main() {
     });
   }
 
-  testWidgets('embedded in a host page: body only, or with its header', (
+  testWidgets('embedded in a host page: with or without its header', (
     tester,
   ) async {
     env = await makeEnv();
@@ -488,9 +488,10 @@ void main() {
         child: const StopPage(stopId: stopId),
       ),
     );
+    // No header: the host titles the page; the actions lead the list.
     await env.pumpPage(tester, host(showsHeader: false));
     expect(find.text(stopName), findsNothing);
-    expect(find.byTooltip('Bookmark stop'), findsNothing);
+    expect(find.byTooltip('Bookmark stop'), findsOneWidget);
 
     // A host tab with no title of its own for the stop: the stop's name is a
     // heading and the page's actions are there, under the host's one app

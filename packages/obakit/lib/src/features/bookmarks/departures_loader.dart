@@ -5,6 +5,8 @@ import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../app/polling.dart';
+import '../../widgets/loader.dart';
 import '../../app/application.dart';
 
 /// What a [StopDeparturesLoader] knows about one stop.
@@ -49,7 +51,7 @@ class BookmarkStopDepartures {
 ///
 /// Owned by a `State`, which calls [dispose]. It reads the REST client on
 /// every fetch and starts over when the region (client) changes.
-class StopDeparturesLoader extends ChangeNotifier {
+class StopDeparturesLoader extends ChangeNotifier with ObaDisposeSafeNotifier {
   StopDeparturesLoader(
     this.app, {
     this.maxConcurrent = 3,
@@ -72,14 +74,10 @@ class StopDeparturesLoader extends ChangeNotifier {
   final Set<String> _inFlight = {};
   Timer? _timer;
   bool _active = false;
-  bool _disposed = false;
   int _generation = 0;
   Duration _serverOffset = Duration.zero;
   DateTime? _lastRefresh;
   Completer<void>? _idle;
-
-  /// Number of requests started so far (for tests and diagnostics).
-  int requestCount = 0;
 
   /// The state of [stopId]; loading when it is wanted but not fetched yet.
   BookmarkStopDepartures stateFor(String stopId) =>
@@ -105,13 +103,13 @@ class StopDeparturesLoader extends ChangeNotifier {
       }
       _pump();
     }
-    _notify();
+    notifyListeners();
   }
 
   /// Whether the owner is on screen. Interval refresh runs only while true;
   /// becoming active refreshes stale data at once.
   void setActive(bool active) {
-    if (_active == active || _disposed) return;
+    if (_active == active || isDisposed) return;
     _active = active;
     _timer?.cancel();
     _timer = null;
@@ -126,7 +124,7 @@ class StopDeparturesLoader extends ChangeNotifier {
 
   /// Fetches every wanted stop again. Completes when the queue has drained.
   Future<void> refresh() {
-    if (_disposed) return Future.value();
+    if (isDisposed) return Future.value();
     _lastRefresh = clock.now();
     for (final id in _wanted) {
       _enqueue(id);
@@ -154,11 +152,10 @@ class StopDeparturesLoader extends ChangeNotifier {
   }
 
   Future<void> _fetch(String stopId, int generation) async {
-    requestCount++;
     BookmarkStopDepartures result;
     try {
       final client = app.core.restClient;
-      if (client == null) throw StateError('No region selected');
+      if (client == null) throw const ObaNoRegionException();
       final response = await client.arrivalsAndDepartures.forStop(
         stopId,
         minutesBefore: minutesBefore,
@@ -186,11 +183,11 @@ class StopDeparturesLoader extends ChangeNotifier {
       );
     }
     _inFlight.remove(stopId);
-    if (!_disposed && generation == _generation && _wanted.contains(stopId)) {
+    if (!isDisposed && generation == _generation && _wanted.contains(stopId)) {
       _states[stopId] = result;
-      _notify();
+      notifyListeners();
     }
-    if (!_disposed) _pump();
+    if (!isDisposed) _pump();
   }
 
   void _onClientsChanged() {
@@ -203,16 +200,11 @@ class StopDeparturesLoader extends ChangeNotifier {
       _enqueue(id);
     }
     _pump();
-    _notify();
-  }
-
-  void _notify() {
-    if (!_disposed) notifyListeners();
+    notifyListeners();
   }
 
   @override
   void dispose() {
-    _disposed = true;
     _timer?.cancel();
     app.core.clientsListenable.removeListener(_onClientsChanged);
     _idle?.complete();

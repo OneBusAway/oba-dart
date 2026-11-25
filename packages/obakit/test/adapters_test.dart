@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:obakit/obakit.dart';
+import 'package:obakit/src/platform/geolocator_location_provider.dart';
 import 'package:obakit_trip_planner/obakit_trip_planner.dart' as tp;
 import 'package:shared_preferences/shared_preferences.dart';
 

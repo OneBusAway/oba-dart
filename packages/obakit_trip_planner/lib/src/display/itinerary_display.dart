@@ -58,12 +58,6 @@ Leg? firstTransitLeg(Itinerary itinerary) {
   return null;
 }
 
-/// True when the trip involves transit and any transit leg has real-time
-/// data.
-bool hasRealTimeData(Itinerary itinerary) => itinerary.legs.any(
-  (leg) => LegKind.of(leg) == LegKind.transit && leg.realTime,
-);
-
 /// The turn a walking [LegStep] asks for (OTPKit `RelativeDirection`).
 enum RelativeDirection {
   depart('DEPART'),

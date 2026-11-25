@@ -19,7 +19,7 @@ export 'contact_us.dart' show ObaSupport;
 export 'credits_page.dart'
     show CreditsPage, ObaLicensesPage, ObaLicensesRoute, kObaLicenseText;
 export 'custom_region_page.dart' show CustomRegionPage;
-export 'link_opener.dart'
+export '../../widgets/link_opener.dart'
     show ObaLinkOpener, ObaLinkOpenerScope, UrlLauncherLinkOpener;
 export 'more_page.dart' show MorePage;
 export 'onboarding_pages.dart' show OnboardingStepPage;

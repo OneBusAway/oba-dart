@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../widgets/heading.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
 import '../../navigation/oba_route.dart';
@@ -63,11 +64,7 @@ class _StepHeader extends StatelessWidget {
           child: Icon(icon, size: 56, color: theme.colorScheme.primary),
         ),
         const SizedBox(height: 16),
-        Semantics(
-          container: true,
-          header: true,
-          child: Text(title, style: theme.textTheme.headlineMedium),
-        ),
+        ObaHeading(title, style: theme.textTheme.headlineMedium),
         if (body != null) ...[
           const SizedBox(height: 12),
           Text(body!, style: theme.textTheme.bodyLarge),
@@ -324,14 +321,7 @@ class _RegionStepState extends State<_RegionStep> {
               if (suggested != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Semantics(
-                    container: true,
-                    header: true,
-                    child: Text(
-                      l10n.onboardingRegionOthers,
-                      style: theme.textTheme.titleMedium,
-                    ),
-                  ),
+                  child: ObaHeading(l10n.onboardingRegionOthers),
                 ),
               for (final r in regions)
                 ObaListRow(

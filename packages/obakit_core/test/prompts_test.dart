@@ -156,18 +156,16 @@ void main() {
       c = PromptCoordinator(store);
     });
 
-    test('one review prompt per session, none after an error', () {
+    test('one review prompt per session', () {
       expect(c.canShowReviewPrompt(), isTrue);
       c.noteShown(PromptKind.review);
       expect(c.canShowReviewPrompt(), isFalse);
       expect(c.canShowInlineCards(), isFalse);
       c.beginNewSession();
       expect(c.canShowReviewPrompt(), isTrue);
-      c.sawErrorThisSession = true;
-      expect(c.canShowReviewPrompt(), isFalse);
     });
 
-    test('an inline card starts a 14 day cooldown, undone by noteNotShown', () {
+    test('an inline card starts a 14 day cooldown', () {
       withClock(Clock.fixed(t0), () {
         c.noteShown(PromptKind.donationModal);
         c.beginNewSession();
@@ -175,15 +173,6 @@ void main() {
         withClock(Clock.fixed(t0.add(const Duration(days: 15))), () {
           expect(c.canShowReviewPrompt(), isTrue);
         });
-      });
-    });
-
-    test('noteNotShown undoes the cooldown it started', () {
-      withClock(Clock.fixed(t0), () {
-        c.noteShown(PromptKind.donationModal);
-        c.noteNotShown(PromptKind.donationModal);
-        expect(c.lastEngagement, isNull);
-        expect(c.canShowReviewPrompt(), isTrue);
       });
     });
 

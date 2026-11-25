@@ -1,4 +1,4 @@
-// OWNER: stop agent (stop page, schedules, trip page, route stops, problem
+// Stop routes (stop page, schedules, trip page, route stops, problem
 // reports). The pages live in the other files of this folder; this file
 // keeps the `build...Route` functions the registry calls and re-exports
 // the public widgets.

@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:obakit_core/obakit_core.dart';
 
-import '../features/stop/stop_arrivals_controller.dart';
+import 'polling.dart';
 import 'scope.dart';
 
 /// Holds a live-location lease ([LocationService.acquire]) while this

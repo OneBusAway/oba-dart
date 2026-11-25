@@ -4,6 +4,8 @@ import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../app/polling.dart';
+import '../../widgets/loader.dart';
 import '../../app/application.dart';
 
 /// Loads the service alerts (REST `Situation`s) for a screen.
@@ -18,7 +20,7 @@ import '../../app/application.dart';
 /// - neither (region-wide): arrivals at up to [maxRegionStops] stops the rider
 ///   cares about (bookmarked, then recent, then nearest to them), at most
 ///   three requests at a time.
-class AlertsLoader extends ChangeNotifier {
+class AlertsLoader extends ChangeNotifier with ObaDisposeSafeNotifier {
   AlertsLoader(this.app, {this.stopId, this.routeId, this.maxRegionStops = 8});
 
   final ObaApplication app;
@@ -29,7 +31,6 @@ class AlertsLoader extends ChangeNotifier {
   List<Situation> _alerts = const [];
   Object? _error;
   bool _loading = true;
-  bool _disposed = false;
   int _generation = 0;
   DateTime? _loadedAt;
 
@@ -45,10 +46,10 @@ class AlertsLoader extends ChangeNotifier {
     final generation = ++_generation;
     _loading = _alerts.isEmpty;
     _error = null;
-    _notify();
+    notifyListeners();
     try {
       final client = app.core.restClient;
-      if (client == null) throw StateError('No region selected');
+      if (client == null) throw const ObaNoRegionException();
       final found = <Situation>[];
       final stops = await _stopsToAsk(client);
       var failures = 0;
@@ -88,7 +89,7 @@ class AlertsLoader extends ChangeNotifier {
       _error = e;
     }
     _loading = false;
-    _notify();
+    notifyListeners();
   }
 
   Iterable<Situation> _situationsOf(
@@ -132,15 +133,5 @@ class AlertsLoader extends ChangeNotifier {
       }
     }
     return ids.take(maxRegionStops).toList();
-  }
-
-  void _notify() {
-    if (!_disposed) notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
   }
 }

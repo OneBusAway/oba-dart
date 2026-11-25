@@ -6,7 +6,6 @@ import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
 import '../../navigation/oba_navigator.dart';
 import '../../navigation/oba_route.dart';
-import '../../navigation/presentation.dart';
 import '../../platform/listenable_adapter.dart';
 import '../../widgets/feed_card.dart';
 import '../../widgets/rows.dart';
@@ -14,7 +13,7 @@ import '../../widgets/sheet_page.dart';
 import '../../widgets/states.dart';
 import 'bookmark_card.dart';
 import 'bookmarks_model.dart';
-import 'visibility.dart';
+import '../../widgets/visibility.dart';
 
 /// The key under which the list's sort mode is stored (`true`: by group).
 const String bookmarksSortByGroupKey = 'oba.bookmarks.sortByGroup';
@@ -75,7 +74,6 @@ class _BookmarksPageState extends State<BookmarksPage>
     final model = _model!;
     final l10n = context.obaL10n;
     final navigator = ObaNavigator.of(context);
-    final embedded = ObaPresentation.of(context) == ObaPresentation.embedded;
     final sortButton = PopupMenuButton<bool>(
       tooltip: l10n.bookmarksSortTooltip,
       icon: const Icon(Icons.sort),
@@ -123,13 +121,6 @@ class _BookmarksPageState extends State<BookmarksPage>
             title: l10n.titleBookmarks,
             actions: [sortButton, refreshButton, manageButton],
             slivers: [
-              if (embedded)
-                SliverToBoxAdapter(
-                  child: Wrap(
-                    alignment: WrapAlignment.end,
-                    children: [sortButton, refreshButton, manageButton],
-                  ),
-                ),
               if (sections.isEmpty)
                 SliverFillRemaining(
                   hasScrollBody: false,
@@ -215,7 +206,7 @@ class _GroupHeader extends StatelessWidget {
             : l10n.bookmarksGroupExpanded,
         onTapHint: l10n.bookmarksGroupToggleHint,
         child: ListTile(
-          title: Text(title),
+          title: Text(obaBidiIsolate(context, title)),
           titleTextStyle: Theme.of(context).textTheme.titleMedium
               ?.copyWith(color: Theme.of(context).colorScheme.onSurface),
           trailing: ExcludeSemantics(

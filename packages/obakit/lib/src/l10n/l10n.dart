@@ -1,5 +1,6 @@
-import 'package:flutter/widgets.dart';
-import 'package:obakit_core/obakit_core.dart' show DistanceUnits, WeatherUnits;
+import 'package:flutter/material.dart';
+import 'package:obakit_core/obakit_core.dart'
+    show DistanceUnits, MeasurementSystem, WeatherUnits;
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'generated/oba_localizations.dart';
@@ -58,26 +59,24 @@ String? obaCountryCode(BuildContext context) {
   return (locale?.languageCode ?? 'en') == 'en' ? 'US' : null;
 }
 
-/// Feet and miles in the US, Liberia, Myanmar and the UK; metres and
-/// kilometres elsewhere. One policy for every screen.
+/// The rider's measurement system ([MeasurementSystem.forCountry] of
+/// [obaCountryCode]). One policy for every screen.
+MeasurementSystem obaMeasurementSystem(BuildContext context) =>
+    MeasurementSystem.forCountry(obaCountryCode(context));
+
+/// Feet and miles in the US, its territories, Liberia, Myanmar and the UK;
+/// metres and kilometres elsewhere. `context.obaFormatters` already uses
+/// these.
 DistanceUnits obaDistanceUnits(BuildContext context) =>
-    const {
-      'US',
-      'LR',
-      'MM',
-      'GB',
-      'PR',
-      'GU',
-      'VI',
-      'AS',
-      'MP',
-      'UM',
-    }.contains(obaCountryCode(context))
-    ? DistanceUnits.imperial
-    : DistanceUnits.metric;
+    DistanceUnits.of(obaMeasurementSystem(context));
 
 /// Temperature and wind units for the rider's country.
-WeatherUnits obaWeatherUnits(BuildContext context) => WeatherUnits.forLocale(
-  languageCode: Localizations.maybeLocaleOf(context)?.languageCode ?? 'en',
-  countryCode: obaCountryCode(context),
-);
+WeatherUnits obaWeatherUnits(BuildContext context) =>
+    WeatherUnits.of(obaMeasurementSystem(context));
+
+/// A local time of day ("10:42 AM"), honouring the 24-hour setting.
+String obaClockTime(BuildContext context, DateTime time) =>
+    MaterialLocalizations.of(context).formatTimeOfDay(
+      TimeOfDay.fromDateTime(time.toLocal()),
+      alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
+    );

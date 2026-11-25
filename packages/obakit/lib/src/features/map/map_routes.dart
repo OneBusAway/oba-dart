@@ -1,4 +1,4 @@
-// Map-owned routes (scaffold): map settings and the accessible list of the
+// Map routes: map settings and the accessible list of the
 // stops on the map.
 
 import 'package:flutter/material.dart';
@@ -67,8 +67,6 @@ class MapSettingsPage extends StatelessWidget {
                 value: settings.mapShowsHeading,
                 onChanged: (v) => settings.mapShowsHeading = v,
               ),
-              // No "Show stop labels" switch: the map doesn't draw labels
-              // under pins yet, so the setting would do nothing.
             ],
           ),
         ],

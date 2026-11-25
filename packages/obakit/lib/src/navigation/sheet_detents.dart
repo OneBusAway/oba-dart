@@ -33,19 +33,6 @@ final class FractionDetent extends ObaSheetDetent {
   int get hashCode => fraction.hashCode;
 }
 
-final class HeightDetent extends ObaSheetDetent {
-  const HeightDetent(this.height);
-  final double height;
-  @override
-  double resolve({required double maxHeight, required double headerHeight}) =>
-      height.clamp(0, maxHeight);
-  @override
-  bool operator ==(Object other) =>
-      other is HeightDetent && other.height == height;
-  @override
-  int get hashCode => height.hashCode;
-}
-
 final class CollapsedDetent extends ObaSheetDetent {
   const CollapsedDetent();
   @override

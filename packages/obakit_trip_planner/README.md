@@ -198,8 +198,10 @@ network provider, for caching or for tests.
 
 ### Units, times and text
 
-- Distances use miles and feet for US, LR and MM locales, and kilometres and
-  metres elsewhere. Pass `distanceUnits:` to force either.
+- Distances use miles and feet for the US and its territories, Liberia,
+  Myanmar and the UK, and kilometres and metres elsewhere (the same policy
+  as `obakit_core`'s `MeasurementSystem`). Pass `distanceUnits:` to force
+  either.
 - Clock times use `MaterialLocalizations` and honour the device's 24-hour
   setting.
 - All user-facing text lives in `TripPlannerStrings`. Subclass it and pass

@@ -40,15 +40,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
   String get commonErrorTitle => '出了点问题';
 
   @override
-  String get commonEmptyTitle => '这里还没有内容';
-
-  @override
-  String get commonComingSoon => '即将推出';
-
-  @override
-  String get commonComingSoonBody => '此页面暂不可用。';
-
-  @override
   String get commonOffline => '你似乎已离线。请检查网络连接后重试。';
 
   @override
@@ -142,9 +133,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
   String get mapVehicle => '车辆';
 
   @override
-  String get mapSelectedStop => '已选中';
-
-  @override
   String get mapBookmarkedStop => '已加书签';
 
   @override
@@ -173,18 +161,7 @@ class ObaLocalizationsZh extends ObaLocalizations {
   String get mapTypeHybrid => '混合';
 
   @override
-  String get mapShowScale => '显示比例尺';
-
-  @override
   String get mapShowHeading => '显示朝向';
-
-  @override
-  String get mapShowStopLabels => '显示站点标签';
-
-  @override
-  String mapPlaceAt(String lat, String lon) {
-    return '位于 $lat、$lon 的位置';
-  }
 
   @override
   String get directionN => '北向';
@@ -468,9 +445,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
 
   @override
   String get stopPageGoogleMaps => 'Google 地图';
-
-  @override
-  String get stopPageCannotOpen => '无法打开该链接。';
 
   @override
   String stopPageTransfer(String route, String headsign, String time) {
@@ -1113,9 +1087,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
   String get settingsHeadingHelp => '在地图上显示你所面对的方向。';
 
   @override
-  String get settingsStopLabelsHelp => '在地图上的站点旁显示路线名称。';
-
-  @override
   String get settingsWalkingDirections => '步行路线';
 
   @override
@@ -1149,12 +1120,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
   String get settingsFilterScheduled => '仅按时刻表';
 
   @override
-  String get settingsRegionTimeZone => '以所在地区的时区显示时间';
-
-  @override
-  String get settingsRegionTimeZoneHelp => '时钟时间使用公交地区的时区，与你的设备不同时会附带说明。';
-
-  @override
   String get settingsSectionAccessibility => '辅助功能';
 
   @override
@@ -1162,12 +1127,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
 
   @override
   String get settingsReducedColorsHelp => '以统一的中性样式显示路线标识。';
-
-  @override
-  String get settingsCompactMode => '紧凑的站点和行程页面';
-
-  @override
-  String get settingsCompactModeHelp => '缩小间距，让屏幕容纳更多内容。';
 
   @override
   String get settingsSectionWalking => '步行速度';
@@ -1399,7 +1358,7 @@ class ObaLocalizationsZh extends ObaLocalizations {
   String get moreFareDontShowAgain => '继续且不再显示';
 
   @override
-  String get moreCantOpenLink => '无法打开该链接。';
+  String get commonCantOpenLink => '无法打开该链接。';
 
   @override
   String get regionPickerAutomatic => '自动选择地区';
@@ -1759,57 +1718,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
   String get dataUpdated => '已更新';
 
   @override
-  String get bookmarksEtaNow => '现在';
-
-  @override
-  String bookmarksEtaMinutes(int minutes) {
-    return '$minutes 分钟';
-  }
-
-  @override
-  String bookmarksEtaSemantic(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes 分钟后',
-      one: '$minutes 分钟后',
-      zero: '现在',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get bookmarksStatusOnTime => '准点';
-
-  @override
-  String bookmarksStatusLate(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '晚点 $minutes 分钟',
-      one: '晚点 $minutes 分钟',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String bookmarksStatusEarly(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '提前 $minutes 分钟',
-      one: '提前 $minutes 分钟',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get bookmarksStatusScheduled => '按时刻表';
-
-  @override
-  String get bookmarksStatusCanceled => '已取消';
-
-  @override
   String bookmarksDepartureRoute(String route, String headsign) {
     return '$route 路，开往 $headsign';
   }
@@ -1919,11 +1827,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
   }
 
   @override
-  String bookmarksStopLine(String name, String details) {
-    return '$name，$details';
-  }
-
-  @override
   String get bookmarksEditorNameLabel => '书签名称';
 
   @override
@@ -1981,9 +1884,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
 
   @override
   String get bookmarksManageGroupsHeader => '分组';
-
-  @override
-  String get bookmarksManageBookmarksHeader => '书签';
 
   @override
   String get bookmarksManageAddGroup => '添加分组';
@@ -2095,9 +1995,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
   String get alarmsDeleteFailed => '无法删除闹钟。请检查网络连接后重试。';
 
   @override
-  String get alarmsOpen => '打开该行程';
-
-  @override
   String get alertsEmptyTitle => '没有服务通知';
 
   @override
@@ -2183,9 +2080,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
   String get alertsDetailStops => '站点';
 
   @override
-  String get alertsDetailAgencies => '运营机构';
-
-  @override
   String get alertsDetailLearnMore => '了解更多';
 
   @override
@@ -2195,9 +2089,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
   String alertsDetailUpdated(String date) {
     return '发布于 $date';
   }
-
-  @override
-  String get alertsCouldNotOpen => '无法打开该链接。';
 
   @override
   String get agenciesEmptyTitle => '没有运营机构';
@@ -2413,9 +2304,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
   String get searchNearbyLoadingDepartures => '正在加载班次';
 
   @override
-  String get searchNearbyUpdated => '附近的发车信息已更新';
-
-  @override
   String searchNearbyStopsCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -2464,56 +2352,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
 
   @override
   String get searchNearbyCardTitle => '你附近的发车信息';
-
-  @override
-  String searchEtaMinutes(int minutes) {
-    return '$minutes 分钟';
-  }
-
-  @override
-  String get searchEtaNow => '现在';
-
-  @override
-  String searchEtaMinutesSpoken(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes 分钟后',
-      one: '$minutes 分钟后',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get searchEtaNowSpoken => '正在发车';
-
-  @override
-  String get searchStatusOnTime => '准点';
-
-  @override
-  String searchStatusLate(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '晚点 $minutes 分钟',
-      one: '晚点 $minutes 分钟',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String searchStatusEarly(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '提前 $minutes 分钟',
-      one: '提前 $minutes 分钟',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get searchStatusScheduled => '按时刻表';
 
   @override
   String get searchExplorePlanTrip => '规划行程';
@@ -2710,54 +2548,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
   String get bookmarksSectionEmpty => '已加书签的站点会显示在这里。';
 
   @override
-  String get coreDirectionNameN => '北';
-
-  @override
-  String get coreDirectionNameNE => '东北';
-
-  @override
-  String get coreDirectionNameE => '东';
-
-  @override
-  String get coreDirectionNameSE => '东南';
-
-  @override
-  String get coreDirectionNameS => '南';
-
-  @override
-  String get coreDirectionNameSW => '西南';
-
-  @override
-  String get coreDirectionNameW => '西';
-
-  @override
-  String get coreDirectionNameNW => '西北';
-
-  @override
-  String get coreDirectionAbbrN => '北';
-
-  @override
-  String get coreDirectionAbbrNE => '东北';
-
-  @override
-  String get coreDirectionAbbrE => '东';
-
-  @override
-  String get coreDirectionAbbrSE => '东南';
-
-  @override
-  String get coreDirectionAbbrS => '南';
-
-  @override
-  String get coreDirectionAbbrSW => '西南';
-
-  @override
-  String get coreDirectionAbbrW => '西';
-
-  @override
-  String get coreDirectionAbbrNW => '西北';
-
-  @override
   String get coreDirectionBoundN => '北向';
 
   @override
@@ -2782,30 +2572,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
   String get coreDirectionBoundNW => '西北向';
 
   @override
-  String get coreRouteTypeLightRail => '轻轨';
-
-  @override
-  String get coreRouteTypeSubway => '地铁';
-
-  @override
-  String get coreRouteTypeRail => '铁路';
-
-  @override
-  String get coreRouteTypeBus => '公交车';
-
-  @override
-  String get coreRouteTypeFerry => '渡轮';
-
-  @override
-  String get coreRouteTypeCableCar => '缆车';
-
-  @override
-  String get coreRouteTypeGondola => '索道';
-
-  @override
-  String get coreRouteTypeFunicular => '缆索铁路';
-
-  @override
   String coreStopCodeNumeric(String code) {
     return '站点 #$code';
   }
@@ -2813,60 +2579,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
   @override
   String coreStopCodeNonNumeric(String code) {
     return '站点：\'$code\'';
-  }
-
-  @override
-  String coreStopId(String code) {
-    return '站点编号：$code';
-  }
-
-  @override
-  String coreRoutesLabel(String routes) {
-    return '路线：$routes';
-  }
-
-  @override
-  String coreRoutesLabelPlusMore(String routes, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '路线：$routes，另有 $count 条',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String coreMapRoutesOverflow(String routes) {
-    return '$routes…';
-  }
-
-  @override
-  String coreSearchPlaceholder(String region) {
-    return '在 $region 中搜索';
-  }
-
-  @override
-  String get coreNow => '现在';
-
-  @override
-  String coreShortMinutes(int minutes) {
-    return '$minutes分';
-  }
-
-  @override
-  String get coreOneMinute => '1 分钟';
-
-  @override
-  String get coreOneMinuteAgo => '1 分钟前';
-
-  @override
-  String coreMinutes(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes 分钟',
-    );
-    return '$_temp0';
   }
 
   @override
@@ -2899,92 +2611,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
   }
 
   @override
-  String coreUpdatedAt(String ago) {
-    return '更新时间：$ago';
-  }
-
-  @override
-  String get coreScheduledNotRealTime => '按时刻表/非实时';
-
-  @override
-  String coreArrivedMinAgo(int minutes) {
-    return '$minutes 分钟前已到站';
-  }
-
-  @override
-  String coreDepartedMinAgo(int minutes) {
-    return '$minutes 分钟前已发车';
-  }
-
-  @override
-  String get coreArrivingNow => '正在进站';
-
-  @override
-  String get coreDepartingNow => '正在发车';
-
-  @override
-  String coreArrivesInMin(int minutes) {
-    return '$minutes 分钟后到站';
-  }
-
-  @override
-  String coreDepartsInMin(int minutes) {
-    return '$minutes 分钟后发车';
-  }
-
-  @override
-  String coreArrivedLate(int minutes) {
-    return '晚点 $minutes 分钟到站';
-  }
-
-  @override
-  String coreArrivedEarly(int minutes) {
-    return '提前 $minutes 分钟到站';
-  }
-
-  @override
-  String get coreArrivedOnTime => '准点到站';
-
-  @override
-  String coreDepartedLate(int minutes) {
-    return '晚点 $minutes 分钟发车';
-  }
-
-  @override
-  String coreDepartedEarly(int minutes) {
-    return '提前 $minutes 分钟发车';
-  }
-
-  @override
-  String get coreDepartedOnTime => '准点发车';
-
-  @override
-  String coreArrivesLate(int minutes) {
-    return '将晚点 $minutes 分钟到站';
-  }
-
-  @override
-  String coreArrivesEarly(int minutes) {
-    return '将提前 $minutes 分钟到站';
-  }
-
-  @override
-  String get coreArrivesOnTime => '将准点到站';
-
-  @override
-  String coreDepartsLate(int minutes) {
-    return '将晚点 $minutes 分钟发车';
-  }
-
-  @override
-  String coreDepartsEarly(int minutes) {
-    return '将提前 $minutes 分钟发车';
-  }
-
-  @override
-  String get coreDepartsOnTime => '将准点发车';
-
-  @override
   String coreMeters(String value) {
     return '$value 米';
   }
@@ -3002,17 +2628,6 @@ class ObaLocalizationsZh extends ObaLocalizations {
   @override
   String coreMiles(String value) {
     return '$value 英里';
-  }
-
-  @override
-  String coreAlarmMinutes(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes 分钟',
-      one: '$minutes 分钟',
-    );
-    return '$_temp0';
   }
 
   @override
@@ -3860,15 +3475,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
   String get commonErrorTitle => '發生問題';
 
   @override
-  String get commonEmptyTitle => '這裡還沒有內容';
-
-  @override
-  String get commonComingSoon => '即將推出';
-
-  @override
-  String get commonComingSoonBody => '此畫面目前尚無法使用。';
-
-  @override
   String get commonOffline => '你似乎已離線。請檢查網路連線後再試一次。';
 
   @override
@@ -3962,9 +3568,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
   String get mapVehicle => '車輛';
 
   @override
-  String get mapSelectedStop => '已選取';
-
-  @override
   String get mapBookmarkedStop => '已加入書籤';
 
   @override
@@ -3993,18 +3596,7 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
   String get mapTypeHybrid => '混合';
 
   @override
-  String get mapShowScale => '顯示比例尺';
-
-  @override
   String get mapShowHeading => '顯示朝向';
-
-  @override
-  String get mapShowStopLabels => '顯示站牌標籤';
-
-  @override
-  String mapPlaceAt(String lat, String lon) {
-    return '位於 $lat、$lon 的位置';
-  }
 
   @override
   String get directionN => '北行';
@@ -4288,9 +3880,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
 
   @override
   String get stopPageGoogleMaps => 'Google 地圖';
-
-  @override
-  String get stopPageCannotOpen => '無法開啟該連結。';
 
   @override
   String stopPageTransfer(String route, String headsign, String time) {
@@ -4933,9 +4522,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
   String get settingsHeadingHelp => '在地圖上顯示你所面對的方向。';
 
   @override
-  String get settingsStopLabelsHelp => '在地圖上的站牌旁顯示路線名稱。';
-
-  @override
   String get settingsWalkingDirections => '步行路線';
 
   @override
@@ -4969,12 +4555,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
   String get settingsFilterScheduled => '僅依時刻表';
 
   @override
-  String get settingsRegionTimeZone => '以所在地區的時區顯示時間';
-
-  @override
-  String get settingsRegionTimeZoneHelp => '時鐘時間使用交通地區的時區，與你的裝置不同時會附上說明。';
-
-  @override
   String get settingsSectionAccessibility => '輔助使用';
 
   @override
@@ -4982,12 +4562,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
 
   @override
   String get settingsReducedColorsHelp => '以統一的中性樣式顯示路線標章。';
-
-  @override
-  String get settingsCompactMode => '精簡的站牌與行程頁面';
-
-  @override
-  String get settingsCompactModeHelp => '縮小間距，讓畫面容納更多內容。';
 
   @override
   String get settingsSectionWalking => '步行速度';
@@ -5219,7 +4793,7 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
   String get moreFareDontShowAgain => '繼續且不再顯示';
 
   @override
-  String get moreCantOpenLink => '無法開啟該連結。';
+  String get commonCantOpenLink => '無法開啟該連結。';
 
   @override
   String get regionPickerAutomatic => '自動選擇地區';
@@ -5579,57 +5153,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
   String get dataUpdated => '已更新';
 
   @override
-  String get bookmarksEtaNow => '現在';
-
-  @override
-  String bookmarksEtaMinutes(int minutes) {
-    return '$minutes 分鐘';
-  }
-
-  @override
-  String bookmarksEtaSemantic(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes 分鐘後',
-      one: '$minutes 分鐘後',
-      zero: '現在',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get bookmarksStatusOnTime => '準點';
-
-  @override
-  String bookmarksStatusLate(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '誤點 $minutes 分鐘',
-      one: '誤點 $minutes 分鐘',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String bookmarksStatusEarly(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '提早 $minutes 分鐘',
-      one: '提早 $minutes 分鐘',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get bookmarksStatusScheduled => '依時刻表';
-
-  @override
-  String get bookmarksStatusCanceled => '已取消';
-
-  @override
   String bookmarksDepartureRoute(String route, String headsign) {
     return '$route 路線，往 $headsign';
   }
@@ -5739,11 +5262,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
   }
 
   @override
-  String bookmarksStopLine(String name, String details) {
-    return '$name，$details';
-  }
-
-  @override
   String get bookmarksEditorNameLabel => '書籤名稱';
 
   @override
@@ -5801,9 +5319,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
 
   @override
   String get bookmarksManageGroupsHeader => '群組';
-
-  @override
-  String get bookmarksManageBookmarksHeader => '書籤';
 
   @override
   String get bookmarksManageAddGroup => '新增群組';
@@ -5915,9 +5430,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
   String get alarmsDeleteFailed => '無法刪除提醒。請檢查網路連線後再試一次。';
 
   @override
-  String get alarmsOpen => '開啟該行程';
-
-  @override
   String get alertsEmptyTitle => '沒有服務警示';
 
   @override
@@ -6003,9 +5515,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
   String get alertsDetailStops => '站牌';
 
   @override
-  String get alertsDetailAgencies => '營運機構';
-
-  @override
   String get alertsDetailLearnMore => '瞭解更多';
 
   @override
@@ -6015,9 +5524,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
   String alertsDetailUpdated(String date) {
     return '發布於 $date';
   }
-
-  @override
-  String get alertsCouldNotOpen => '無法開啟該連結。';
 
   @override
   String get agenciesEmptyTitle => '沒有營運機構';
@@ -6233,9 +5739,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
   String get searchNearbyLoadingDepartures => '正在載入班次';
 
   @override
-  String get searchNearbyUpdated => '附近的發車資訊已更新';
-
-  @override
   String searchNearbyStopsCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -6284,56 +5787,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
 
   @override
   String get searchNearbyCardTitle => '你附近的發車資訊';
-
-  @override
-  String searchEtaMinutes(int minutes) {
-    return '$minutes 分鐘';
-  }
-
-  @override
-  String get searchEtaNow => '現在';
-
-  @override
-  String searchEtaMinutesSpoken(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes 分鐘後',
-      one: '$minutes 分鐘後',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get searchEtaNowSpoken => '正在發車';
-
-  @override
-  String get searchStatusOnTime => '準點';
-
-  @override
-  String searchStatusLate(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '誤點 $minutes 分鐘',
-      one: '誤點 $minutes 分鐘',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String searchStatusEarly(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '提早 $minutes 分鐘',
-      one: '提早 $minutes 分鐘',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get searchStatusScheduled => '依時刻表';
 
   @override
   String get searchExplorePlanTrip => '規劃行程';
@@ -6530,54 +5983,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
   String get bookmarksSectionEmpty => '已加入書籤的站牌會顯示在這裡。';
 
   @override
-  String get coreDirectionNameN => '北';
-
-  @override
-  String get coreDirectionNameNE => '東北';
-
-  @override
-  String get coreDirectionNameE => '東';
-
-  @override
-  String get coreDirectionNameSE => '東南';
-
-  @override
-  String get coreDirectionNameS => '南';
-
-  @override
-  String get coreDirectionNameSW => '西南';
-
-  @override
-  String get coreDirectionNameW => '西';
-
-  @override
-  String get coreDirectionNameNW => '西北';
-
-  @override
-  String get coreDirectionAbbrN => '北';
-
-  @override
-  String get coreDirectionAbbrNE => '東北';
-
-  @override
-  String get coreDirectionAbbrE => '東';
-
-  @override
-  String get coreDirectionAbbrSE => '東南';
-
-  @override
-  String get coreDirectionAbbrS => '南';
-
-  @override
-  String get coreDirectionAbbrSW => '西南';
-
-  @override
-  String get coreDirectionAbbrW => '西';
-
-  @override
-  String get coreDirectionAbbrNW => '西北';
-
-  @override
   String get coreDirectionBoundN => '北行';
 
   @override
@@ -6602,30 +6007,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
   String get coreDirectionBoundNW => '西北行';
 
   @override
-  String get coreRouteTypeLightRail => '輕軌';
-
-  @override
-  String get coreRouteTypeSubway => '捷運';
-
-  @override
-  String get coreRouteTypeRail => '鐵路';
-
-  @override
-  String get coreRouteTypeBus => '公車';
-
-  @override
-  String get coreRouteTypeFerry => '渡輪';
-
-  @override
-  String get coreRouteTypeCableCar => '纜車';
-
-  @override
-  String get coreRouteTypeGondola => '空中纜車';
-
-  @override
-  String get coreRouteTypeFunicular => '登山纜車';
-
-  @override
   String coreStopCodeNumeric(String code) {
     return '站牌 #$code';
   }
@@ -6633,60 +6014,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
   @override
   String coreStopCodeNonNumeric(String code) {
     return '站牌：\'$code\'';
-  }
-
-  @override
-  String coreStopId(String code) {
-    return '站牌代碼：$code';
-  }
-
-  @override
-  String coreRoutesLabel(String routes) {
-    return '路線：$routes';
-  }
-
-  @override
-  String coreRoutesLabelPlusMore(String routes, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '路線：$routes，另有 $count 條',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String coreMapRoutesOverflow(String routes) {
-    return '$routes…';
-  }
-
-  @override
-  String coreSearchPlaceholder(String region) {
-    return '在 $region 中搜尋';
-  }
-
-  @override
-  String get coreNow => '現在';
-
-  @override
-  String coreShortMinutes(int minutes) {
-    return '$minutes分';
-  }
-
-  @override
-  String get coreOneMinute => '1 分鐘';
-
-  @override
-  String get coreOneMinuteAgo => '1 分鐘前';
-
-  @override
-  String coreMinutes(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes 分鐘',
-    );
-    return '$_temp0';
   }
 
   @override
@@ -6719,92 +6046,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
   }
 
   @override
-  String coreUpdatedAt(String ago) {
-    return '更新時間：$ago';
-  }
-
-  @override
-  String get coreScheduledNotRealTime => '依時刻表／非即時';
-
-  @override
-  String coreArrivedMinAgo(int minutes) {
-    return '$minutes 分鐘前已到站';
-  }
-
-  @override
-  String coreDepartedMinAgo(int minutes) {
-    return '$minutes 分鐘前已發車';
-  }
-
-  @override
-  String get coreArrivingNow => '正在進站';
-
-  @override
-  String get coreDepartingNow => '正在發車';
-
-  @override
-  String coreArrivesInMin(int minutes) {
-    return '$minutes 分鐘後到站';
-  }
-
-  @override
-  String coreDepartsInMin(int minutes) {
-    return '$minutes 分鐘後發車';
-  }
-
-  @override
-  String coreArrivedLate(int minutes) {
-    return '誤點 $minutes 分鐘到站';
-  }
-
-  @override
-  String coreArrivedEarly(int minutes) {
-    return '提早 $minutes 分鐘到站';
-  }
-
-  @override
-  String get coreArrivedOnTime => '準點到站';
-
-  @override
-  String coreDepartedLate(int minutes) {
-    return '誤點 $minutes 分鐘發車';
-  }
-
-  @override
-  String coreDepartedEarly(int minutes) {
-    return '提早 $minutes 分鐘發車';
-  }
-
-  @override
-  String get coreDepartedOnTime => '準點發車';
-
-  @override
-  String coreArrivesLate(int minutes) {
-    return '將誤點 $minutes 分鐘到站';
-  }
-
-  @override
-  String coreArrivesEarly(int minutes) {
-    return '將提早 $minutes 分鐘到站';
-  }
-
-  @override
-  String get coreArrivesOnTime => '將準點到站';
-
-  @override
-  String coreDepartsLate(int minutes) {
-    return '將誤點 $minutes 分鐘發車';
-  }
-
-  @override
-  String coreDepartsEarly(int minutes) {
-    return '將提早 $minutes 分鐘發車';
-  }
-
-  @override
-  String get coreDepartsOnTime => '將準點發車';
-
-  @override
   String coreMeters(String value) {
     return '$value 公尺';
   }
@@ -6822,17 +6063,6 @@ class ObaLocalizationsZhHant extends ObaLocalizationsZh {
   @override
   String coreMiles(String value) {
     return '$value 英里';
-  }
-
-  @override
-  String coreAlarmMinutes(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes 分鐘',
-      one: '$minutes 分鐘',
-    );
-    return '$_temp0';
   }
 
   @override

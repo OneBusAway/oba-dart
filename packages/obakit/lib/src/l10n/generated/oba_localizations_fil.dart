@@ -40,15 +40,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
   String get commonErrorTitle => 'May nangyaring mali';
 
   @override
-  String get commonEmptyTitle => 'Wala pang laman';
-
-  @override
-  String get commonComingSoon => 'Paparating na';
-
-  @override
-  String get commonComingSoonBody => 'Hindi pa available ang screen na ito.';
-
-  @override
   String get commonOffline =>
       'Mukhang offline ka. Tingnan ang iyong koneksyon at subukang muli.';
 
@@ -146,9 +137,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
   String get mapVehicle => 'Sasakyan';
 
   @override
-  String get mapSelectedStop => 'Napili';
-
-  @override
   String get mapBookmarkedStop => 'Naka-bookmark';
 
   @override
@@ -177,18 +165,7 @@ class ObaLocalizationsFil extends ObaLocalizations {
   String get mapTypeHybrid => 'Hybrid';
 
   @override
-  String get mapShowScale => 'Ipakita ang scale';
-
-  @override
   String get mapShowHeading => 'Ipakita ang heading';
-
-  @override
-  String get mapShowStopLabels => 'Ipakita ang mga label ng hintuan';
-
-  @override
-  String mapPlaceAt(String lat, String lon) {
-    return 'Lokasyon sa $lat, $lon';
-  }
 
   @override
   String get directionN => 'Pa-hilaga';
@@ -475,9 +452,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
 
   @override
   String get stopPageGoogleMaps => 'Google Maps';
-
-  @override
-  String get stopPageCannotOpen => 'Hindi mabuksan ang link na iyon.';
 
   @override
   String stopPageTransfer(String route, String headsign, String time) {
@@ -1135,10 +1109,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
       'Ipinapakita ang direksyong kinakaharap mo sa mapa.';
 
   @override
-  String get settingsStopLabelsHelp =>
-      'Ipinapakita ang mga pangalan ng ruta sa tabi ng mga hintuan sa mapa.';
-
-  @override
   String get settingsWalkingDirections => 'Mga direksyon sa paglalakad';
 
   @override
@@ -1174,14 +1144,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
   String get settingsFilterScheduled => 'Nakaiskedyul lang';
 
   @override
-  String get settingsRegionTimeZone =>
-      'Ipakita ang mga oras sa time zone ng rehiyon';
-
-  @override
-  String get settingsRegionTimeZoneHelp =>
-      'Gumagamit ang mga oras ng orasan ng time zone ng rehiyon ng transit, na may paalala kapag iba ito sa iyong device.';
-
-  @override
   String get settingsSectionAccessibility => 'Accessibility';
 
   @override
@@ -1191,14 +1153,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
   @override
   String get settingsReducedColorsHelp =>
       'Ipinapakita ang mga badge ng ruta sa iisang neutral na istilo.';
-
-  @override
-  String get settingsCompactMode =>
-      'Compact na mga pahina ng hintuan at biyahe';
-
-  @override
-  String get settingsCompactModeHelp =>
-      'Pinaliliit ang espasyo para mas marami ang magkasya sa screen.';
 
   @override
   String get settingsSectionWalking => 'Bilis ng paglalakad';
@@ -1441,7 +1395,7 @@ class ObaLocalizationsFil extends ObaLocalizations {
   String get moreFareDontShowAgain => 'Magpatuloy at huwag nang ipakita muli';
 
   @override
-  String get moreCantOpenLink => 'Hindi mabuksan ang link na iyon.';
+  String get commonCantOpenLink => 'Hindi mabuksan ang link na iyon.';
 
   @override
   String get regionPickerAutomatic => 'Awtomatikong piliin ang rehiyon';
@@ -1828,57 +1782,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
   String get dataUpdated => 'Na-update';
 
   @override
-  String get bookmarksEtaNow => 'Ngayon';
-
-  @override
-  String bookmarksEtaMinutes(int minutes) {
-    return '$minutes min';
-  }
-
-  @override
-  String bookmarksEtaSemantic(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: 'sa loob ng $minutes minuto',
-      one: 'sa loob ng $minutes minuto',
-      zero: 'ngayon',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get bookmarksStatusOnTime => 'Nasa oras';
-
-  @override
-  String bookmarksStatusLate(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes min na huli',
-      one: '$minutes min na huli',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String bookmarksStatusEarly(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes min na maaga',
-      one: '$minutes min na maaga',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get bookmarksStatusScheduled => 'Nakaiskedyul';
-
-  @override
-  String get bookmarksStatusCanceled => 'Kanselado';
-
-  @override
   String bookmarksDepartureRoute(String route, String headsign) {
     return 'Rutang $route papuntang $headsign';
   }
@@ -1990,11 +1893,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
   }
 
   @override
-  String bookmarksStopLine(String name, String details) {
-    return '$name, $details';
-  }
-
-  @override
   String get bookmarksEditorNameLabel => 'Pangalan ng bookmark';
 
   @override
@@ -2055,9 +1953,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
 
   @override
   String get bookmarksManageGroupsHeader => 'Mga grupo';
-
-  @override
-  String get bookmarksManageBookmarksHeader => 'Mga bookmark';
 
   @override
   String get bookmarksManageAddGroup => 'Magdagdag ng grupo';
@@ -2175,9 +2070,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
       'Hindi ma-delete ang paalala. Tingnan ang iyong koneksyon at subukang muli.';
 
   @override
-  String get alarmsOpen => 'Binubuksan ang biyahe';
-
-  @override
   String get alertsEmptyTitle => 'Walang alerto sa serbisyo';
 
   @override
@@ -2264,9 +2156,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
   String get alertsDetailStops => 'Mga hintuan';
 
   @override
-  String get alertsDetailAgencies => 'Mga ahensya';
-
-  @override
   String get alertsDetailLearnMore => 'Matuto pa';
 
   @override
@@ -2276,9 +2165,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
   String alertsDetailUpdated(String date) {
     return 'Inilabas $date';
   }
-
-  @override
-  String get alertsCouldNotOpen => 'Hindi mabuksan ang link na iyon.';
 
   @override
   String get agenciesEmptyTitle => 'Walang ahensya';
@@ -2505,9 +2391,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
   String get searchNearbyLoadingDepartures => 'Naglo-load ng mga pag-alis';
 
   @override
-  String get searchNearbyUpdated => 'Na-update ang mga kalapit na pag-alis';
-
-  @override
   String searchNearbyStopsCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -2556,56 +2439,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
 
   @override
   String get searchNearbyCardTitle => 'Mga pag-alis malapit sa iyo';
-
-  @override
-  String searchEtaMinutes(int minutes) {
-    return '$minutes min';
-  }
-
-  @override
-  String get searchEtaNow => 'Ngayon';
-
-  @override
-  String searchEtaMinutesSpoken(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: 'sa loob ng $minutes minuto',
-      one: 'sa loob ng $minutes minuto',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get searchEtaNowSpoken => 'aalis na ngayon';
-
-  @override
-  String get searchStatusOnTime => 'Nasa oras';
-
-  @override
-  String searchStatusLate(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes min na huli',
-      one: '$minutes min na huli',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String searchStatusEarly(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes min na maaga',
-      one: '$minutes min na maaga',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get searchStatusScheduled => 'Nakaiskedyul';
 
   @override
   String get searchExplorePlanTrip => 'Magplano ng biyahe';
@@ -2804,54 +2637,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
       'Lalabas dito ang mga naka-bookmark na hintuan.';
 
   @override
-  String get coreDirectionNameN => 'Hilaga';
-
-  @override
-  String get coreDirectionNameNE => 'Hilagang-silangan';
-
-  @override
-  String get coreDirectionNameE => 'Silangan';
-
-  @override
-  String get coreDirectionNameSE => 'Timog-silangan';
-
-  @override
-  String get coreDirectionNameS => 'Timog';
-
-  @override
-  String get coreDirectionNameSW => 'Timog-kanluran';
-
-  @override
-  String get coreDirectionNameW => 'Kanluran';
-
-  @override
-  String get coreDirectionNameNW => 'Hilagang-kanluran';
-
-  @override
-  String get coreDirectionAbbrN => 'H';
-
-  @override
-  String get coreDirectionAbbrNE => 'HS';
-
-  @override
-  String get coreDirectionAbbrE => 'S';
-
-  @override
-  String get coreDirectionAbbrSE => 'TS';
-
-  @override
-  String get coreDirectionAbbrS => 'T';
-
-  @override
-  String get coreDirectionAbbrSW => 'TK';
-
-  @override
-  String get coreDirectionAbbrW => 'K';
-
-  @override
-  String get coreDirectionAbbrNW => 'HK';
-
-  @override
   String get coreDirectionBoundN => 'Pa-hilaga';
 
   @override
@@ -2876,30 +2661,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
   String get coreDirectionBoundNW => 'Pa-HK';
 
   @override
-  String get coreRouteTypeLightRail => 'Light Rail';
-
-  @override
-  String get coreRouteTypeSubway => 'Subway';
-
-  @override
-  String get coreRouteTypeRail => 'Tren';
-
-  @override
-  String get coreRouteTypeBus => 'Bus';
-
-  @override
-  String get coreRouteTypeFerry => 'Ferry';
-
-  @override
-  String get coreRouteTypeCableCar => 'Cable Car';
-
-  @override
-  String get coreRouteTypeGondola => 'Gondola';
-
-  @override
-  String get coreRouteTypeFunicular => 'Funicular';
-
-  @override
   String coreStopCodeNumeric(String code) {
     return 'Hintuan #$code';
   }
@@ -2907,60 +2668,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
   @override
   String coreStopCodeNonNumeric(String code) {
     return 'Hintuan: \'$code\'';
-  }
-
-  @override
-  String coreStopId(String code) {
-    return 'Stop ID: $code';
-  }
-
-  @override
-  String coreRoutesLabel(String routes) {
-    return 'Mga ruta: $routes';
-  }
-
-  @override
-  String coreRoutesLabelPlusMore(String routes, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'Mga ruta: $routes, + $count pa',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String coreMapRoutesOverflow(String routes) {
-    return '$routes…';
-  }
-
-  @override
-  String coreSearchPlaceholder(String region) {
-    return 'Maghanap sa $region';
-  }
-
-  @override
-  String get coreNow => 'NGAYON';
-
-  @override
-  String coreShortMinutes(int minutes) {
-    return '${minutes}m';
-  }
-
-  @override
-  String get coreOneMinute => 'Isang minuto';
-
-  @override
-  String get coreOneMinuteAgo => 'Isang minuto ang nakalipas';
-
-  @override
-  String coreMinutes(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes minuto',
-    );
-    return '$_temp0';
   }
 
   @override
@@ -2993,92 +2700,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
   }
 
   @override
-  String coreUpdatedAt(String ago) {
-    return 'Na-update: $ago';
-  }
-
-  @override
-  String get coreScheduledNotRealTime => 'Nakaiskedyul/hindi real-time';
-
-  @override
-  String coreArrivedMinAgo(int minutes) {
-    return 'Dumating $minutes min ang nakalipas';
-  }
-
-  @override
-  String coreDepartedMinAgo(int minutes) {
-    return 'Umalis $minutes min ang nakalipas';
-  }
-
-  @override
-  String get coreArrivingNow => 'Dumarating na';
-
-  @override
-  String get coreDepartingNow => 'Aalis na';
-
-  @override
-  String coreArrivesInMin(int minutes) {
-    return 'Darating sa loob ng $minutes min';
-  }
-
-  @override
-  String coreDepartsInMin(int minutes) {
-    return 'Aalis sa loob ng $minutes min';
-  }
-
-  @override
-  String coreArrivedLate(int minutes) {
-    return 'dumating nang $minutes min na huli';
-  }
-
-  @override
-  String coreArrivedEarly(int minutes) {
-    return 'dumating nang $minutes min na maaga';
-  }
-
-  @override
-  String get coreArrivedOnTime => 'dumating sa oras';
-
-  @override
-  String coreDepartedLate(int minutes) {
-    return 'umalis nang $minutes min na huli';
-  }
-
-  @override
-  String coreDepartedEarly(int minutes) {
-    return 'umalis nang $minutes min na maaga';
-  }
-
-  @override
-  String get coreDepartedOnTime => 'umalis sa oras';
-
-  @override
-  String coreArrivesLate(int minutes) {
-    return 'darating nang $minutes min na huli';
-  }
-
-  @override
-  String coreArrivesEarly(int minutes) {
-    return 'darating nang $minutes min na maaga';
-  }
-
-  @override
-  String get coreArrivesOnTime => 'darating sa oras';
-
-  @override
-  String coreDepartsLate(int minutes) {
-    return 'aalis nang $minutes min na huli';
-  }
-
-  @override
-  String coreDepartsEarly(int minutes) {
-    return 'aalis nang $minutes min na maaga';
-  }
-
-  @override
-  String get coreDepartsOnTime => 'aalis sa oras';
-
-  @override
   String coreMeters(String value) {
     return '$value m';
   }
@@ -3096,17 +2717,6 @@ class ObaLocalizationsFil extends ObaLocalizations {
   @override
   String coreMiles(String value) {
     return '$value mi';
-  }
-
-  @override
-  String coreAlarmMinutes(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes minuto',
-      one: '$minutes minuto',
-    );
-    return '$_temp0';
   }
 
   @override

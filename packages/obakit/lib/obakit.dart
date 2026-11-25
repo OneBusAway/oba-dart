@@ -22,6 +22,7 @@ export 'src/app/location_holder.dart';
 export 'src/app/map_config.dart';
 export 'src/app/oba_app.dart';
 export 'src/app/onboarding_gate.dart';
+export 'src/app/polling.dart' show ObaPollable, ObaPollingHolder;
 export 'src/app/scope.dart';
 export 'src/features/bookmarks/bookmarks_routes.dart'
     show
@@ -104,8 +105,6 @@ export 'src/features/stop/stop_routes.dart'
         StopArrivalsController,
         StopArrivalsState,
         StopArrivalsStatus,
-        ObaPollable,
-        ObaPollingHolder,
         StopHeader,
         ObaStopDeparturesCard,
         TripController,
@@ -130,7 +129,7 @@ export 'src/navigation/presentation.dart';
 export 'src/navigation/route_builder.dart';
 export 'src/navigation/sheet_controller.dart';
 export 'src/navigation/sheet_detents.dart';
-export 'src/platform/geolocator_location_provider.dart';
+export 'src/platform/geolocator_location_provider.dart' hide GeolocatorApi;
 export 'src/platform/listenable_adapter.dart';
 export 'src/platform/nominatim_place_search.dart';
 export 'src/platform/shared_preferences_store.dart';
@@ -138,7 +137,7 @@ export 'src/platform/trip_place_search_bridge.dart';
 export 'src/shell/home_sheet.dart' show ObaHomeSheet, ObaSearchFieldButton;
 export 'src/shell/home_shell.dart';
 export 'src/theme/oba_theme.dart';
-export 'src/widgets/placeholder_section.dart';
+export 'src/widgets/heading.dart';
 export 'src/widgets/rows.dart';
-export 'src/widgets/sheet_page.dart';
+export 'src/widgets/sheet_page.dart' hide ObaMeasureSize, RenderObaMeasureSize;
 export 'src/widgets/states.dart';

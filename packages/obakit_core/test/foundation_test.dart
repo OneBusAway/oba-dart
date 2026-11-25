@@ -1,4 +1,6 @@
 import 'package:obakit_core/obakit_core.dart';
+import 'package:obakit_core/src/foundation/uuid.dart';
+import 'package:obakit_core/src/geo/distance.dart';
 import 'package:test/test.dart';
 
 void main() {

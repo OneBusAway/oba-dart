@@ -61,7 +61,10 @@ void main() {
           find.descendant(of: row, matching: find.byType(ObaRouteBadge)),
         );
         final headsign = tester.getRect(
-          find.descendant(of: row, matching: find.text('LAKE CITY WEDGWOOD')),
+          find.descendant(
+            of: row,
+            matching: find.textContaining('LAKE CITY WEDGWOOD'),
+          ),
         );
         if (rtl) {
           expect(badge.left, greaterThan(headsign.right));
@@ -203,6 +206,45 @@ void main() {
       expect(
         text.data,
         locale == arabic ? '\u2068Washington, D.C.\u2069' : 'Washington, D.C.',
+      );
+    }
+  });
+
+  testWidgets('page titles and headsigns are bidi-isolated in right-to-left', (
+    tester,
+  ) async {
+    env = await ObaTestEnv.create(
+      responses: {
+        'arrivals-and-departures-for-stop': fixture(
+          'arrivals_and_departures_for_stop_1_10020.json',
+        ),
+      },
+    );
+    for (final locale in [english, arabic]) {
+      String iso(String s) => locale == arabic ? '\u2068$s\u2069' : s;
+      await env.pumpPage(
+        tester,
+        const ObaSheetPage(title: 'Washington, D.C.', slivers: []),
+        locale: locale,
+      );
+      expect(find.text(iso('Washington, D.C.')), findsOneWidget);
+
+      await env.pumpPage(
+        tester,
+        const StopPage(stopId: '1_10020'),
+        locale: locale,
+        surfaceSize: const Size(390, 844),
+      );
+      final row = tester.widget<ObaDepartureRow>(
+        find.byType(ObaDepartureRow).first,
+      );
+      final headsign = row.arrival.tripHeadsign!;
+      expect(
+        find.descendant(
+          of: find.byType(ObaDepartureRow).first,
+          matching: find.text(iso(headsign)),
+        ),
+        findsOneWidget,
       );
     }
   });

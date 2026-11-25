@@ -16,7 +16,6 @@ class Bookmark {
     required this.stop,
     required this.dateCreated,
     this.groupId,
-    this.isFavorite = false,
     this.isPinned = false,
     this.sortOrder = 0,
     this.routeShortName,
@@ -76,7 +75,6 @@ class Bookmark {
           jDate(j, 'dateCreated') ??
           DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
       groupId: jString(j, 'groupId'),
-      isFavorite: jBool(j, 'isFavorite') ?? false,
       isPinned: jBool(j, 'isPinned') ?? false,
       sortOrder: jInt(j, 'sortOrder') ?? 0,
       routeShortName: jString(j, 'routeShortName'),
@@ -93,7 +91,6 @@ class Bookmark {
   final StoredStop stop;
   final DateTime dateCreated;
   final String? groupId;
-  final bool isFavorite;
   final bool isPinned;
   final int sortOrder;
   final String? routeShortName;
@@ -144,7 +141,6 @@ class Bookmark {
     String? name,
     StoredStop? stop,
     String? Function()? groupId,
-    bool? isFavorite,
     bool? isPinned,
     int? sortOrder,
   }) => Bookmark(
@@ -154,7 +150,6 @@ class Bookmark {
     stop: stop ?? this.stop,
     dateCreated: dateCreated,
     groupId: groupId == null ? this.groupId : groupId(),
-    isFavorite: isFavorite ?? this.isFavorite,
     isPinned: isPinned ?? this.isPinned,
     sortOrder: sortOrder ?? this.sortOrder,
     routeShortName: routeShortName,
@@ -171,7 +166,6 @@ class Bookmark {
     'stop': stop.toJson(),
     'dateCreated': isoDate(dateCreated),
     'groupId': ?groupId,
-    'isFavorite': isFavorite,
     'isPinned': isPinned,
     'sortOrder': sortOrder,
     'routeShortName': ?routeShortName,
@@ -188,7 +182,6 @@ class Bookmark {
       other.groupId == groupId &&
       other.sortOrder == sortOrder &&
       other.stop == stop &&
-      other.isFavorite == isFavorite &&
       other.isPinned == isPinned &&
       other.destinationStopName == destinationStopName &&
       other.dateCreated.isAtSameMomentAs(dateCreated) &&
@@ -288,8 +281,3 @@ class TripBookmarkKey {
   @override
   String toString() => 'TripBookmarkKey($stopId, $routeAndHeadsign)';
 }
-
-/// Last bookmark per stop id (iOS `dedupedByStopID`).
-Map<String, Bookmark> bookmarksByStopId(Iterable<Bookmark> bookmarks) => {
-  for (final b in bookmarks) b.stopId: b,
-};

@@ -40,18 +40,6 @@
   "@commonErrorTitle": {
     "description": "Title of the error state shown when content fails to load."
   },
-  "commonEmptyTitle": "Nothing here yet",
-  "@commonEmptyTitle": {
-    "description": "Generic title of an empty list."
-  },
-  "commonComingSoon": "Coming soon",
-  "@commonComingSoon": {
-    "description": "Title of a placeholder screen that is not built yet."
-  },
-  "commonComingSoonBody": "This screen isn't available yet.",
-  "@commonComingSoonBody": {
-    "description": "Body of a placeholder screen that is not built yet."
-  },
   "commonOffline": "You appear to be offline. Check your connection and try again.",
   "@commonOffline": {
     "description": "Error body when the device has no network."
@@ -169,10 +157,6 @@
   "@mapVehicle": {
     "description": "Screen reader label of a vehicle marker on the map."
   },
-  "mapSelectedStop": "Selected",
-  "@mapSelectedStop": {
-    "description": "Appended to a stop marker's screen reader label when it is the selected stop."
-  },
   "mapBookmarkedStop": "Bookmarked",
   "@mapBookmarkedStop": {
     "description": "Appended to a stop marker's screen reader label when the stop is bookmarked."
@@ -218,29 +202,9 @@
   "@mapTypeHybrid": {
     "description": "Satellite imagery with street labels map type."
   },
-  "mapShowScale": "Show scale",
-  "@mapShowScale": {
-    "description": "Map setting: show the scale bar."
-  },
   "mapShowHeading": "Show heading",
   "@mapShowHeading": {
     "description": "Map setting: show which way the device faces."
-  },
-  "mapShowStopLabels": "Show stop labels",
-  "@mapShowStopLabels": {
-    "description": "Map setting: show stop names under pins."
-  },
-  "mapPlaceAt": "Location at {lat}, {lon}",
-  "@mapPlaceAt": {
-    "description": "Screen reader label of a marker for a coordinate.",
-    "placeholders": {
-      "lat": {
-        "type": "String"
-      },
-      "lon": {
-        "type": "String"
-      }
-    }
   },
   "directionN": "Northbound",
   "@directionN": {
@@ -619,10 +583,6 @@
   "stopPageGoogleMaps": "Google Maps",
   "@stopPageGoogleMaps": {
     "description": "Maps app option."
-  },
-  "stopPageCannotOpen": "Couldn't open that link.",
-  "@stopPageCannotOpen": {
-    "description": "Shown when a link fails to open."
   },
   "stopPageTransfer": "Transfer from {route} {headsign}, arriving {time}",
   "@stopPageTransfer": {
@@ -1501,10 +1461,6 @@
   "@settingsHeadingHelp": {
     "description": "Helper text under the Show heading switch."
   },
-  "settingsStopLabelsHelp": "Shows route names next to stops on the map.",
-  "@settingsStopLabelsHelp": {
-    "description": "Helper text under the Show stop labels switch."
-  },
   "settingsWalkingDirections": "Walking directions",
   "@settingsWalkingDirections": {
     "description": "Label of the setting that picks which app gives walking directions."
@@ -1549,14 +1505,6 @@
   "@settingsFilterScheduled": {
     "description": "Departure filter option: only scheduled departures."
   },
-  "settingsRegionTimeZone": "Show times in the region's time zone",
-  "@settingsRegionTimeZone": {
-    "description": "Label of the switch that shows clock times in the transit region time zone."
-  },
-  "settingsRegionTimeZoneHelp": "Clock times use the transit region's time zone, with a note when it differs from your device.",
-  "@settingsRegionTimeZoneHelp": {
-    "description": "Helper text under the region time zone switch."
-  },
   "settingsSectionAccessibility": "Accessibility",
   "@settingsSectionAccessibility": {
     "description": "Settings section title for accessibility options."
@@ -1568,14 +1516,6 @@
   "settingsReducedColorsHelp": "Shows route badges in one neutral style.",
   "@settingsReducedColorsHelp": {
     "description": "Helper text under the reduce colors switch."
-  },
-  "settingsCompactMode": "Compact stop and trip pages",
-  "@settingsCompactMode": {
-    "description": "Label of the switch that tightens spacing on stop and trip pages."
-  },
-  "settingsCompactModeHelp": "Tightens spacing so more fits on screen.",
-  "@settingsCompactModeHelp": {
-    "description": "Helper text under the compact mode switch."
   },
   "settingsSectionWalking": "Walking speed",
   "@settingsSectionWalking": {
@@ -1898,9 +1838,9 @@
   "@moreFareDontShowAgain": {
     "description": "Button in the fare payment warning dialog that continues and hides the warning in future."
   },
-  "moreCantOpenLink": "Couldn't open that link.",
-  "@moreCantOpenLink": {
-    "description": "Shown when a link cannot be opened."
+  "commonCantOpenLink": "Couldn't open that link.",
+  "@commonCantOpenLink": {
+    "description": "Shown (and announced) when a web, mail, phone, maps or store link can't be opened."
   },
   "regionPickerAutomatic": "Choose region automatically",
   "@regionPickerAutomatic": {
@@ -2402,58 +2342,6 @@
   "@dataUpdated": {
     "description": "Announced to screen readers when content refreshes."
   },
-  "bookmarksEtaNow": "Now",
-  "@bookmarksEtaNow": {
-    "description": "Minutes until a departure, shown in a compact badge, when it is leaving this minute."
-  },
-  "bookmarksEtaMinutes": "{minutes} min",
-  "@bookmarksEtaMinutes": {
-    "description": "Minutes until a departure, shown in a compact badge.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "bookmarksEtaSemantic": "{minutes, plural, =0{now} =1{in 1 minute} other{in {minutes} minutes}}",
-  "@bookmarksEtaSemantic": {
-    "description": "Spoken form of the time until a departure, read after the route name.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "bookmarksStatusOnTime": "On time",
-  "@bookmarksStatusOnTime": {
-    "description": "Real-time status of a departure that is on schedule."
-  },
-  "bookmarksStatusLate": "{minutes, plural, =1{1 min late} other{{minutes} min late}}",
-  "@bookmarksStatusLate": {
-    "description": "Real-time status of a departure that is behind schedule.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "bookmarksStatusEarly": "{minutes, plural, =1{1 min early} other{{minutes} min early}}",
-  "@bookmarksStatusEarly": {
-    "description": "Real-time status of a departure that is ahead of schedule.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "bookmarksStatusScheduled": "Scheduled",
-  "@bookmarksStatusScheduled": {
-    "description": "Status of a departure that has no real-time prediction, only a timetable time."
-  },
-  "bookmarksStatusCanceled": "Canceled",
-  "@bookmarksStatusCanceled": {
-    "description": "Status of a departure whose trip was canceled."
-  },
   "bookmarksDepartureRoute": "Route {route} to {headsign}",
   "@bookmarksDepartureRoute": {
     "description": "A route and its destination, for example 'Route 10 to Downtown'.",
@@ -2621,18 +2509,6 @@
       }
     }
   },
-  "bookmarksStopLine": "{name}, {details}",
-  "@bookmarksStopLine": {
-    "description": "Spoken label of a bookmark card: its name then its details.",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "details": {
-        "type": "String"
-      }
-    }
-  },
   "bookmarksEditorNameLabel": "Bookmark name",
   "@bookmarksEditorNameLabel": {
     "description": "Label of the text field for the bookmark's name."
@@ -2723,10 +2599,6 @@
   "bookmarksManageGroupsHeader": "Groups",
   "@bookmarksManageGroupsHeader": {
     "description": "Heading of the list of bookmark groups on the manage screen."
-  },
-  "bookmarksManageBookmarksHeader": "Bookmarks",
-  "@bookmarksManageBookmarksHeader": {
-    "description": "Heading above a group's bookmarks on the manage screen."
   },
   "bookmarksManageAddGroup": "Add group",
   "@bookmarksManageAddGroup": {
@@ -2895,10 +2767,6 @@
   "@alarmsDeleteFailed": {
     "description": "Snackbar shown when deleting an alarm failed."
   },
-  "alarmsOpen": "Opens the trip",
-  "@alarmsOpen": {
-    "description": "Hint of an alarm row."
-  },
   "alertsEmptyTitle": "No service alerts",
   "@alertsEmptyTitle": {
     "description": "Title shown when there are no active alerts."
@@ -3017,10 +2885,6 @@
   "@alertsDetailStops": {
     "description": "Heading of the stops an alert affects."
   },
-  "alertsDetailAgencies": "Agencies",
-  "@alertsDetailAgencies": {
-    "description": "Heading of the agencies an alert affects."
-  },
   "alertsDetailLearnMore": "Learn more",
   "@alertsDetailLearnMore": {
     "description": "Button that opens the alert's web page."
@@ -3037,10 +2901,6 @@
         "type": "String"
       }
     }
-  },
-  "alertsCouldNotOpen": "Couldn't open that link.",
-  "@alertsCouldNotOpen": {
-    "description": "Shown when a web, phone or email link can't be opened."
   },
   "agenciesEmptyTitle": "No agencies",
   "@agenciesEmptyTitle": {
@@ -3352,10 +3212,6 @@
   "@searchNearbyLoadingDepartures": {
     "description": "Subtitle of a nearby stop whose departures are loading."
   },
-  "searchNearbyUpdated": "Nearby departures updated",
-  "@searchNearbyUpdated": {
-    "description": "Screen-reader announcement after nearby departures refreshed."
-  },
   "searchNearbyStopsCount": "{count, plural, =0{No stops nearby} =1{1 stop nearby} other{{count} stops nearby}}",
   "@searchNearbyStopsCount": {
     "description": "Screen-reader announcement after the nearby stops list refreshed.",
@@ -3428,58 +3284,6 @@
   "searchNearbyCardTitle": "Departures near you",
   "@searchNearbyCardTitle": {
     "description": "Title of the embeddable nearby departures card."
-  },
-  "searchEtaMinutes": "{minutes} min",
-  "@searchEtaMinutes": {
-    "description": "Short countdown to a departure.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "searchEtaNow": "Now",
-  "@searchEtaNow": {
-    "description": "Countdown for a departure leaving this minute."
-  },
-  "searchEtaMinutesSpoken": "{minutes, plural, =1{in 1 minute} other{in {minutes} minutes}}",
-  "@searchEtaMinutesSpoken": {
-    "description": "Spoken countdown to a departure.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "searchEtaNowSpoken": "leaving now",
-  "@searchEtaNowSpoken": {
-    "description": "Spoken countdown for a departure leaving this minute."
-  },
-  "searchStatusOnTime": "On time",
-  "@searchStatusOnTime": {
-    "description": "Real-time status: on schedule."
-  },
-  "searchStatusLate": "{minutes, plural, =1{1 min late} other{{minutes} min late}}",
-  "@searchStatusLate": {
-    "description": "Real-time status: behind schedule.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "searchStatusEarly": "{minutes, plural, =1{1 min early} other{{minutes} min early}}",
-  "@searchStatusEarly": {
-    "description": "Real-time status: ahead of schedule.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "searchStatusScheduled": "Scheduled",
-  "@searchStatusScheduled": {
-    "description": "Status of a departure with no real-time prediction."
   },
   "searchExplorePlanTrip": "Plan a trip",
   "@searchExplorePlanTrip": {
@@ -3770,70 +3574,6 @@
   "@bookmarksSectionEmpty": {
     "description": "Shown in the Bookmarks home section when there are no bookmarks."
   },
-  "coreDirectionNameN": "North",
-  "@coreDirectionNameN": {
-    "description": "Compass direction a stop faces (N), spoken in a stop's screen-reader label."
-  },
-  "coreDirectionNameNE": "Northeast",
-  "@coreDirectionNameNE": {
-    "description": "Compass direction a stop faces (NE), spoken in a stop's screen-reader label."
-  },
-  "coreDirectionNameE": "East",
-  "@coreDirectionNameE": {
-    "description": "Compass direction a stop faces (E), spoken in a stop's screen-reader label."
-  },
-  "coreDirectionNameSE": "Southeast",
-  "@coreDirectionNameSE": {
-    "description": "Compass direction a stop faces (SE), spoken in a stop's screen-reader label."
-  },
-  "coreDirectionNameS": "South",
-  "@coreDirectionNameS": {
-    "description": "Compass direction a stop faces (S), spoken in a stop's screen-reader label."
-  },
-  "coreDirectionNameSW": "Southwest",
-  "@coreDirectionNameSW": {
-    "description": "Compass direction a stop faces (SW), spoken in a stop's screen-reader label."
-  },
-  "coreDirectionNameW": "West",
-  "@coreDirectionNameW": {
-    "description": "Compass direction a stop faces (W), spoken in a stop's screen-reader label."
-  },
-  "coreDirectionNameNW": "Northwest",
-  "@coreDirectionNameNW": {
-    "description": "Compass direction a stop faces (NW), spoken in a stop's screen-reader label."
-  },
-  "coreDirectionAbbrN": "N",
-  "@coreDirectionAbbrN": {
-    "description": "Short compass direction (North) after a stop name, e.g. 'Pine St & 3rd Ave (N)'."
-  },
-  "coreDirectionAbbrNE": "NE",
-  "@coreDirectionAbbrNE": {
-    "description": "Short compass direction (Northeast) after a stop name, e.g. 'Pine St & 3rd Ave (NE)'."
-  },
-  "coreDirectionAbbrE": "E",
-  "@coreDirectionAbbrE": {
-    "description": "Short compass direction (East) after a stop name, e.g. 'Pine St & 3rd Ave (E)'."
-  },
-  "coreDirectionAbbrSE": "SE",
-  "@coreDirectionAbbrSE": {
-    "description": "Short compass direction (Southeast) after a stop name, e.g. 'Pine St & 3rd Ave (SE)'."
-  },
-  "coreDirectionAbbrS": "S",
-  "@coreDirectionAbbrS": {
-    "description": "Short compass direction (South) after a stop name, e.g. 'Pine St & 3rd Ave (S)'."
-  },
-  "coreDirectionAbbrSW": "SW",
-  "@coreDirectionAbbrSW": {
-    "description": "Short compass direction (Southwest) after a stop name, e.g. 'Pine St & 3rd Ave (SW)'."
-  },
-  "coreDirectionAbbrW": "W",
-  "@coreDirectionAbbrW": {
-    "description": "Short compass direction (West) after a stop name, e.g. 'Pine St & 3rd Ave (W)'."
-  },
-  "coreDirectionAbbrNW": "NW",
-  "@coreDirectionAbbrNW": {
-    "description": "Short compass direction (Northwest) after a stop name, e.g. 'Pine St & 3rd Ave (NW)'."
-  },
   "coreDirectionBoundN": "Northbound",
   "@coreDirectionBoundN": {
     "description": "Direction of travel at a stop facing North, e.g. 'Stop #1234 — Northbound'. Short forms follow the iOS app."
@@ -3866,38 +3606,6 @@
   "@coreDirectionBoundNW": {
     "description": "Direction of travel at a stop facing Northwest, e.g. 'Stop #1234 — NW bound'. Short forms follow the iOS app."
   },
-  "coreRouteTypeLightRail": "Light Rail",
-  "@coreRouteTypeLightRail": {
-    "description": "Kind of transit route, shown instead of route numbers when a route has none (e.g. ferries)."
-  },
-  "coreRouteTypeSubway": "Subway",
-  "@coreRouteTypeSubway": {
-    "description": "Kind of transit route, shown instead of route numbers when a route has none (e.g. ferries)."
-  },
-  "coreRouteTypeRail": "Rail",
-  "@coreRouteTypeRail": {
-    "description": "Kind of transit route, shown instead of route numbers when a route has none (e.g. ferries)."
-  },
-  "coreRouteTypeBus": "Bus",
-  "@coreRouteTypeBus": {
-    "description": "Kind of transit route, shown instead of route numbers when a route has none (e.g. ferries)."
-  },
-  "coreRouteTypeFerry": "Ferry",
-  "@coreRouteTypeFerry": {
-    "description": "Kind of transit route, shown instead of route numbers when a route has none (e.g. ferries)."
-  },
-  "coreRouteTypeCableCar": "Cable Car",
-  "@coreRouteTypeCableCar": {
-    "description": "Kind of transit route, shown instead of route numbers when a route has none (e.g. ferries)."
-  },
-  "coreRouteTypeGondola": "Gondola",
-  "@coreRouteTypeGondola": {
-    "description": "Kind of transit route, shown instead of route numbers when a route has none (e.g. ferries)."
-  },
-  "coreRouteTypeFunicular": "Funicular",
-  "@coreRouteTypeFunicular": {
-    "description": "Kind of transit route, shown instead of route numbers when a route has none (e.g. ferries)."
-  },
   "coreStopCodeNumeric": "Stop #{code}",
   "@coreStopCodeNumeric": {
     "description": "Numeric stop code, e.g. 'Stop #1234'.",
@@ -3913,84 +3621,6 @@
     "placeholders": {
       "code": {
         "type": "String"
-      }
-    }
-  },
-  "coreStopId": "Stop ID: {code}",
-  "@coreStopId": {
-    "description": "Stop code in a stop's screen-reader label.",
-    "placeholders": {
-      "code": {
-        "type": "String"
-      }
-    }
-  },
-  "coreRoutesLabel": "Routes: {routes}",
-  "@coreRoutesLabel": {
-    "description": "Routes serving a stop; routes is a comma-separated list such as '10, 12, 49'.",
-    "placeholders": {
-      "routes": {
-        "type": "String"
-      }
-    }
-  },
-  "coreRoutesLabelPlusMore": "{count, plural, other{Routes: {routes}, + {count} more}}",
-  "@coreRoutesLabelPlusMore": {
-    "description": "Routes serving a stop when the list is cut short; count is how many routes are not listed.",
-    "placeholders": {
-      "routes": {
-        "type": "String"
-      },
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coreMapRoutesOverflow": "{routes}…",
-  "@coreMapRoutesOverflow": {
-    "description": "Route list on a map pin when more routes are not shown.",
-    "placeholders": {
-      "routes": {
-        "type": "String"
-      }
-    }
-  },
-  "coreSearchPlaceholder": "Search in {region}",
-  "@coreSearchPlaceholder": {
-    "description": "Placeholder of the search field; region is the transit region's name.",
-    "placeholders": {
-      "region": {
-        "type": "String"
-      }
-    }
-  },
-  "coreNow": "NOW",
-  "@coreNow": {
-    "description": "Compact countdown for a vehicle arriving or departing now. Capitals follow the iOS app."
-  },
-  "coreShortMinutes": "{minutes}m",
-  "@coreShortMinutes": {
-    "description": "Compact countdown in minutes, e.g. '7m' (negative for a past departure).",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "coreOneMinute": "One minute",
-  "@coreOneMinute": {
-    "description": "Spoken countdown of one minute."
-  },
-  "coreOneMinuteAgo": "One minute ago",
-  "@coreOneMinuteAgo": {
-    "description": "Spoken time of a departure one minute ago."
-  },
-  "coreMinutes": "{minutes, plural, other{{minutes} minutes}}",
-  "@coreMinutes": {
-    "description": "Spoken countdown in minutes (never one: that has its own string).",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
       }
     }
   },
@@ -4034,151 +3664,6 @@
       }
     }
   },
-  "coreUpdatedAt": "Updated: {ago}",
-  "@coreUpdatedAt": {
-    "description": "When data was last updated; ago is a relative time such as '4 min. ago'.",
-    "placeholders": {
-      "ago": {
-        "type": "String"
-      }
-    }
-  },
-  "coreScheduledNotRealTime": "Scheduled/not real-time",
-  "@coreScheduledNotRealTime": {
-    "description": "Status of a departure with no real-time prediction."
-  },
-  "coreArrivedMinAgo": "Arrived {minutes} min ago",
-  "@coreArrivedMinAgo": {
-    "description": "A vehicle that already arrived.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "coreDepartedMinAgo": "Departed {minutes} min ago",
-  "@coreDepartedMinAgo": {
-    "description": "A vehicle that already departed.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "coreArrivingNow": "Arriving now",
-  "@coreArrivingNow": {
-    "description": "A vehicle arriving now."
-  },
-  "coreDepartingNow": "Departing now",
-  "@coreDepartingNow": {
-    "description": "A vehicle departing now."
-  },
-  "coreArrivesInMin": "Arrives in {minutes} min",
-  "@coreArrivesInMin": {
-    "description": "A vehicle arriving in some minutes.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "coreDepartsInMin": "Departs in {minutes} min",
-  "@coreDepartsInMin": {
-    "description": "A vehicle departing in some minutes.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "coreArrivedLate": "arrived {minutes} min late",
-  "@coreArrivedLate": {
-    "description": "Schedule deviation: arrived behind schedule.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "coreArrivedEarly": "arrived {minutes} min early",
-  "@coreArrivedEarly": {
-    "description": "Schedule deviation: arrived ahead of schedule.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "coreArrivedOnTime": "arrived on time",
-  "@coreArrivedOnTime": {
-    "description": "Schedule deviation: arrived on schedule."
-  },
-  "coreDepartedLate": "departed {minutes} min late",
-  "@coreDepartedLate": {
-    "description": "Schedule deviation: departed behind schedule.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "coreDepartedEarly": "departed {minutes} min early",
-  "@coreDepartedEarly": {
-    "description": "Schedule deviation: departed ahead of schedule.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "coreDepartedOnTime": "departed on time",
-  "@coreDepartedOnTime": {
-    "description": "Schedule deviation: departed on schedule."
-  },
-  "coreArrivesLate": "arrives {minutes} min late",
-  "@coreArrivesLate": {
-    "description": "Schedule deviation: arrives behind schedule.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "coreArrivesEarly": "arrives {minutes} min early",
-  "@coreArrivesEarly": {
-    "description": "Schedule deviation: arrives ahead of schedule.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "coreArrivesOnTime": "arrives on time",
-  "@coreArrivesOnTime": {
-    "description": "Schedule deviation: arrives on schedule."
-  },
-  "coreDepartsLate": "departs {minutes} min late",
-  "@coreDepartsLate": {
-    "description": "Schedule deviation: departs behind schedule.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "coreDepartsEarly": "departs {minutes} min early",
-  "@coreDepartsEarly": {
-    "description": "Schedule deviation: departs ahead of schedule.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "coreDepartsOnTime": "departs on time",
-  "@coreDepartsOnTime": {
-    "description": "Schedule deviation: departs on schedule."
-  },
   "coreMeters": "{value} m",
   "@coreMeters": {
     "description": "A distance in metres; value is already formatted, e.g. '350 m'.",
@@ -4212,15 +3697,6 @@
     "placeholders": {
       "value": {
         "type": "String"
-      }
-    }
-  },
-  "coreAlarmMinutes": "{minutes, plural, =1{1 minute} other{{minutes} minutes}}",
-  "@coreAlarmMinutes": {
-    "description": "Alarm lead time: how long before a departure the alarm rings.",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
       }
     }
   },

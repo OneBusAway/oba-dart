@@ -20,7 +20,7 @@ Dependency direction: `lib → obakit → {obakit_core, oba_arrivals, obakit_tri
 
 ## Commands
 
-The toolchain is pinned with mise (Flutter 3.47.5 / Dart 3.13.4). Prefix commands with `mise exec --`.
+The toolchain is pinned with mise (Flutter 3.47.5 / Dart 3.13.4). Prefix commands with `mise exec --`. When you upgrade Flutter, grep for `TODO(flutter-upgrade)`: those are workarounds for framework bugs (e.g. `buildModalBarrier` in `shell/sheet_navigator.dart`, flutter/flutter#186178) to remove once the fix ships.
 
 ```bash
 mise install && mise exec -- flutter pub get
@@ -73,7 +73,7 @@ Never send write requests to production OBA, Obaco or OTP servers from tests, th
 
 ## `obakit_core`
 
-- No Flutter dependency. `ObaCoreApplication(ObaAppConfig)` must `await start()` before use. It owns regions, user data, settings, search, alarms, problem reports, surveys, alerts, deep links and formatters.
+- No Flutter dependency. `ObaCoreApplication(ObaAppConfig)` must `await start()` before use. It owns regions, user data, settings, search, alarms, problem reports, surveys, alerts and deep links.
 - Read `app.restClient` and `app.obacoClient` on every use. They are rebuilt when the region changes (`clientsListenable`). Never cache them.
 - Platform access is behind interfaces: `KeyValueStore`, `LocationProvider`, `PushServiceProvider`, `ObaAnalytics`, `PlaceSearchProvider`. Each has an in-memory or no-op implementation for tests (`InMemoryKeyValueStore`, `FakeLocationProvider`, `FakePushServiceProvider`, `NoopAnalytics`). Persisted keys start with `oba.` and hold JSON strings. Persisted models parse tolerantly: skip a bad entry, don't fail the list.
 - Change notification uses `ObaChangeNotifier` and `ObaValueListenable<T>`, pure-Dart twins of Flutter's. `obakit` adapts them with `ObaListenableAdapter`.

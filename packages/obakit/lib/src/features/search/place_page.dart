@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
+import '../../widgets/link_opener.dart';
 import '../../app/scope.dart';
 import '../../features/map/map_coordinator.dart';
 import '../../features/map/map_logic.dart';
@@ -13,7 +13,7 @@ import '../../navigation/oba_route.dart';
 import '../../widgets/rows.dart';
 import '../../widgets/sheet_page.dart';
 import '../../widgets/states.dart';
-import 'search_common.dart';
+import '../../l10n/strings_bridge.dart';
 
 /// An OpenStreetMap link to [place], for sharing.
 Uri placeWebUrl(Place place) {
@@ -78,12 +78,6 @@ class _PlacePageState extends State<PlacePage> {
     }
   }
 
-  void _say(String message) {
-    obaAnnounce(context, message);
-    ScaffoldMessenger.maybeOf(context)
-        ?.showSnackBar(SnackBar(content: Text(message)));
-  }
-
   Future<void> _share(BuildContext buttonContext) async {
     final l10n = context.obaL10n;
     final place = widget.place;
@@ -104,37 +98,28 @@ class _PlacePageState extends State<PlacePage> {
         ),
       );
     } catch (_) {
-      if (mounted) _say(l10n.searchPlaceShareFailed);
+      if (mounted) obaNotify(context, l10n.searchPlaceShareFailed);
     }
   }
 
   Future<void> _openInMaps() async {
     final l10n = context.obaL10n;
     final uri = placeMapsAppUrl(widget.place, defaultTargetPlatform);
-    var ok = false;
-    try {
-      ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-      if (!ok && uri.scheme == 'geo') {
-        ok = await launchUrl(
-          placeWebUrl(widget.place),
-          mode: LaunchMode.externalApplication,
-        );
-      }
-    } catch (_) {
-      ok = false;
+    // A `geo:` link needs a maps app; the web map is the fallback.
+    if (uri.scheme == 'geo' && await ObaLinkOpenerScope.of(context).open(uri)) {
+      return;
     }
-    if (!ok && mounted) _say(l10n.searchPlaceOpenFailed);
+    if (!mounted) return;
+    await obaOpenLink(
+      context,
+      uri.scheme == 'geo' ? placeWebUrl(widget.place) : uri,
+      failureMessage: l10n.searchPlaceOpenFailed,
+    );
   }
 
-  void _removePin() {
-    final map = ObaMapCoordinator.maybeOf(context);
-    ObaNavigator.of(context).pop();
-    // The map keeps a dropped pin on the page it was dropped from; clear it
-    // once that page is on top again.
-    if (map != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => map.clearOverlays());
-    }
-  }
+  // The pin is this page's overlay ([ObaMapOverlays] below): closing the
+  // page removes it and leaves the previous page's overlay alone.
+  void _removePin() => ObaNavigator.of(context).pop();
 
   @override
   Widget build(BuildContext context) {
@@ -230,8 +215,7 @@ class _PlacePageState extends State<PlacePage> {
               if (here != null)
                 detail(
                   l10n.searchPlaceDistance,
-                  formatDistance(
-                    context,
+                  context.obaFormatters.distance(
                     distanceBetween(here, place.coordinate),
                   ),
                 ),

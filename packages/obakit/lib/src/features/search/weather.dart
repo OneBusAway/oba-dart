@@ -7,7 +7,7 @@ import 'package:obakit_core/obakit_core.dart' hide Route;
 
 import '../../app/application.dart';
 import '../../app/scope.dart';
-import '../bookmarks/visibility.dart';
+import '../../widgets/visibility.dart';
 import '../../l10n/l10n.dart';
 import '../../navigation/oba_navigator.dart';
 import '../../navigation/oba_route.dart';
@@ -79,16 +79,17 @@ class WeatherFormat {
 
   String condition(String iconKey) => weatherConditionText(l10n, iconKey);
 
-  /// The hour, in the locale's style ("3 PM", "15").
+  /// The hour, in the locale's style ("3 PM", "15"), or 24-hour when the
+  /// device asks for it.
   String hour(DateTime time) {
     final locale = Localizations.maybeLocaleOf(context)?.toLanguageTag();
-    return DateFormat.j(locale).format(time.toLocal());
+    final format = MediaQuery.alwaysUse24HourFormatOf(context)
+        ? DateFormat.H(locale)
+        : DateFormat.j(locale);
+    return format.format(time.toLocal());
   }
 
-  String time(DateTime time) {
-    final locale = Localizations.maybeLocaleOf(context)?.toLanguageTag();
-    return DateFormat.jm(locale).format(time.toLocal());
-  }
+  String time(DateTime time) => obaClockTime(context, time);
 }
 
 /// The localized name of an Obaco condition icon ("Partly cloudy").
@@ -326,14 +327,9 @@ class _WeatherPageState extends State<WeatherPage>
       ];
     } else if (forecast == null) {
       slivers = [
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: s.error != null && !s.isLoading
-              ? ObaErrorState(
-                  error: s.error,
-                  onRetry: () => s.load(force: true),
-                )
-              : const ObaLoadingState(),
+        ObaLoadingOrErrorSliver(
+          error: s.isLoading ? null : s.error,
+          onRetry: () => s.load(force: true),
         ),
       ];
     } else {

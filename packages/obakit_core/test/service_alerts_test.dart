@@ -1,4 +1,5 @@
 import 'package:obakit_core/obakit_core.dart';
+import 'package:obakit_core/src/alerts/service_alerts.dart';
 import 'package:test/test.dart';
 
 import 'support/support.dart';

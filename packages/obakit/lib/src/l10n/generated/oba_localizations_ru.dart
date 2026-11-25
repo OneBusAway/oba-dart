@@ -40,15 +40,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
   String get commonErrorTitle => 'Что-то пошло не так';
 
   @override
-  String get commonEmptyTitle => 'Здесь пока ничего нет';
-
-  @override
-  String get commonComingSoon => 'Скоро';
-
-  @override
-  String get commonComingSoonBody => 'Этот экран пока недоступен.';
-
-  @override
   String get commonOffline =>
       'Похоже, нет подключения к интернету. Проверьте соединение и повторите попытку.';
 
@@ -148,9 +139,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
   String get mapVehicle => 'Транспорт';
 
   @override
-  String get mapSelectedStop => 'Выбрана';
-
-  @override
   String get mapBookmarkedStop => 'В закладках';
 
   @override
@@ -179,18 +167,7 @@ class ObaLocalizationsRu extends ObaLocalizations {
   String get mapTypeHybrid => 'Гибрид';
 
   @override
-  String get mapShowScale => 'Показывать масштаб';
-
-  @override
   String get mapShowHeading => 'Показывать направление';
-
-  @override
-  String get mapShowStopLabels => 'Показывать подписи остановок';
-
-  @override
-  String mapPlaceAt(String lat, String lon) {
-    return 'Место: $lat, $lon';
-  }
 
   @override
   String get directionN => 'На север';
@@ -489,9 +466,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
 
   @override
   String get stopPageGoogleMaps => 'Google Карты';
-
-  @override
-  String get stopPageCannotOpen => 'Не удалось открыть эту ссылку.';
 
   @override
   String stopPageTransfer(String route, String headsign, String time) {
@@ -1170,10 +1144,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
       'Показывает на карте направление, в котором вы смотрите.';
 
   @override
-  String get settingsStopLabelsHelp =>
-      'Показывает названия маршрутов рядом с остановками на карте.';
-
-  @override
   String get settingsWalkingDirections => 'Пешеходный маршрут';
 
   @override
@@ -1209,14 +1179,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
   String get settingsFilterScheduled => 'Только по расписанию';
 
   @override
-  String get settingsRegionTimeZone =>
-      'Показывать время в часовом поясе региона';
-
-  @override
-  String get settingsRegionTimeZoneHelp =>
-      'Время показывается в часовом поясе региона транспорта, с пометкой, если он отличается от пояса вашего устройства.';
-
-  @override
   String get settingsSectionAccessibility => 'Универсальный доступ';
 
   @override
@@ -1225,13 +1187,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
   @override
   String get settingsReducedColorsHelp =>
       'Показывает значки маршрутов в одном нейтральном стиле.';
-
-  @override
-  String get settingsCompactMode => 'Компактные страницы остановок и рейсов';
-
-  @override
-  String get settingsCompactModeHelp =>
-      'Уменьшает отступы, чтобы на экране помещалось больше.';
 
   @override
   String get settingsSectionWalking => 'Скорость ходьбы';
@@ -1472,7 +1427,7 @@ class ObaLocalizationsRu extends ObaLocalizations {
   String get moreFareDontShowAgain => 'Продолжить и больше не показывать';
 
   @override
-  String get moreCantOpenLink => 'Не удалось открыть эту ссылку.';
+  String get commonCantOpenLink => 'Не удалось открыть эту ссылку.';
 
   @override
   String get regionPickerAutomatic => 'Выбирать регион автоматически';
@@ -1860,59 +1815,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
   String get dataUpdated => 'Обновлено';
 
   @override
-  String get bookmarksEtaNow => 'Сейчас';
-
-  @override
-  String bookmarksEtaMinutes(int minutes) {
-    return '$minutes мин.';
-  }
-
-  @override
-  String bookmarksEtaSemantic(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: 'через $minutes минуты',
-      many: 'через $minutes минут',
-      few: 'через $minutes минуты',
-      one: 'через $minutes минуту',
-      zero: 'сейчас',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get bookmarksStatusOnTime => 'Вовремя';
-
-  @override
-  String bookmarksStatusLate(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: 'опоздание $minutes мин.',
-      one: 'опоздание $minutes мин.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String bookmarksStatusEarly(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: 'раньше на $minutes мин.',
-      one: 'раньше на $minutes мин.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get bookmarksStatusScheduled => 'По расписанию';
-
-  @override
-  String get bookmarksStatusCanceled => 'Отменён';
-
-  @override
   String bookmarksDepartureRoute(String route, String headsign) {
     return 'Маршрут $route до $headsign';
   }
@@ -2024,11 +1926,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
   }
 
   @override
-  String bookmarksStopLine(String name, String details) {
-    return '$name, $details';
-  }
-
-  @override
   String get bookmarksEditorNameLabel => 'Название закладки';
 
   @override
@@ -2089,9 +1986,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
 
   @override
   String get bookmarksManageGroupsHeader => 'Группы';
-
-  @override
-  String get bookmarksManageBookmarksHeader => 'Закладки';
 
   @override
   String get bookmarksManageAddGroup => 'Добавить группу';
@@ -2215,9 +2109,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
       'Не удалось удалить напоминание. Проверьте подключение и повторите попытку.';
 
   @override
-  String get alarmsOpen => 'Открывает рейс';
-
-  @override
   String get alertsEmptyTitle => 'Нет оповещений о движении';
 
   @override
@@ -2308,9 +2199,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
   String get alertsDetailStops => 'Остановки';
 
   @override
-  String get alertsDetailAgencies => 'Агентства';
-
-  @override
   String get alertsDetailLearnMore => 'Подробнее';
 
   @override
@@ -2320,9 +2208,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
   String alertsDetailUpdated(String date) {
     return 'Опубликовано $date';
   }
-
-  @override
-  String get alertsCouldNotOpen => 'Не удалось открыть эту ссылку.';
 
   @override
   String get agenciesEmptyTitle => 'Нет агентств';
@@ -2551,9 +2436,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
   String get searchNearbyLoadingDepartures => 'Загрузка отправлений';
 
   @override
-  String get searchNearbyUpdated => 'Ближайшие отправления обновлены';
-
-  @override
   String searchNearbyStopsCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -2604,58 +2486,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
 
   @override
   String get searchNearbyCardTitle => 'Отправления рядом';
-
-  @override
-  String searchEtaMinutes(int minutes) {
-    return '$minutes мин.';
-  }
-
-  @override
-  String get searchEtaNow => 'Сейчас';
-
-  @override
-  String searchEtaMinutesSpoken(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: 'через $minutes минуты',
-      many: 'через $minutes минут',
-      few: 'через $minutes минуты',
-      one: 'через $minutes минуту',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get searchEtaNowSpoken => 'отправляется сейчас';
-
-  @override
-  String get searchStatusOnTime => 'Вовремя';
-
-  @override
-  String searchStatusLate(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: 'опоздание $minutes мин.',
-      one: 'опоздание $minutes мин.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String searchStatusEarly(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: 'раньше на $minutes мин.',
-      one: 'раньше на $minutes мин.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get searchStatusScheduled => 'По расписанию';
 
   @override
   String get searchExplorePlanTrip => 'Спланировать поездку';
@@ -2857,54 +2687,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
   String get bookmarksSectionEmpty => 'Остановки из закладок появляются здесь.';
 
   @override
-  String get coreDirectionNameN => 'Север';
-
-  @override
-  String get coreDirectionNameNE => 'Северо-восток';
-
-  @override
-  String get coreDirectionNameE => 'Восток';
-
-  @override
-  String get coreDirectionNameSE => 'Юго-восток';
-
-  @override
-  String get coreDirectionNameS => 'Юг';
-
-  @override
-  String get coreDirectionNameSW => 'Юго-запад';
-
-  @override
-  String get coreDirectionNameW => 'Запад';
-
-  @override
-  String get coreDirectionNameNW => 'Северо-запад';
-
-  @override
-  String get coreDirectionAbbrN => 'С';
-
-  @override
-  String get coreDirectionAbbrNE => 'СВ';
-
-  @override
-  String get coreDirectionAbbrE => 'В';
-
-  @override
-  String get coreDirectionAbbrSE => 'ЮВ';
-
-  @override
-  String get coreDirectionAbbrS => 'Ю';
-
-  @override
-  String get coreDirectionAbbrSW => 'ЮЗ';
-
-  @override
-  String get coreDirectionAbbrW => 'З';
-
-  @override
-  String get coreDirectionAbbrNW => 'СЗ';
-
-  @override
   String get coreDirectionBoundN => 'На север';
 
   @override
@@ -2929,30 +2711,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
   String get coreDirectionBoundNW => 'На северо-запад';
 
   @override
-  String get coreRouteTypeLightRail => 'Скоростной трамвай';
-
-  @override
-  String get coreRouteTypeSubway => 'Метро';
-
-  @override
-  String get coreRouteTypeRail => 'Железная дорога';
-
-  @override
-  String get coreRouteTypeBus => 'Автобус';
-
-  @override
-  String get coreRouteTypeFerry => 'Паром';
-
-  @override
-  String get coreRouteTypeCableCar => 'Канатный трамвай';
-
-  @override
-  String get coreRouteTypeGondola => 'Гондола';
-
-  @override
-  String get coreRouteTypeFunicular => 'Фуникулёр';
-
-  @override
   String coreStopCodeNumeric(String code) {
     return 'Остановка № $code';
   }
@@ -2960,63 +2718,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
   @override
   String coreStopCodeNonNumeric(String code) {
     return 'Остановка: \'$code\'';
-  }
-
-  @override
-  String coreStopId(String code) {
-    return 'ID остановки: $code';
-  }
-
-  @override
-  String coreRoutesLabel(String routes) {
-    return 'Маршруты: $routes';
-  }
-
-  @override
-  String coreRoutesLabelPlusMore(String routes, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'Маршруты: $routes, ещё $count',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String coreMapRoutesOverflow(String routes) {
-    return '$routes…';
-  }
-
-  @override
-  String coreSearchPlaceholder(String region) {
-    return 'Поиск: $region';
-  }
-
-  @override
-  String get coreNow => 'СЕЙЧАС';
-
-  @override
-  String coreShortMinutes(int minutes) {
-    return '$minutes мин';
-  }
-
-  @override
-  String get coreOneMinute => 'Одна минута';
-
-  @override
-  String get coreOneMinuteAgo => 'Минуту назад';
-
-  @override
-  String coreMinutes(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes минуты',
-      many: '$minutes минут',
-      few: '$minutes минуты',
-      one: '$minutes минута',
-    );
-    return '$_temp0';
   }
 
   @override
@@ -3051,93 +2752,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
   }
 
   @override
-  String coreUpdatedAt(String ago) {
-    return 'Обновлено: $ago';
-  }
-
-  @override
-  String get coreScheduledNotRealTime =>
-      'По расписанию / не в реальном времени';
-
-  @override
-  String coreArrivedMinAgo(int minutes) {
-    return 'Прибыл $minutes мин. назад';
-  }
-
-  @override
-  String coreDepartedMinAgo(int minutes) {
-    return 'Отправился $minutes мин. назад';
-  }
-
-  @override
-  String get coreArrivingNow => 'Прибывает сейчас';
-
-  @override
-  String get coreDepartingNow => 'Отправляется сейчас';
-
-  @override
-  String coreArrivesInMin(int minutes) {
-    return 'Прибудет через $minutes мин.';
-  }
-
-  @override
-  String coreDepartsInMin(int minutes) {
-    return 'Отправится через $minutes мин.';
-  }
-
-  @override
-  String coreArrivedLate(int minutes) {
-    return 'прибыл с опозданием $minutes мин.';
-  }
-
-  @override
-  String coreArrivedEarly(int minutes) {
-    return 'прибыл раньше на $minutes мин.';
-  }
-
-  @override
-  String get coreArrivedOnTime => 'прибыл вовремя';
-
-  @override
-  String coreDepartedLate(int minutes) {
-    return 'отправился с опозданием $minutes мин.';
-  }
-
-  @override
-  String coreDepartedEarly(int minutes) {
-    return 'отправился раньше на $minutes мин.';
-  }
-
-  @override
-  String get coreDepartedOnTime => 'отправился вовремя';
-
-  @override
-  String coreArrivesLate(int minutes) {
-    return 'прибудет с опозданием $minutes мин.';
-  }
-
-  @override
-  String coreArrivesEarly(int minutes) {
-    return 'прибудет раньше на $minutes мин.';
-  }
-
-  @override
-  String get coreArrivesOnTime => 'прибудет вовремя';
-
-  @override
-  String coreDepartsLate(int minutes) {
-    return 'отправится с опозданием $minutes мин.';
-  }
-
-  @override
-  String coreDepartsEarly(int minutes) {
-    return 'отправится раньше на $minutes мин.';
-  }
-
-  @override
-  String get coreDepartsOnTime => 'отправится вовремя';
-
-  @override
   String coreMeters(String value) {
     return '$value м';
   }
@@ -3155,19 +2769,6 @@ class ObaLocalizationsRu extends ObaLocalizations {
   @override
   String coreMiles(String value) {
     return '$value ми';
-  }
-
-  @override
-  String coreAlarmMinutes(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes минуты',
-      many: '$minutes минут',
-      few: '$minutes минуты',
-      one: '$minutes минута',
-    );
-    return '$_temp0';
   }
 
   @override

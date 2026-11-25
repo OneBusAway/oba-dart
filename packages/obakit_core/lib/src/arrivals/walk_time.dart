@@ -55,69 +55,6 @@ class WalkTime {
   int get hashCode => Object.hash(minutes, distanceMeters);
 }
 
-/// A chronological stop page split around the walk-time divider (iOS
-/// `StopPageListBuilder.ChronologicalPartition`).
-class ChronologicalPartition {
-  const ChronologicalPartition({
-    required this.past,
-    required this.missed,
-    required this.reachable,
-  });
-
-  /// Already gone.
-  final List<ArrivalAndDeparture> past;
-
-  /// Upcoming, but sooner than the walk; shown above the divider. Empty
-  /// without a walk time.
-  final List<ArrivalAndDeparture> missed;
-
-  /// Catchable on foot (`minutes >= walkMinutes`).
-  final List<ArrivalAndDeparture> reachable;
-
-  /// Whether the UI should draw the walk divider (between [missed] and
-  /// [reachable]).
-  bool get showsWalkDivider => missed.isNotEmpty;
-}
-
-/// Sorts by minutes until departure and partitions into past / missed /
-/// reachable given [walkMinutes].
-ChronologicalPartition partitionByWalkTime(
-  Iterable<ArrivalAndDeparture> arrivals, {
-  required DateTime now,
-  int? walkMinutes,
-}) {
-  final timed = [
-    for (final a in arrivals)
-      if (a.minutesUntil(now) case final m?) (a, m),
-  ]..sort((x, y) => x.$2.compareTo(y.$2));
-  final past = [
-    for (final t in timed)
-      if (t.$2 < 0) t.$1,
-  ];
-  final upcoming = [
-    for (final t in timed)
-      if (t.$2 >= 0) t,
-  ];
-  if (walkMinutes == null) {
-    return ChronologicalPartition(
-      past: past,
-      missed: const [],
-      reachable: [for (final t in upcoming) t.$1],
-    );
-  }
-  return ChronologicalPartition(
-    past: past,
-    missed: [
-      for (final t in upcoming)
-        if (t.$2 < walkMinutes) t.$1,
-    ],
-    reachable: [
-      for (final t in upcoming)
-        if (t.$2 >= walkMinutes) t.$1,
-    ],
-  );
-}
-
 /// The index in [arrivals] (already in display order) before which the walk
 /// divider goes: the first upcoming row whose minutes are at least
 /// [walkMinutes]. Null when there is no walk time, or no upcoming row is

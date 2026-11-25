@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../app/polling.dart';
 import '../../app/application.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';

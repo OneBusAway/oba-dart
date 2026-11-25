@@ -3,10 +3,9 @@
 // obakit_trip_planner pieces is translated as a whole.
 //
 // How each package gets its strings:
-// - obakit_core: formatters are pure Dart and built outside the widget
-//   tree, so obakit never uses `ObaCoreApplication.formatters` (English
-//   only). Screens call `context.obaFormatters`, which wraps the current
-//   locale's strings; a test fails if obakit reads the English formatters.
+// - obakit_core: `ObaFormatters` is pure Dart and English by default.
+//   Screens call `context.obaFormatters`, which wraps the current locale's
+//   strings; a test fails if obakit builds the English formatters.
 // - oba_arrivals: `ObaScope` puts an `ObaArrivalsStringsScope` in the tree
 //   that resolves strings at each panel's own context, so a panel embedded
 //   anywhere under the scope (even with the scope above the host's
@@ -28,9 +27,11 @@ import 'l10n.dart';
 
 /// Strings for the current locale, plus formatters that use them.
 extension ObaStringsBridgeContext on BuildContext {
-  /// [ObaFormatters] that speak the current locale. Use this instead of
-  /// `ObaCoreApplication.formatters`, which is English only.
-  ObaFormatters get obaFormatters => ObaFormatters(obaCoreStrings);
+  /// [ObaFormatters] that speak the current locale and use the rider's
+  /// distance units. Use this instead of `const ObaFormatters()`, which is
+  /// English and metric only.
+  ObaFormatters get obaFormatters =>
+      ObaFormatters(obaCoreStrings, obaDistanceUnits(this));
 
   /// `obakit_core` strings from the SDK's localizations.
   ObaCoreStrings get obaCoreStrings => ObaL10nCoreStrings(obaL10n);
@@ -41,6 +42,12 @@ extension ObaStringsBridgeContext on BuildContext {
   /// `obakit_trip_planner` strings from the SDK's localizations.
   tp.TripPlannerStrings get obaTripPlannerStrings =>
       ObaL10nTripPlannerStrings(obaL10n);
+
+  /// The rider's distance units, as the trip planner's own enum.
+  tp.DistanceUnits get obaTripPlannerDistanceUnits =>
+      obaDistanceUnits(this) == DistanceUnits.imperial
+      ? tp.DistanceUnits.imperial
+      : tp.DistanceUnits.metric;
 }
 
 /// [ObaCoreStrings] read from [l10n].
@@ -57,32 +64,6 @@ class ObaL10nCoreStrings extends ObaCoreStrings {
   int get hashCode => identityHashCode(l10n);
 
   @override
-  String directionName(StopDirection d) => switch (d) {
-    StopDirection.n => l10n.coreDirectionNameN,
-    StopDirection.ne => l10n.coreDirectionNameNE,
-    StopDirection.e => l10n.coreDirectionNameE,
-    StopDirection.se => l10n.coreDirectionNameSE,
-    StopDirection.s => l10n.coreDirectionNameS,
-    StopDirection.sw => l10n.coreDirectionNameSW,
-    StopDirection.w => l10n.coreDirectionNameW,
-    StopDirection.nw => l10n.coreDirectionNameNW,
-    StopDirection.unknown => '',
-  };
-
-  @override
-  String directionAbbreviation(StopDirection d) => switch (d) {
-    StopDirection.n => l10n.coreDirectionAbbrN,
-    StopDirection.ne => l10n.coreDirectionAbbrNE,
-    StopDirection.e => l10n.coreDirectionAbbrE,
-    StopDirection.se => l10n.coreDirectionAbbrSE,
-    StopDirection.s => l10n.coreDirectionAbbrS,
-    StopDirection.sw => l10n.coreDirectionAbbrSW,
-    StopDirection.w => l10n.coreDirectionAbbrW,
-    StopDirection.nw => l10n.coreDirectionAbbrNW,
-    StopDirection.unknown => '',
-  };
-
-  @override
   String directionAdjective(StopDirection d) => switch (d) {
     StopDirection.n => l10n.coreDirectionBoundN,
     StopDirection.ne => l10n.coreDirectionBoundNE,
@@ -96,45 +77,10 @@ class ObaL10nCoreStrings extends ObaCoreStrings {
   };
 
   @override
-  String routeTypeName(RouteType t) => switch (t) {
-    RouteType.lightRail => l10n.coreRouteTypeLightRail,
-    RouteType.subway => l10n.coreRouteTypeSubway,
-    RouteType.rail => l10n.coreRouteTypeRail,
-    RouteType.bus => l10n.coreRouteTypeBus,
-    RouteType.ferry => l10n.coreRouteTypeFerry,
-    RouteType.cableCar => l10n.coreRouteTypeCableCar,
-    RouteType.gondola => l10n.coreRouteTypeGondola,
-    RouteType.funicular => l10n.coreRouteTypeFunicular,
-    RouteType.unknown => '',
-  };
-
-  @override
   String stopCodeNumeric(String code) => l10n.coreStopCodeNumeric(code);
   @override
   String stopCodeNonNumeric(String code) => l10n.coreStopCodeNonNumeric(code);
-  @override
-  String stopId(String code) => l10n.coreStopId(code);
-  @override
-  String routesLabel(String list) => l10n.coreRoutesLabel(list);
-  @override
-  String routesLabelPlusMore(String list, int more) =>
-      l10n.coreRoutesLabelPlusMore(list, more);
-  @override
-  String mapRoutesOverflow(String list) => l10n.coreMapRoutesOverflow(list);
-  @override
-  String searchPlaceholder(String regionName) =>
-      l10n.coreSearchPlaceholder(regionName);
 
-  @override
-  String get now => l10n.coreNow;
-  @override
-  String shortMinutes(int minutes) => l10n.coreShortMinutes(minutes);
-  @override
-  String get oneMinute => l10n.coreOneMinute;
-  @override
-  String get oneMinuteAgo => l10n.coreOneMinuteAgo;
-  @override
-  String minutes(int minutes) => l10n.coreMinutes(minutes);
   @override
   String get justNow => l10n.coreJustNow;
   @override
@@ -145,49 +91,6 @@ class ObaL10nCoreStrings extends ObaCoreStrings {
   String hoursAgo(int n) => l10n.coreHoursAgo(n);
   @override
   String daysAgo(int n) => l10n.coreDaysAgo(n);
-  @override
-  String updatedAt(String ago) => l10n.coreUpdatedAt(ago);
-
-  @override
-  String get scheduledNotRealTime => l10n.coreScheduledNotRealTime;
-
-  @override
-  String arrivedMinAgo(int m) => l10n.coreArrivedMinAgo(m);
-  @override
-  String departedMinAgo(int m) => l10n.coreDepartedMinAgo(m);
-  @override
-  String get arrivingNow => l10n.coreArrivingNow;
-  @override
-  String get departingNow => l10n.coreDepartingNow;
-  @override
-  String arrivesInMin(int m) => l10n.coreArrivesInMin(m);
-  @override
-  String departsInMin(int m) => l10n.coreDepartsInMin(m);
-
-  @override
-  String arrivedLate(int m) => l10n.coreArrivedLate(m);
-  @override
-  String arrivedEarly(int m) => l10n.coreArrivedEarly(m);
-  @override
-  String get arrivedOnTime => l10n.coreArrivedOnTime;
-  @override
-  String departedLate(int m) => l10n.coreDepartedLate(m);
-  @override
-  String departedEarly(int m) => l10n.coreDepartedEarly(m);
-  @override
-  String get departedOnTime => l10n.coreDepartedOnTime;
-  @override
-  String arrivesLate(int m) => l10n.coreArrivesLate(m);
-  @override
-  String arrivesEarly(int m) => l10n.coreArrivesEarly(m);
-  @override
-  String get arrivesOnTime => l10n.coreArrivesOnTime;
-  @override
-  String departsLate(int m) => l10n.coreDepartsLate(m);
-  @override
-  String departsEarly(int m) => l10n.coreDepartsEarly(m);
-  @override
-  String get departsOnTime => l10n.coreDepartsOnTime;
 
   @override
   String meters(String n) => l10n.coreMeters(n);
@@ -197,9 +100,6 @@ class ObaL10nCoreStrings extends ObaCoreStrings {
   String feet(String n) => l10n.coreFeet(n);
   @override
   String miles(String n) => l10n.coreMiles(n);
-
-  @override
-  String alarmMinutes(int m) => l10n.coreAlarmMinutes(m);
 }
 
 /// [ObaArrivalsStrings] read from [l10n].

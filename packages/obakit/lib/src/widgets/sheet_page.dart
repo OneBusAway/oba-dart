@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import 'heading.dart';
 import '../l10n/l10n.dart';
 import '../navigation/oba_navigator.dart';
 import '../navigation/presentation.dart';
-import 'states.dart';
 
 /// The scaffold every SDK page uses. It adapts to how the page is shown
 /// (`ObaPresentation`):
@@ -16,8 +16,10 @@ import 'states.dart';
 /// - in the side panel: the same header, no drag;
 /// - as a normal route (host navigator, no shell): a `Scaffold` with an
 ///   `AppBar`;
-/// - embedded inline: the body alone, or with the compact header (title
-///   and actions, no back button) when the scope's `showsHeader` is set.
+/// - embedded inline: the compact header (title and actions, no back
+///   button) when the scope's `showsHeader` is set; otherwise no header,
+///   and a sliver page shows its [actions] and [headerBottom] at the top
+///   of the list instead, so they are never lost or shown twice.
 ///
 /// Give it [slivers] (preferred) or a [body]. A [body] that scrolls must
 /// use the primary scroll controller (`primary: true`, or no controller) so
@@ -60,7 +62,28 @@ class ObaSheetPage extends StatelessWidget {
         body ?? _SliverBody(slivers: slivers!, presentation: presentation);
     switch (presentation) {
       case ObaPresentation.embedded:
-        if (scope?.showsHeader != true) return content;
+        if (scope?.showsHeader != true) {
+          final slivers = this.slivers;
+          if (slivers == null || (actions.isEmpty && headerBottom == null)) {
+            return content;
+          }
+          return _SliverBody(
+            presentation: presentation,
+            slivers: [
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (actions.isNotEmpty)
+                      Wrap(alignment: WrapAlignment.end, children: actions),
+                    ?headerBottom,
+                  ],
+                ),
+              ),
+              ...slivers,
+            ],
+          );
+        }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -76,7 +99,11 @@ class ObaSheetPage extends StatelessWidget {
       case ObaPresentation.page:
         return Scaffold(
           appBar: AppBar(
-            title: Text(title, maxLines: 3, softWrap: true),
+            title: Text(
+              obaBidiIsolate(context, title),
+              maxLines: 3,
+              softWrap: true,
+            ),
             actions: actions,
             automaticallyImplyLeading: automaticallyImplyLeading,
           ),
@@ -181,14 +208,9 @@ class ObaSheetHeader extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child:
                       titleWidget ??
-                      Semantics(
-                        container: true,
-                        header: true,
-                        child: Text(
-                          title,
-                          style: theme.textTheme.titleLarge,
-                          softWrap: true,
-                        ),
+                      ObaHeading(
+                        obaBidiIsolate(context, title),
+                        style: theme.textTheme.titleLarge,
                       ),
                 ),
               ),
@@ -252,36 +274,5 @@ class RenderObaMeasureSize extends RenderProxyBox {
       final s = size;
       WidgetsBinding.instance.addPostFrameCallback((_) => onSize(s));
     }
-  }
-}
-
-/// A placeholder page for a screen that is not built yet. Feature agents
-/// replace every use of it.
-class ObaComingSoonPage extends StatelessWidget {
-  const ObaComingSoonPage({super.key, required this.title, this.details});
-
-  final String title;
-
-  /// Optional developer-facing note (e.g. the route's parameters).
-  final String? details;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.obaL10n;
-    return ObaSheetPage(
-      title: title,
-      slivers: [
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: ObaEmptyState(
-            icon: Icons.construction_outlined,
-            title: l10n.commonComingSoon,
-            message: details == null
-                ? l10n.commonComingSoonBody
-                : '${l10n.commonComingSoonBody}\n$details',
-          ),
-        ),
-      ],
-    );
   }
 }

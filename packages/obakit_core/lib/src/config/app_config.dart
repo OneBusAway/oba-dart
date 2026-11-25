@@ -146,7 +146,6 @@ class ObaAppConfig {
     this.donations = DonationsConfig.disabled,
     MoreTabConfig? moreTab,
     this.feedbackPromptEnabled = true,
-    this.launchRouteId,
     this.operatingSystem = 'android',
     this.apnsSandbox = false,
     this.pushServiceProvider,
@@ -164,7 +163,7 @@ class ObaAppConfig {
   /// `RegionsServerAPIPath`, `FixedRegionName`, `FixedRegionOBABaseURL`,
   /// `DefaultArrivalDepartureFilter`, `ExtensionURLScheme`,
   /// `AppDevelopersEmailAddress`, `PrivacyPolicyURL`, `AppStoreID`,
-  /// `PlayStoreID`, `FeedbackPromptEnabled`, `LaunchRouteID`, `Donations`
+  /// `PlayStoreID`, `FeedbackPromptEnabled`, `Donations`
   /// (`Enabled`, `DonationManagementPortal`) and `MoreTab`.
   factory ObaAppConfig.fromOBAKitConfig(
     Map<String, Object?> map, {
@@ -218,7 +217,6 @@ class ObaAppConfig {
       feedbackPromptEnabled: map['FeedbackPromptEnabled'] is bool
           ? map['FeedbackPromptEnabled'] as bool
           : true,
-      launchRouteId: str('LaunchRouteID'),
       donations: donations is Map<String, Object?>
           ? DonationsConfig(
               enabled: donations['Enabled'] == true,
@@ -274,9 +272,6 @@ class ObaAppConfig {
   final DonationsConfig donations;
   final MoreTabConfig moreTab;
   final bool feedbackPromptEnabled;
-
-  /// A route ID the map opens on (`LaunchRouteID`).
-  final String? launchRouteId;
 
   /// Sent to Obaco as `operating_system` (`ios` or `android`).
   final String operatingSystem;

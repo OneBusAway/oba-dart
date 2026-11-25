@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../widgets/text_scale.dart';
 import '../app/scope.dart';
 import '../features/bookmarks/bookmarks_routes.dart';
 import '../features/settings/settings_routes.dart';
@@ -43,10 +44,8 @@ class ObaHomeSheet extends StatelessWidget {
             // At large text the labels no longer fit a third of the width
             // each and would break mid-word: let the tabs size to their
             // labels and scroll instead.
-            isScrollable: MediaQuery.textScalerOf(context).scale(10) > 15,
-            tabAlignment: MediaQuery.textScalerOf(context).scale(10) > 15
-                ? TabAlignment.start
-                : null,
+            isScrollable: obaIsLargeText(context),
+            tabAlignment: obaIsLargeText(context) ? TabAlignment.start : null,
             tabs: [
               _tab(Icons.home_outlined, l10n.homeTabHome),
               _tab(Icons.schedule, l10n.homeTabRecent),

@@ -33,12 +33,14 @@ abstract final class BookmarkActions {
         .bookmarksInGroup(groupId)
         .indexWhere((b) => b.id == bookmark.id);
     store.deleteBookmark(bookmark.id);
-    final messenger = ScaffoldMessenger.maybeOf(context);
-    messenger
+    final message = l10n.bookmarksDeleted(bookmark.name);
+    // Like obaNotify, plus an Undo action.
+    obaAnnounce(context, message);
+    ScaffoldMessenger.maybeOf(context)
       ?..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text(l10n.bookmarksDeleted(bookmark.name)),
+          content: Text(message),
           action: SnackBarAction(
             label: l10n.bookmarksUndo,
             onPressed: () => store.addBookmark(

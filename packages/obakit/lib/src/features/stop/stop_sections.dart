@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 import 'package:obakit_core/obakit_core.dart' as oba show Route;
 
+import '../../widgets/heading.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
 import '../../l10n/strings_bridge.dart';
@@ -11,7 +12,7 @@ import '../../theme/oba_theme.dart';
 import '../../widgets/rows.dart';
 import '../../widgets/states.dart';
 import 'stop_actions.dart';
-import 'stop_format.dart';
+import '../../widgets/departure_format.dart';
 
 /// Metric or imperial, from the locale.
 
@@ -106,10 +107,7 @@ class _WalkPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.obaL10n;
-    final distance = context.obaFormatters.distance(
-      walk.distanceMeters,
-      units: obaDistanceUnits(context),
-    );
+    final distance = context.obaFormatters.distance(walk.distanceMeters);
     return Semantics(
       label: bike
           ? l10n.stopPageBikeTimeLabel(walk.minutes, distance)
@@ -552,11 +550,7 @@ class _StopFilterSheetState extends State<StopFilterSheet> {
     final theme = Theme.of(context);
     Widget heading(String t) => Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(24, 16, 24, 4),
-      child: Semantics(
-        container: true,
-        header: true,
-        child: Text(t, style: theme.textTheme.titleSmall),
-      ),
+      child: ObaHeading(t, style: theme.textTheme.titleSmall),
     );
     return SafeArea(
       child: SingleChildScrollView(
@@ -569,13 +563,9 @@ class _StopFilterSheetState extends State<StopFilterSheet> {
               child: Row(
                 children: [
                   Expanded(
-                    child: Semantics(
-                      container: true,
-                      header: true,
-                      child: Text(
-                        l10n.stopFilterTitle,
-                        style: theme.textTheme.titleLarge,
-                      ),
+                    child: ObaHeading(
+                      l10n.stopFilterTitle,
+                      style: theme.textTheme.titleLarge,
                     ),
                   ),
                   TextButton(
@@ -608,7 +598,12 @@ class _StopFilterSheetState extends State<StopFilterSheet> {
                 value: !_prefs.isRouteHidden(r.id),
                 onChanged: (_) => _set(_prefs.toggleRouteHidden(r.id)),
                 secondary: ObaRouteBadge.forRoute(r),
-                title: Text(r.longName ?? r.description ?? r.shortName ?? r.id),
+                title: Text(
+                  obaBidiIsolate(
+                    context,
+                    r.longName ?? r.description ?? r.shortName ?? r.id,
+                  ),
+                ),
               ),
             if (_prefs.hasHiddenRoutes)
               Padding(

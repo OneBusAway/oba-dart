@@ -2,11 +2,9 @@ import 'package:onebusaway/onebusaway.dart';
 
 import '../strings.dart';
 
-/// `MTS_24151` -> `24151`. Keeps everything after the first underscore.
-String stripAgencyPrefix(String id) {
-  final i = id.indexOf('_');
-  return i < 0 ? id : id.substring(i + 1);
-}
+/// `MTS_24151` -> `24151`. Keeps everything after the first underscore
+/// (`agencyLocalId` in `onebusaway`).
+String stripAgencyPrefix(String id) => agencyLocalId(id);
 
 /// Short names of routes that serve [stop], sorted. References can include
 /// routes that don't serve the stop, so only `stop.routeIds` count.

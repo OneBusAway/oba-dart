@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../widgets/heading.dart';
+import '../../app/polling.dart';
 import '../../app/application.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
@@ -19,8 +21,7 @@ import '../map/map_coordinator.dart';
 import '../map/map_logic.dart';
 import 'report_pages.dart';
 import 'stop_actions.dart';
-import 'stop_arrivals_controller.dart';
-import 'stop_format.dart';
+import '../../widgets/departure_format.dart';
 import 'stop_sections.dart';
 import 'trip_controller.dart';
 
@@ -152,12 +153,7 @@ class _TripPageState extends State<TripPage> {
     final slivers = <Widget>[];
     if (!s.hasData) {
       slivers.add(
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: s.error != null
-              ? ObaErrorState(error: s.error, onRetry: _controller.refresh)
-              : const ObaLoadingState(),
-        ),
+        ObaLoadingOrErrorSliver(error: s.error, onRetry: _controller.refresh),
       );
     } else {
       slivers.addAll([
@@ -184,14 +180,7 @@ class _TripPageState extends State<TripPage> {
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 4),
-            child: Semantics(
-              container: true,
-              header: true,
-              child: Text(
-                l10n.stopTripStopsHeader,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
+            child: ObaHeading(l10n.stopTripStopsHeader),
           ),
         ),
         SliverList.list(
@@ -453,7 +442,12 @@ class _TripSummary extends StatelessWidget {
               textColor: state.references.route(arrival.routeId)?.textColor,
             ),
             const SizedBox(width: 12),
-            Expanded(child: Text(headsign, style: theme.textTheme.titleMedium)),
+            Expanded(
+              child: Text(
+                obaBidiIsolate(context, headsign),
+                style: theme.textTheme.titleMedium,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 8),
@@ -508,10 +502,7 @@ class _TripSummary extends StatelessWidget {
               l10n.stopTripStopsAway(away),
               if (distance != null && distance > 0)
                 l10n.stopTripDistanceAway(
-                  context.obaFormatters.distance(
-                    distance,
-                    units: obaDistanceUnits(context),
-                  ),
+                  context.obaFormatters.distance(distance),
                 ),
             ].join(' · '),
             style: theme.textTheme.bodyMedium,
@@ -523,7 +514,12 @@ class _TripSummary extends StatelessWidget {
           children: [
             if (routeName.isNotEmpty) ObaRouteBadge(label: routeName),
             const SizedBox(width: 12),
-            Expanded(child: Text(headsign, style: theme.textTheme.titleMedium)),
+            Expanded(
+              child: Text(
+                obaBidiIsolate(context, headsign),
+                style: theme.textTheme.titleMedium,
+              ),
+            ),
           ],
         ),
       );

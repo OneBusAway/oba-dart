@@ -136,12 +136,6 @@ class ObaSheetController extends ChangeNotifier {
   /// Asks the sheet to re-measure (the top page's header changed).
   void remeasure() => notifyListeners();
 
-  void jumpTo(double height) {
-    _animation.stop();
-    _resting = _nearestDetent(height);
-    _setHeight(height);
-  }
-
   double _animationTarget = 0;
 
   Future<void> _animateToDetent(

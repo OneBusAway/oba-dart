@@ -4,10 +4,13 @@ import 'package:flutter/widgets.dart';
 /// foreground, so it can poll politely. The widget counts as hidden when
 /// it sits under a pushed route (its tickers are disabled, see
 /// [TickerMode]), in a hidden `IndexedStack` child such as a host's
-/// off-screen tab ([Visibility.of]), or when the app is backgrounded.
+/// off-screen tab ([Visibility.of]), or when the app is not in the
+/// foreground (seeded from [WidgetsBinding.lifecycleState]).
 ///
-/// Override [onVisibilityChanged]; it is called after every change and
-/// once on the first dependency pass.
+/// Override [onVisibilityChanged]; it is called once on the first
+/// dependency pass and then after every change. It may run during
+/// `didChangeDependencies`, where `setState` is allowed (the element is
+/// about to build anyway).
 mixin ObaVisibilityAware<T extends StatefulWidget> on State<T> {
   late final _LifecycleWatcher _watcher = _LifecycleWatcher(_update);
   bool _tickerEnabled = true;
@@ -49,16 +52,20 @@ mixin ObaVisibilityAware<T extends StatefulWidget> on State<T> {
 }
 
 class _LifecycleWatcher with WidgetsBindingObserver {
-  _LifecycleWatcher(this._onChange);
+  _LifecycleWatcher(this._onChange)
+    : foreground = _isForeground(WidgetsBinding.instance.lifecycleState);
 
   final VoidCallback _onChange;
-  bool foreground = true;
+  bool foreground;
+
+  static bool _isForeground(AppLifecycleState? state) =>
+      state == null ||
+      state == AppLifecycleState.resumed ||
+      state == AppLifecycleState.inactive;
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    foreground =
-        state == AppLifecycleState.resumed ||
-        state == AppLifecycleState.inactive;
+    foreground = _isForeground(state);
     _onChange();
   }
 }

@@ -7,7 +7,7 @@ import '../../app/application.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
 import '../../widgets/states.dart';
-import 'link_opener.dart';
+import '../../widgets/link_opener.dart';
 
 /// Support email and store links for the settings screens.
 abstract final class ObaSupport {
@@ -125,9 +125,7 @@ class _CantEmailDialog extends StatelessWidget {
     final l10n = context.obaL10n;
     await Clipboard.setData(ClipboardData(text: text));
     if (!context.mounted) return;
-    obaAnnounce(context, l10n.moreCopied);
-    ScaffoldMessenger.maybeOf(context)
-        ?.showSnackBar(SnackBar(content: Text(l10n.moreCopied)));
+    obaNotify(context, l10n.moreCopied);
   }
 
   @override

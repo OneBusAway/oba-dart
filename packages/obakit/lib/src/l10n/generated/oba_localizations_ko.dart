@@ -40,15 +40,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
   String get commonErrorTitle => '문제가 발생했습니다';
 
   @override
-  String get commonEmptyTitle => '아직 아무것도 없습니다';
-
-  @override
-  String get commonComingSoon => '곧 제공 예정';
-
-  @override
-  String get commonComingSoonBody => '이 화면은 아직 사용할 수 없습니다.';
-
-  @override
   String get commonOffline => '오프라인 상태인 것 같습니다. 연결을 확인하고 다시 시도하세요.';
 
   @override
@@ -142,9 +133,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
   String get mapVehicle => '차량';
 
   @override
-  String get mapSelectedStop => '선택됨';
-
-  @override
   String get mapBookmarkedStop => '즐겨찾기에 추가됨';
 
   @override
@@ -173,18 +161,7 @@ class ObaLocalizationsKo extends ObaLocalizations {
   String get mapTypeHybrid => '하이브리드';
 
   @override
-  String get mapShowScale => '축척 표시';
-
-  @override
   String get mapShowHeading => '방향 표시';
-
-  @override
-  String get mapShowStopLabels => '정류장 이름 표시';
-
-  @override
-  String mapPlaceAt(String lat, String lon) {
-    return '위치: $lat, $lon';
-  }
 
   @override
   String get directionN => '북쪽 방면';
@@ -468,9 +445,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
 
   @override
   String get stopPageGoogleMaps => 'Google 지도';
-
-  @override
-  String get stopPageCannotOpen => '링크를 열 수 없습니다.';
 
   @override
   String stopPageTransfer(String route, String headsign, String time) {
@@ -1115,9 +1089,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
   String get settingsHeadingHelp => '지도에 내가 향하고 있는 방향을 표시합니다.';
 
   @override
-  String get settingsStopLabelsHelp => '지도에서 정류장 옆에 노선 이름을 표시합니다.';
-
-  @override
   String get settingsWalkingDirections => '도보 길찾기';
 
   @override
@@ -1152,13 +1123,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
   String get settingsFilterScheduled => '시간표만';
 
   @override
-  String get settingsRegionTimeZone => '지역 시간대로 시간 표시';
-
-  @override
-  String get settingsRegionTimeZoneHelp =>
-      '시각은 교통 지역의 시간대를 사용하며, 기기와 다를 경우 안내가 표시됩니다.';
-
-  @override
   String get settingsSectionAccessibility => '접근성';
 
   @override
@@ -1166,12 +1130,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
 
   @override
   String get settingsReducedColorsHelp => '노선 배지를 하나의 중립적인 스타일로 표시합니다.';
-
-  @override
-  String get settingsCompactMode => '간결한 정류장 및 운행 페이지';
-
-  @override
-  String get settingsCompactModeHelp => '여백을 줄여 화면에 더 많은 내용을 표시합니다.';
 
   @override
   String get settingsSectionWalking => '걷는 속도';
@@ -1404,7 +1362,7 @@ class ObaLocalizationsKo extends ObaLocalizations {
   String get moreFareDontShowAgain => '계속하고 다시 표시 안 함';
 
   @override
-  String get moreCantOpenLink => '링크를 열 수 없습니다.';
+  String get commonCantOpenLink => '링크를 열 수 없습니다.';
 
   @override
   String get regionPickerAutomatic => '지역 자동 선택';
@@ -1766,57 +1724,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
   String get dataUpdated => '업데이트됨';
 
   @override
-  String get bookmarksEtaNow => '지금';
-
-  @override
-  String bookmarksEtaMinutes(int minutes) {
-    return '$minutes분';
-  }
-
-  @override
-  String bookmarksEtaSemantic(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes분 후',
-      one: '$minutes분 후',
-      zero: '지금',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get bookmarksStatusOnTime => '정시';
-
-  @override
-  String bookmarksStatusLate(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes분 지연',
-      one: '$minutes분 지연',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String bookmarksStatusEarly(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes분 일찍',
-      one: '$minutes분 일찍',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get bookmarksStatusScheduled => '예정';
-
-  @override
-  String get bookmarksStatusCanceled => '취소됨';
-
-  @override
   String bookmarksDepartureRoute(String route, String headsign) {
     return '$headsign 방면 $route 노선';
   }
@@ -1926,11 +1833,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
   }
 
   @override
-  String bookmarksStopLine(String name, String details) {
-    return '$name, $details';
-  }
-
-  @override
   String get bookmarksEditorNameLabel => '즐겨찾기 이름';
 
   @override
@@ -1989,9 +1891,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
 
   @override
   String get bookmarksManageGroupsHeader => '그룹';
-
-  @override
-  String get bookmarksManageBookmarksHeader => '즐겨찾기';
 
   @override
   String get bookmarksManageAddGroup => '그룹 추가';
@@ -2103,9 +2002,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
   String get alarmsDeleteFailed => '미리 알림을 삭제할 수 없습니다. 연결을 확인하고 다시 시도하세요.';
 
   @override
-  String get alarmsOpen => '운행 정보를 엽니다';
-
-  @override
   String get alertsEmptyTitle => '운행 알림 없음';
 
   @override
@@ -2191,9 +2087,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
   String get alertsDetailStops => '정류장';
 
   @override
-  String get alertsDetailAgencies => '운영 기관';
-
-  @override
   String get alertsDetailLearnMore => '자세히 알아보기';
 
   @override
@@ -2203,9 +2096,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
   String alertsDetailUpdated(String date) {
     return '$date 발행';
   }
-
-  @override
-  String get alertsCouldNotOpen => '링크를 열 수 없습니다.';
 
   @override
   String get agenciesEmptyTitle => '운영 기관 없음';
@@ -2424,9 +2314,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
   String get searchNearbyLoadingDepartures => '출발 정보 불러오는 중';
 
   @override
-  String get searchNearbyUpdated => '주변 출발 정보가 업데이트되었습니다';
-
-  @override
   String searchNearbyStopsCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -2475,56 +2362,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
 
   @override
   String get searchNearbyCardTitle => '내 주변 출발 정보';
-
-  @override
-  String searchEtaMinutes(int minutes) {
-    return '$minutes분';
-  }
-
-  @override
-  String get searchEtaNow => '지금';
-
-  @override
-  String searchEtaMinutesSpoken(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes분 후',
-      one: '$minutes분 후',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get searchEtaNowSpoken => '지금 출발';
-
-  @override
-  String get searchStatusOnTime => '정시';
-
-  @override
-  String searchStatusLate(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes분 지연',
-      one: '$minutes분 지연',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String searchStatusEarly(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes분 일찍',
-      one: '$minutes분 일찍',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get searchStatusScheduled => '예정';
 
   @override
   String get searchExplorePlanTrip => '경로 계획';
@@ -2721,54 +2558,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
   String get bookmarksSectionEmpty => '즐겨찾기한 정류장이 여기에 표시됩니다.';
 
   @override
-  String get coreDirectionNameN => '북쪽';
-
-  @override
-  String get coreDirectionNameNE => '북동쪽';
-
-  @override
-  String get coreDirectionNameE => '동쪽';
-
-  @override
-  String get coreDirectionNameSE => '남동쪽';
-
-  @override
-  String get coreDirectionNameS => '남쪽';
-
-  @override
-  String get coreDirectionNameSW => '남서쪽';
-
-  @override
-  String get coreDirectionNameW => '서쪽';
-
-  @override
-  String get coreDirectionNameNW => '북서쪽';
-
-  @override
-  String get coreDirectionAbbrN => '북';
-
-  @override
-  String get coreDirectionAbbrNE => '북동';
-
-  @override
-  String get coreDirectionAbbrE => '동';
-
-  @override
-  String get coreDirectionAbbrSE => '남동';
-
-  @override
-  String get coreDirectionAbbrS => '남';
-
-  @override
-  String get coreDirectionAbbrSW => '남서';
-
-  @override
-  String get coreDirectionAbbrW => '서';
-
-  @override
-  String get coreDirectionAbbrNW => '북서';
-
-  @override
   String get coreDirectionBoundN => '북쪽 방면';
 
   @override
@@ -2793,30 +2582,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
   String get coreDirectionBoundNW => '북서쪽 방면';
 
   @override
-  String get coreRouteTypeLightRail => '경전철';
-
-  @override
-  String get coreRouteTypeSubway => '지하철';
-
-  @override
-  String get coreRouteTypeRail => '철도';
-
-  @override
-  String get coreRouteTypeBus => '버스';
-
-  @override
-  String get coreRouteTypeFerry => '여객선';
-
-  @override
-  String get coreRouteTypeCableCar => '케이블카';
-
-  @override
-  String get coreRouteTypeGondola => '곤돌라';
-
-  @override
-  String get coreRouteTypeFunicular => '푸니쿨라';
-
-  @override
   String coreStopCodeNumeric(String code) {
     return '정류장 #$code';
   }
@@ -2824,60 +2589,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
   @override
   String coreStopCodeNonNumeric(String code) {
     return '정류장: \'$code\'';
-  }
-
-  @override
-  String coreStopId(String code) {
-    return '정류장 ID: $code';
-  }
-
-  @override
-  String coreRoutesLabel(String routes) {
-    return '노선: $routes';
-  }
-
-  @override
-  String coreRoutesLabelPlusMore(String routes, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '노선: $routes 외 $count개',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String coreMapRoutesOverflow(String routes) {
-    return '$routes…';
-  }
-
-  @override
-  String coreSearchPlaceholder(String region) {
-    return '$region에서 검색';
-  }
-
-  @override
-  String get coreNow => '지금';
-
-  @override
-  String coreShortMinutes(int minutes) {
-    return '$minutes분';
-  }
-
-  @override
-  String get coreOneMinute => '1분';
-
-  @override
-  String get coreOneMinuteAgo => '1분 전';
-
-  @override
-  String coreMinutes(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes분',
-    );
-    return '$_temp0';
   }
 
   @override
@@ -2910,92 +2621,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
   }
 
   @override
-  String coreUpdatedAt(String ago) {
-    return '업데이트: $ago';
-  }
-
-  @override
-  String get coreScheduledNotRealTime => '예정/실시간 아님';
-
-  @override
-  String coreArrivedMinAgo(int minutes) {
-    return '$minutes분 전 도착';
-  }
-
-  @override
-  String coreDepartedMinAgo(int minutes) {
-    return '$minutes분 전 출발';
-  }
-
-  @override
-  String get coreArrivingNow => '지금 도착';
-
-  @override
-  String get coreDepartingNow => '지금 출발';
-
-  @override
-  String coreArrivesInMin(int minutes) {
-    return '$minutes분 후 도착';
-  }
-
-  @override
-  String coreDepartsInMin(int minutes) {
-    return '$minutes분 후 출발';
-  }
-
-  @override
-  String coreArrivedLate(int minutes) {
-    return '$minutes분 늦게 도착';
-  }
-
-  @override
-  String coreArrivedEarly(int minutes) {
-    return '$minutes분 일찍 도착';
-  }
-
-  @override
-  String get coreArrivedOnTime => '정시에 도착';
-
-  @override
-  String coreDepartedLate(int minutes) {
-    return '$minutes분 늦게 출발';
-  }
-
-  @override
-  String coreDepartedEarly(int minutes) {
-    return '$minutes분 일찍 출발';
-  }
-
-  @override
-  String get coreDepartedOnTime => '정시에 출발';
-
-  @override
-  String coreArrivesLate(int minutes) {
-    return '$minutes분 늦게 도착 예정';
-  }
-
-  @override
-  String coreArrivesEarly(int minutes) {
-    return '$minutes분 일찍 도착 예정';
-  }
-
-  @override
-  String get coreArrivesOnTime => '정시 도착 예정';
-
-  @override
-  String coreDepartsLate(int minutes) {
-    return '$minutes분 늦게 출발 예정';
-  }
-
-  @override
-  String coreDepartsEarly(int minutes) {
-    return '$minutes분 일찍 출발 예정';
-  }
-
-  @override
-  String get coreDepartsOnTime => '정시 출발 예정';
-
-  @override
   String coreMeters(String value) {
     return '${value}m';
   }
@@ -3013,17 +2638,6 @@ class ObaLocalizationsKo extends ObaLocalizations {
   @override
   String coreMiles(String value) {
     return '${value}mi';
-  }
-
-  @override
-  String coreAlarmMinutes(int minutes) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '$minutes분',
-      one: '$minutes분',
-    );
-    return '$_temp0';
   }
 
   @override

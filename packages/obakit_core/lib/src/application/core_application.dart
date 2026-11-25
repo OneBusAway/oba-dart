@@ -6,7 +6,6 @@ import 'package:onebusaway/onebusaway.dart';
 import '../alerts/service_alerts.dart';
 import '../config/app_config.dart';
 import '../deep_links/deep_link_router.dart';
-import '../format/formatters.dart';
 import '../foundation/change_notifier.dart';
 import '../platform/analytics.dart';
 import '../platform/key_value_store.dart';
@@ -107,16 +106,13 @@ class ObaCoreApplication extends ObaChangeNotifier {
   late final DeepLinkRouter deepLinks = DeepLinkRouter(
     scheme: config.urlScheme,
   );
-  final ObaFormatters formatters = const ObaFormatters();
 
   /// `stops-for-route` responses for the current region's client, shared
   /// by every screen. Cleared when the region's clients change.
   final StopsForRouteCache stopsForRoute = StopsForRouteCache();
 
   final ObaValueNotifier<RegionClients?> _clients = ObaValueNotifier(null);
-  final ObaValueNotifier<String?> _regionTimeZone = ObaValueNotifier(null);
   bool _started = false;
-  int _timeZoneGeneration = 0;
 
   bool get isStarted => _started;
 
@@ -295,7 +291,6 @@ class ObaCoreApplication extends ObaChangeNotifier {
       old?.rest.close();
       old?.obaco?.close();
     }
-    _refreshRegionTimeZone();
   }
 
   // -- Location ---------------------------------------------------------------------
@@ -330,64 +325,8 @@ class ObaCoreApplication extends ObaChangeNotifier {
     if (location != null) regions.updateLocation(location);
   }
 
-  // -- Region time zone --------------------------------------------------------------
-
-  /// The IANA time zone the region's agencies use most, when
-  /// [ObaSettings.showRegionTimeZone] is on and it has been resolved;
-  /// otherwise null (use the device zone).
-  ObaValueListenable<String?> get regionTimeZoneListenable => _regionTimeZone;
-
-  String? get regionTimeZone => _regionTimeZone.value;
-
   void _onSettingsChanged() {
     analytics.setReportingEnabled(settings.analyticsReportingEnabled);
-    // Most settings changes have nothing to do with the time zone: only
-    // refetch when its inputs changed.
-    if ((settings.showRegionTimeZone, currentRegion?.id) == _timeZoneInputs) {
-      return;
-    }
-    _refreshRegionTimeZone();
-  }
-
-  /// The (setting, region id) the last [_refreshRegionTimeZone] ran for.
-  (bool, int?)? _timeZoneInputs;
-
-  Future<void> _refreshRegionTimeZone() async {
-    _timeZoneInputs = (settings.showRegionTimeZone, currentRegion?.id);
-    final generation = ++_timeZoneGeneration;
-    final client = restClient;
-    if (!settings.showRegionTimeZone || client == null) {
-      _regionTimeZone.value = null;
-      return;
-    }
-    try {
-      final response = await client.agencies.withCoverage();
-      if (generation != _timeZoneGeneration) return;
-      _regionTimeZone.value = preferredTimeZone([
-        for (final a in response.list)
-          ?response.references.agency(a.agencyId)?.timezone,
-      ]);
-    } catch (_) {
-      if (generation == _timeZoneGeneration) _regionTimeZone.value = null;
-    }
-  }
-
-  /// The most common identifier, ties broken alphabetically (iOS
-  /// `preferredScheduleTimeZone`).
-  static String? preferredTimeZone(Iterable<String> identifiers) {
-    final counts = <String, int>{};
-    for (final id in identifiers) {
-      if (id.isEmpty) continue;
-      counts[id] = (counts[id] ?? 0) + 1;
-    }
-    if (counts.isEmpty) return null;
-    final max = counts.values.reduce((a, b) => a > b ? a : b);
-    return (counts.entries
-            .where((e) => e.value == max)
-            .map((e) => e.key)
-            .toList()
-          ..sort())
-        .first;
   }
 
   // -- Identity ---------------------------------------------------------------------
@@ -453,7 +392,6 @@ class ObaCoreApplication extends ObaChangeNotifier {
     c?.obaco?.close();
     _clients.dispose();
     locationService.dispose();
-    _regionTimeZone.dispose();
     if (_ownsHttp) httpClient.close();
     super.dispose();
   }

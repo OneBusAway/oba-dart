@@ -147,7 +147,8 @@ class SurveyService extends ObaChangeNotifier {
         userId: userData.surveyUserIdentifier,
       );
       _all = List.of(response.surveys);
-      _updateVisible();
+      final now = clock.now();
+      _visible = _all.where((s) => s.isActive(now)).toList();
       _lastFetch = clock.now();
     } catch (e) {
       _lastError = e;
@@ -182,14 +183,12 @@ class SurveyService extends ObaChangeNotifier {
       userData.nextSurveyReminderDate = clock.now().add(reminderDelay);
 
   void markCompleted(Survey survey) {
-    userData.markSurveyCompleted(survey.id, userData.surveyUserIdentifier);
-    _updateVisible();
+    userData.markSurveyCompleted(survey.id);
     notifyListeners();
   }
 
   void markForLater(Survey survey) {
-    userData.markSurveyForLater(survey.id, userData.surveyUserIdentifier);
-    _updateVisible();
+    userData.markSurveyForLater(survey.id);
     notifyListeners();
   }
 
@@ -198,8 +197,6 @@ class SurveyService extends ObaChangeNotifier {
     markForLater(survey);
     setNextReminderDate();
   }
-
-  void dismiss(Survey survey) => markCompleted(survey);
 
   Future<SurveySubmissionResponse> submitHeroQuestion({
     required Survey survey,
@@ -244,11 +241,6 @@ class SurveyService extends ObaChangeNotifier {
   static String formatCheckboxAnswer(List<String> selections) =>
       jsonEncode(selections);
 
-  void _updateVisible() {
-    final now = clock.now();
-    _visible = _all.where((s) => s.isActive(now)).toList();
-  }
-
   /// Priority: (1) always-visible single-response not yet completed, at
   /// once; (2) the first one-time survey not completed (or due again after
   /// "later"); (3) the first always-visible multi-response survey.
@@ -257,7 +249,6 @@ class SurveyService extends ObaChangeNotifier {
     required String? stopId,
     required List<String> routeIds,
   }) {
-    final userId = userData.surveyUserIdentifier;
     final now = clock.now();
     Survey? alwaysVisible;
     Survey? oneTime;
@@ -267,15 +258,15 @@ class SurveyService extends ObaChangeNotifier {
           ? _visibleOnStop(survey, stopId, routeIds, now)
           : survey.shouldShowOnMap(now);
       if (!visible) continue;
-      final completed = userData.isSurveyCompleted(survey.id, userId);
+      final completed = userData.isSurveyCompleted(survey.id);
       if (survey.alwaysVisible) {
         if (survey.allowsMultipleResponses) {
           alwaysVisible ??= survey;
         } else if (!completed) {
           return survey;
         }
-      } else if (userData.isSurveyMarkedForLater(survey.id, userId)) {
-        if (userData.shouldShowSurveyLater(survey.id, userId)) {
+      } else if (userData.isSurveyMarkedForLater(survey.id)) {
+        if (userData.shouldShowSurveyLater(survey.id)) {
           oneTime ??= survey;
         }
       } else if (!completed) {

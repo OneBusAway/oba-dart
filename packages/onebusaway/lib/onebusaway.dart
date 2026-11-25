@@ -3,6 +3,7 @@ library;
 
 export 'src/client.dart';
 export 'src/core/errors.dart';
+export 'src/core/ids.dart';
 export 'src/core/references.dart';
 export 'src/core/responses.dart';
 export 'src/models/agency.dart';

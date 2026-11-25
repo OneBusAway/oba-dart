@@ -24,31 +24,23 @@ void main() {
     expect(s.bikeSpeedMetersPerSecond, 4.2);
     expect(s.effectiveTravelSpeedMetersPerSecond, 1.4);
     expect(s.mapType, MapType.standard);
-    expect(s.mapShowsScale, isTrue);
     expect(s.walkingDirectionsProvider, WalkingDirectionsProvider.askEveryTime);
     expect(s.analyticsReportingEnabled, isTrue);
     expect(s.debugMode, isFalse);
     expect(s.defaultAlarmLeadTimeMinutes, 10);
-    expect(s.clustersStops, isFalse);
-    expect(s.showRegionTimeZone, isFalse);
   });
 
   test('setters persist and notify only on change', () {
     s.arrivalDepartureFilter = ArrivalDepartureFilter.all;
     s.arrivalDepartureFilter = ArrivalDepartureFilter.all;
     s.mapType = MapType.hybrid;
-    s.compactMode = true;
     s.reducedColors = true;
     s.debugMode = true;
-    s.clustersStops = true;
-    expect(n, 6);
+    expect(n, 4);
     final r = ObaSettings(kv);
     expect(r.arrivalDepartureFilter, ArrivalDepartureFilter.all);
     expect(r.mapType, MapType.hybrid);
-    expect(
-      r.compactMode && r.reducedColors && r.debugMode && r.clustersStops,
-      isTrue,
-    );
+    expect(r.reducedColors && r.debugMode, isTrue);
   });
 
   test('speeds clamp and presets map', () {

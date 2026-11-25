@@ -1,9 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:oba_arrivals/oba_arrivals.dart' show parseHexColor;
 import 'package:obakit_core/obakit_core.dart' hide Route;
 import 'package:obakit_core/obakit_core.dart' as oba show Route;
 
+import '../../widgets/text_scale.dart';
+import '../../widgets/heading.dart';
+import '../../app/polling.dart';
 import '../../app/application.dart';
 import '../../app/location_holder.dart';
 import '../../app/scope.dart';
@@ -19,7 +23,7 @@ import '../map/map_coordinator.dart';
 import 'departure_row.dart';
 import 'stop_actions.dart';
 import 'stop_arrivals_controller.dart';
-import 'stop_format.dart';
+import '../../widgets/departure_format.dart';
 import 'stop_sections.dart';
 
 /// Departures for one stop: the SDK's main screen (iOS `StopPageView`).
@@ -185,7 +189,9 @@ class _StopPageState extends State<StopPage> {
             ? 'NA'
             // Analytics, not shown to the rider: always English.
             // l10n-exempt
-            : core.formatters.distance(distanceBetween(here, stop.coordinate)),
+            : const ObaFormatters().distance(
+                distanceBetween(here, stop.coordinate),
+              ),
       );
     }
     if (_manualRefresh && !s.isRefreshing) {
@@ -388,11 +394,8 @@ class _StopPageState extends State<StopPage> {
     if (stop == null) return ObaMapOverlay.empty;
     final oba = ObaTheme.of(context);
     final byId = {for (final r in routes) r.id: r};
-    Color colorOf(String routeId) {
-      final hex = byId[routeId]?.color;
-      final v = hex == null ? null : int.tryParse(hex, radix: 16);
-      return v == null ? oba.routeLine : Color(0xFF000000 | v);
-    }
+    Color colorOf(String routeId) =>
+        parseHexColor(byId[routeId]?.color) ?? oba.routeLine;
 
     final seenTrips = <String>{};
     final vehicles = [
@@ -407,7 +410,7 @@ class _StopPageState extends State<StopPage> {
                   : (90 - a.tripStatus!.orientation!) % 360,
               color: colorOf(a.routeId),
               label: context.obaL10n.stopTripVehicleLabel(
-                routeLabel(a, s.references),
+                routeLabel(a, s.references.route(a.routeId)),
               ),
               onTap: () =>
                   ObaNavigator.of(context)
@@ -436,32 +439,42 @@ class _StopPageState extends State<StopPage> {
 
   // -- Header actions ---------------------------------------------------------
 
-  static bool _compactHeader(BuildContext context) =>
-      MediaQuery.textScalerOf(context).scale(10) >= 15;
+  static bool _compactHeader(BuildContext context) => obaIsLargeText(context);
+
+  /// The bookmark action, for the header button and the overflow menu:
+  /// edit the stop's bookmark, or add one (null [onPressed] while neither
+  /// is possible).
+  ({IconData icon, String label, bool bookmarked, VoidCallback? onPressed})
+  _bookmarkAction(BuildContext context, ObaCoreApplication core, Stop? stop) {
+    final l10n = context.obaL10n;
+    final bookmark = core.userData.findBookmarkForStop(
+      widget.stopId,
+      regionId: _regionId,
+    );
+    final nav = ObaNavigator.of(context);
+    return (
+      icon: bookmark == null ? Icons.bookmark_border : Icons.bookmark,
+      label: bookmark == null ? l10n.stopPageBookmark : l10n.stopPageBookmarked,
+      bookmarked: bookmark != null,
+      onPressed: bookmark != null
+          ? () => nav.push(BookmarkEditorRoute(bookmark: bookmark))
+          : stop != null
+          ? () => nav.push(BookmarkEditorRoute(stop: stop))
+          : null,
+    );
+  }
 
   Widget _bookmarkButton(
     BuildContext context,
     ObaCoreApplication core,
     Stop? stop,
   ) {
-    final l10n = context.obaL10n;
-    final bookmark = core.userData.findBookmarkForStop(
-      widget.stopId,
-      regionId: _regionId,
-    );
+    final action = _bookmarkAction(context, core, stop);
     return IconButton(
-      icon: Icon(bookmark == null ? Icons.bookmark_border : Icons.bookmark),
-      tooltip: bookmark == null
-          ? l10n.stopPageBookmark
-          : l10n.stopPageBookmarked,
-      isSelected: bookmark != null,
-      onPressed: stop == null && bookmark == null
-          ? null
-          : () => ObaNavigator.of(context).push(
-              bookmark != null
-                  ? BookmarkEditorRoute(bookmark: bookmark)
-                  : BookmarkEditorRoute(stop: stop),
-            ),
+      icon: Icon(action.icon),
+      tooltip: action.label,
+      isSelected: action.bookmarked,
+      onPressed: action.onPressed,
     );
   }
 
@@ -474,10 +487,7 @@ class _StopPageState extends State<StopPage> {
         : DeepLinkRouter.stopShareUrl(region: region, stopId: widget.stopId);
     final planning = core.tripPlanningStatus == FeatureStatus.running;
     final bike = core.settings.bikeModeEnabled;
-    final bookmark = core.userData.findBookmarkForStop(
-      widget.stopId,
-      regionId: _regionId,
-    );
+    final bookmark = _bookmarkAction(context, core, stop);
     PopupMenuItem<VoidCallback> item(
       IconData icon,
       String label,
@@ -502,18 +512,8 @@ class _StopPageState extends State<StopPage> {
       itemBuilder: (_) => [
         if (_compactHeader(context)) ...[
           item(Icons.refresh, l10n.stopPageRefresh, _refresh),
-          if (bookmark != null || stop != null)
-            item(
-              bookmark == null ? Icons.bookmark_border : Icons.bookmark,
-              bookmark == null
-                  ? l10n.stopPageBookmark
-                  : l10n.stopPageBookmarked,
-              () => nav.push(
-                bookmark != null
-                    ? BookmarkEditorRoute(bookmark: bookmark)
-                    : BookmarkEditorRoute(stop: stop),
-              ),
-            ),
+          if (bookmark.onPressed case final onPressed?)
+            item(bookmark.icon, bookmark.label, onPressed),
         ],
         item(
           Icons.calendar_month_outlined,
@@ -585,14 +585,7 @@ class _StopPageState extends State<StopPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Semantics(
-            container: true,
-            header: true,
-            child: Text(
-              l10n.stopPageDeparturesHeader,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
+          ObaHeading(l10n.stopPageDeparturesHeader),
           const SizedBox(height: 8),
           SegmentedButton<StopSort>(
             segments: [
@@ -819,17 +812,22 @@ class _StopPageState extends State<StopPage> {
           children.add(fixed(const Divider(height: 1)));
         }
       }
-      Widget walkDivider(int minutes) => WalkTimeDivider(
-        minutes: minutes,
-        bike: core.settings.bikeModeEnabled,
-        onTap: s.stop == null
-            ? null
-            : () => openStopDirections(context, s.stop!.coordinate),
-      );
-      for (var i = 0; i < d.upcoming.length; i++) {
+      // The divider may also go after the last row (every row missed).
+      for (var i = 0; i <= d.upcoming.length; i++) {
         if (i == d.walkDividerIndex && walkMinutes != null) {
-          children.add(fixed(walkDivider(walkMinutes)));
+          children.add(
+            fixed(
+              WalkTimeDivider(
+                minutes: walkMinutes,
+                bike: core.settings.bikeModeEnabled,
+                onTap: s.stop == null
+                    ? null
+                    : () => openStopDirections(context, s.stop!.coordinate),
+              ),
+            ),
+          );
         }
+        if (i == d.upcoming.length) break;
         final missed = d.walkDividerIndex != null && i < d.walkDividerIndex!;
         children.add(
           row(
@@ -837,9 +835,6 @@ class _StopPageState extends State<StopPage> {
             missed ? ObaDepartureRowStyle.missed : ObaDepartureRowStyle.normal,
           ),
         );
-      }
-      if (d.walkDividerIndex == d.upcoming.length && walkMinutes != null) {
-        children.add(fixed(walkDivider(walkMinutes)));
       }
     } else {
       for (final g in d.groups) {

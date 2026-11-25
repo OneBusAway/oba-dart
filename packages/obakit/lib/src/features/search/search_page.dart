@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../widgets/loader.dart';
 import '../../app/application.dart';
 import '../../app/scope.dart';
 import '../../features/map/map_coordinator.dart';
@@ -10,7 +11,6 @@ import '../../l10n/l10n.dart';
 import '../../l10n/strings_bridge.dart';
 import '../../navigation/oba_navigator.dart';
 import '../../navigation/oba_route.dart';
-import '../../navigation/presentation.dart';
 import '../../widgets/rows.dart';
 import '../../widgets/sheet_page.dart';
 import '../../widgets/states.dart';
@@ -48,7 +48,8 @@ enum _PlaceState { idle, loading, loaded, error }
 
 /// The search session: query, scope, the live place results and the
 /// running search. Owned by [SearchPage]'s State.
-class SearchSessionController extends ChangeNotifier {
+class SearchSessionController extends ChangeNotifier
+    with ObaDisposeSafeNotifier {
   SearchSessionController(
     this.app, {
     this.debounce = const Duration(milliseconds: 350),
@@ -71,7 +72,6 @@ class SearchSessionController extends ChangeNotifier {
   List<Place> _places = const [];
   int _searchGeneration = 0;
   bool _searching = false;
-  bool _disposed = false;
 
   SearchService get _service => app.core.search;
 
@@ -141,11 +141,11 @@ class SearchSessionController extends ChangeNotifier {
         near: mapCenter?.call() ?? region?.centerCoordinate,
         within: region?.serviceRect ?? visibleBounds?.call(),
       );
-      if (_disposed || generation != _placeGeneration) return;
+      if (isDisposed || generation != _placeGeneration) return;
       _places = result;
       _placeState = _PlaceState.loaded;
     } catch (_) {
-      if (_disposed || generation != _placeGeneration) return;
+      if (isDisposed || generation != _placeGeneration) return;
       _places = const [];
       _placeState = _PlaceState.error;
     }
@@ -167,7 +167,7 @@ class SearchSessionController extends ChangeNotifier {
       );
       return generation == _searchGeneration ? result : null;
     } finally {
-      if (!_disposed && generation == _searchGeneration) {
+      if (!isDisposed && generation == _searchGeneration) {
         _searching = false;
         notifyListeners();
       }
@@ -185,7 +185,6 @@ class SearchSessionController extends ChangeNotifier {
 
   @override
   void dispose() {
-    _disposed = true;
     _debounceTimer?.cancel();
     super.dispose();
   }
@@ -396,13 +395,10 @@ class _SearchPageState extends State<SearchPage> {
       onClear: () => _setQueryText(''),
       onScope: _session.setScope,
     );
-    // Embedded pages have no header, so the field goes into the list.
-    final embedded = ObaPresentation.of(context) == ObaPresentation.embedded;
     return ObaSheetPage(
       title: l10n.titleSearch,
-      headerBottom: embedded ? null : header,
+      headerBottom: header,
       slivers: [
-        if (embedded) SliverToBoxAdapter(child: header),
         if (_session.isSearching)
           SliverToBoxAdapter(
             child: Semantics(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:obakit_core/obakit_core.dart';
 
+import 'heading.dart';
 import '../l10n/l10n.dart';
 
 /// Centred icon, title, message and optional action. For empty lists.
@@ -39,15 +40,7 @@ class ObaEmptyState extends StatelessWidget {
                 ),
               ),
             const SizedBox(height: 12),
-            Semantics(
-              container: true,
-              header: true,
-              child: Text(
-                title,
-                style: theme.textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-            ),
+            ObaHeading(title, textAlign: TextAlign.center),
             if (message != null) ...[
               const SizedBox(height: 8),
               Text(
@@ -127,6 +120,30 @@ class ObaLoadingState extends StatelessWidget {
   }
 }
 
+/// A sliver page's state before it has anything to show: [ObaErrorState]
+/// (with [onRetry]; [errorMessage] overrides the text) when [error] is set,
+/// otherwise [ObaLoadingState], filling the rest of the scroll view.
+class ObaLoadingOrErrorSliver extends StatelessWidget {
+  const ObaLoadingOrErrorSliver({
+    super.key,
+    this.error,
+    this.errorMessage,
+    this.onRetry,
+  });
+
+  final Object? error;
+  final String? errorMessage;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) => SliverFillRemaining(
+    hasScrollBody: false,
+    child: error != null
+        ? ObaErrorState(error: error, message: errorMessage, onRetry: onRetry)
+        : const ObaLoadingState(),
+  );
+}
+
 /// Announces [message] to screen readers (polite). Use after a refresh
 /// changes what is on screen, e.g. "Updated" or "3 departures".
 void obaAnnounce(BuildContext context, String message) {
@@ -137,4 +154,44 @@ void obaAnnounce(BuildContext context, String message) {
     message,
     Directionality.maybeOf(context) ?? TextDirection.ltr,
   );
+}
+
+/// Shows [message] in a snack bar (when there is a messenger) and
+/// announces it to screen readers. Use it for every transient
+/// confirmation or failure.
+void obaNotify(BuildContext context, String message) {
+  ScaffoldMessenger.maybeOf(context)
+    ?..hideCurrentSnackBar()
+    ..showSnackBar(SnackBar(content: Text(message)));
+  obaAnnounce(context, message);
+}
+
+/// Asks the rider to confirm a destructive action: [title], [message], a
+/// Cancel button and a [confirmLabel] button. Completes with true only when
+/// confirmed.
+Future<bool> obaConfirm(
+  BuildContext context, {
+  required String title,
+  required String message,
+  required String confirmLabel,
+}) async {
+  final l10n = context.obaL10n;
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(title),
+      content: Text(message),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(l10n.commonCancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: Text(confirmLabel),
+        ),
+      ],
+    ),
+  );
+  return confirmed ?? false;
 }

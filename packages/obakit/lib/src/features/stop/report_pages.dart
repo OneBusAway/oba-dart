@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../widgets/heading.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
 import '../../navigation/oba_navigator.dart';
@@ -8,7 +9,6 @@ import '../../navigation/oba_route.dart';
 import '../../navigation/sheet_detents.dart';
 import '../../widgets/sheet_page.dart';
 import '../../widgets/states.dart';
-import 'stop_format.dart';
 
 enum _SendState { idle, sending, sent, failed }
 
@@ -54,11 +54,7 @@ mixin _ReportForm<W extends StatefulWidget> on State<W> {
 
   Widget heading(String text) => Padding(
     padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 4),
-    child: Semantics(
-      container: true,
-      header: true,
-      child: Text(text, style: Theme.of(context).textTheme.titleSmall),
-    ),
+    child: ObaHeading(text, style: Theme.of(context).textTheme.titleSmall),
   );
 
   Widget commentField() => Padding(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../widgets/heading.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
 import '../../navigation/oba_navigator.dart';
@@ -9,7 +10,7 @@ import '../../navigation/sheet_detents.dart';
 import '../../platform/listenable_adapter.dart';
 import '../../widgets/sheet_page.dart';
 import '../../widgets/states.dart';
-import 'link_opener.dart';
+import '../../widgets/link_opener.dart';
 
 /// A survey prompt for a stop page or the map. Put it in a feed or at the
 /// top of a stop page; it shows nothing unless `SurveyService.shouldShowSurvey`
@@ -189,21 +190,14 @@ class _ObaSurveyCardState extends State<ObaSurveyCard> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.only(top: 8),
-                      child: Semantics(
-                        container: true,
-                        header: true,
-                        child: Text(
-                          l10n.surveyCardTitle,
-                          style: theme.textTheme.titleMedium,
-                        ),
-                      ),
+                      child: ObaHeading(l10n.surveyCardTitle),
                     ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
                     tooltip: l10n.surveyDismiss,
                     onPressed: () {
-                      core.surveys.dismiss(survey);
+                      core.surveys.markCompleted(survey);
                       _finish();
                     },
                   ),

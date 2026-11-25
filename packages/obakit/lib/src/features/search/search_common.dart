@@ -3,11 +3,9 @@ import 'package:obakit_core/obakit_core.dart' hide Route;
 
 import '../../app/application.dart';
 import '../../l10n/l10n.dart';
-import '../../l10n/strings_bridge.dart';
 import '../../navigation/oba_navigator.dart';
 import '../../navigation/oba_route.dart';
 import '../../navigation/presentation.dart';
-import '../../theme/oba_theme.dart';
 import '../../widgets/states.dart';
 
 /// Where a search result leads when it needs no list (iOS
@@ -101,65 +99,3 @@ IconData searchTypeIcon(SearchType type) => switch (type) {
   SearchType.address => Icons.place_outlined,
   SearchType.vehicleId => Icons.directions_bus_outlined,
 };
-
-// -- Departure display ----------------------------------------------------------
-
-/// Short and spoken countdowns and the real-time status of a departure,
-/// with the status colour. Status is always carried by text as well as
-/// colour.
-class DepartureDisplay {
-  DepartureDisplay._({
-    required this.eta,
-    required this.etaSpoken,
-    required this.status,
-    required this.statusColor,
-    required this.isRealTime,
-  });
-
-  factory DepartureDisplay.of(
-    BuildContext context,
-    ArrivalAndDeparture a,
-    DateTime now,
-  ) {
-    final l10n = context.obaL10n;
-    final theme = ObaTheme.of(context);
-    final minutes = (a.minutesUntil(now) ?? 0).clamp(0, 9999);
-    final status = a.scheduleStatus;
-    final deviation = a.deviationFromScheduleInMinutes.abs();
-    return DepartureDisplay._(
-      eta: minutes == 0 ? l10n.searchEtaNow : l10n.searchEtaMinutes(minutes),
-      etaSpoken: minutes == 0
-          ? l10n.searchEtaNowSpoken
-          : l10n.searchEtaMinutesSpoken(minutes),
-      status: switch (status) {
-        ScheduleStatus.unknown => l10n.searchStatusScheduled,
-        ScheduleStatus.onTime => l10n.searchStatusOnTime,
-        ScheduleStatus.delayed => l10n.searchStatusLate(deviation),
-        ScheduleStatus.early => l10n.searchStatusEarly(deviation),
-      },
-      statusColor: switch (status) {
-        ScheduleStatus.unknown => theme.scheduled,
-        ScheduleStatus.onTime => theme.onTime,
-        ScheduleStatus.delayed => theme.late,
-        ScheduleStatus.early => theme.early,
-      },
-      isRealTime: status != ScheduleStatus.unknown,
-    );
-  }
-
-  final String eta;
-  final String etaSpoken;
-  final String status;
-  final Color statusColor;
-  final bool isRealTime;
-}
-
-// -- Distance -------------------------------------------------------------------
-
-/// "350 m" or "0.2 mi", following the locale's measurement system.
-String formatDistance(BuildContext context, double meters) {
-  return context.obaFormatters.distance(
-    meters,
-    units: obaDistanceUnits(context),
-  );
-}

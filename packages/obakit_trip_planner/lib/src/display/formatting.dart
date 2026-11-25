@@ -8,13 +8,18 @@ enum DistanceUnits {
   metric,
   imperial;
 
-  /// Imperial for the US, Liberia and Myanmar (as iOS's `.us` measurement
-  /// system), metric elsewhere.
+  /// Imperial (feet and miles) for the US and its territories, Liberia,
+  /// Myanmar and the UK, metric elsewhere. Mirrors `obakit_core`'s
+  /// `MeasurementSystem.forCountry` (this package doesn't depend on it), so
+  /// a planner inside obakit agrees with the rest of the app.
   static DistanceUnits forLocale(Locale? locale) =>
-      switch (locale?.countryCode?.toUpperCase()) {
-        'US' || 'LR' || 'MM' => imperial,
-        _ => metric,
-      };
+      _imperial.contains(locale?.countryCode?.toUpperCase())
+      ? imperial
+      : metric;
+
+  static const _imperial = {
+    'US', 'LR', 'MM', 'GB', 'PR', 'GU', 'VI', 'AS', 'MP', 'UM', //
+  };
 }
 
 /// A distance split into a number and unit, before localization. Distances
@@ -142,7 +147,4 @@ final class ScheduledStatus extends RealTimeStatus {
 extension LegRealTime on Leg {
   RealTimeStatus get departureStatus =>
       RealTimeStatus.of(realTime: realTime, delaySeconds: departureDelay);
-
-  RealTimeStatus get arrivalStatus =>
-      RealTimeStatus.of(realTime: realTime, delaySeconds: arrivalDelay);
 }

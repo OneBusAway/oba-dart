@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:clock/clock.dart';
 import 'package:onebusaway/onebusaway.dart';
 
+import '../format/measurement.dart';
 import '../foundation/change_notifier.dart';
 
 /// A weather condition family. Day and night variants share one value; the
@@ -75,19 +76,17 @@ class WeatherUnits {
     String? countryCode,
   }) {
     final country =
-        countryCode?.toUpperCase() ??
-        (languageCode.toLowerCase() == 'en' ? 'US' : null);
-    const fahrenheit = {'US', 'LR', 'MM', 'PR', 'GU', 'VI', 'AS', 'MP', 'UM'};
-    const mph = {...fahrenheit, 'GB'};
-    return WeatherUnits(
-      fahrenheit.contains(country)
-          ? TemperatureUnit.fahrenheit
-          : TemperatureUnit.celsius,
-      mph.contains(country)
-          ? SpeedUnit.milesPerHour
-          : SpeedUnit.kilometersPerHour,
-    );
+        countryCode ?? (languageCode.toLowerCase() == 'en' ? 'US' : null);
+    return WeatherUnits.of(MeasurementSystem.forCountry(country));
   }
+
+  /// The units [system] reads.
+  factory WeatherUnits.of(MeasurementSystem system) => WeatherUnits(
+    system.usesFahrenheit
+        ? TemperatureUnit.fahrenheit
+        : TemperatureUnit.celsius,
+    system.usesMiles ? SpeedUnit.milesPerHour : SpeedUnit.kilometersPerHour,
+  );
 
   @override
   bool operator ==(Object other) =>

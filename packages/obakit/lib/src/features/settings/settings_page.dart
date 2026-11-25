@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../widgets/heading.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
 import '../../navigation/oba_navigator.dart';
@@ -103,12 +104,6 @@ class SettingsPage extends StatelessWidget {
         labelOf: filterLabel,
         onChanged: (v) => settings.arrivalDepartureFilter = v,
       ),
-      ObaSettingSwitch(
-        title: l10n.settingsRegionTimeZone,
-        helper: l10n.settingsRegionTimeZoneHelp,
-        value: settings.showRegionTimeZone,
-        onChanged: (v) => settings.showRegionTimeZone = v,
-      ),
 
       // Accessibility
       ObaSectionHeader(title: l10n.settingsSectionAccessibility),
@@ -118,9 +113,6 @@ class SettingsPage extends StatelessWidget {
         value: settings.reducedColors,
         onChanged: (v) => settings.reducedColors = v,
       ),
-      // "Show stop labels" and "Compact stop and trip pages" are not
-      // offered: the map draws no pin labels yet, and a compact density
-      // would shrink targets below 48dp.
 
       // Walking speed and bike mode
       ObaSectionHeader(title: l10n.settingsSectionWalking),
@@ -344,11 +336,7 @@ class ObaChoiceGroup<T> extends StatelessWidget {
           padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 0),
           // Its own node: otherwise the helper sentence merges into the
           // heading.
-          child: Semantics(
-            container: true,
-            header: true,
-            child: Text(title, style: theme.textTheme.titleSmall),
-          ),
+          child: ObaHeading(title, style: theme.textTheme.titleSmall),
         ),
         if (helper != null)
           Padding(

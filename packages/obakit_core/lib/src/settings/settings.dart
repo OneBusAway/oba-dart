@@ -18,9 +18,6 @@ enum WalkingSpeedPreset {
       .firstOrNull;
 }
 
-/// Where a stored speed came from.
-enum SpeedSource { manual, synced }
-
 enum MapType { standard, satellite, hybrid }
 
 /// Which app opens walking directions.
@@ -111,15 +108,8 @@ class ObaSettings extends ObaChangeNotifier {
       WalkingSpeedPreset.matching(walkingSpeedMetersPerSecond);
 
   set walkingSpeedPreset(WalkingSpeedPreset? preset) {
-    if (preset == null) return;
-    walkingSpeedMetersPerSecond = preset.metersPerSecond;
-    walkingSpeedSource = SpeedSource.manual;
+    if (preset != null) walkingSpeedMetersPerSecond = preset.metersPerSecond;
   }
-
-  SpeedSource get walkingSpeedSource =>
-      _enum('walkingSpeedSource', SpeedSource.values, SpeedSource.manual);
-
-  set walkingSpeedSource(SpeedSource v) => _set('walkingSpeedSource', v.name);
 
   bool get bikeModeEnabled => _get('bikeModeEnabled', false);
 
@@ -131,11 +121,6 @@ class ObaSettings extends ObaChangeNotifier {
   set bikeSpeedMetersPerSecond(double v) =>
       _set('bikeSpeed', v.clamp(bikeSpeedMin, bikeSpeedMax));
 
-  SpeedSource get bikeSpeedSource =>
-      _enum('bikeSpeedSource', SpeedSource.values, SpeedSource.manual);
-
-  set bikeSpeedSource(SpeedSource v) => _set('bikeSpeedSource', v.name);
-
   /// Bike speed in bike mode, otherwise walking speed.
   double get effectiveTravelSpeedMetersPerSecond =>
       bikeModeEnabled ? bikeSpeedMetersPerSecond : walkingSpeedMetersPerSecond;
@@ -146,17 +131,9 @@ class ObaSettings extends ObaChangeNotifier {
 
   set mapType(MapType v) => _set('mapType', v.name);
 
-  bool get mapShowsScale => _get('mapShowsScale', true);
-
-  set mapShowsScale(bool v) => _set('mapShowsScale', v);
-
   bool get mapShowsHeading => _get('mapShowsHeading', true);
 
   set mapShowsHeading(bool v) => _set('mapShowsHeading', v);
-
-  bool get mapShowsStopLabels => _get('mapShowsStopLabels', true);
-
-  set mapShowsStopLabels(bool v) => _set('mapShowsStopLabels', v);
 
   WalkingDirectionsProvider get walkingDirectionsProvider => _enum(
     'walkingDirectionsProvider',
@@ -172,15 +149,6 @@ class ObaSettings extends ObaChangeNotifier {
   bool get reducedColors => _get('reducedColors', false);
 
   set reducedColors(bool v) => _set('reducedColors', v);
-
-  bool get compactMode => _get('compactMode', false);
-
-  set compactMode(bool v) => _set('compactMode', v);
-
-  /// Show times in the region's time zone rather than the device's.
-  bool get showRegionTimeZone => _get('showRegionTimeZone', false);
-
-  set showRegionTimeZone(bool v) => _set('showRegionTimeZone', v);
 
   /// Region picker toggles.
   bool get showExperimentalRegions => _get('showExperimentalRegions', false);
@@ -233,12 +201,4 @@ class ObaSettings extends ObaChangeNotifier {
     _store.writeJson('${_p}onboardingSeenVersions', map);
     notifyListeners();
   }
-
-  // -- Feature flags --------------------------------------------------------------
-
-  /// Cluster stop pins on the map (iOS `FeatureFlags.clustersStopsKey`). Off
-  /// by default.
-  bool get clustersStops => _get('featureFlags.clustersStops', false);
-
-  set clustersStops(bool v) => _set('featureFlags.clustersStops', v);
 }

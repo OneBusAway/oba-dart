@@ -119,24 +119,13 @@ class _BookmarkEditorPageState extends State<BookmarkEditorPage> {
   Future<void> _delete() async {
     final l10n = context.obaL10n;
     final existing = _existing!;
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.bookmarksEditorDeleteTitle),
-        content: Text(l10n.bookmarksEditorDeleteBody(existing.name)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(l10n.commonCancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(l10n.bookmarksActionDelete),
-          ),
-        ],
-      ),
+    final ok = await obaConfirm(
+      context,
+      title: l10n.bookmarksEditorDeleteTitle,
+      message: l10n.bookmarksEditorDeleteBody(existing.name),
+      confirmLabel: l10n.bookmarksActionDelete,
     );
-    if (ok != true || !mounted) return;
+    if (!ok || !mounted) return;
     _store.deleteBookmark(existing.id);
     ObaNavigator.of(context).pop();
   }

@@ -166,8 +166,8 @@ class DonationPromptState {
   }
 }
 
-/// Keeps prompts from piling up: one review prompt per session, none after
-/// an error, and two weeks of quiet after any inline card was shown. Port
+/// Keeps prompts from piling up: one review prompt per session, and two
+/// weeks of quiet after any inline card was shown. Port
 /// of iOS `PromptCoordinator`.
 class PromptCoordinator {
   PromptCoordinator(this._store);
@@ -178,16 +178,12 @@ class PromptCoordinator {
   static const _kLastEngagement = 'oba.prompts.lastEngagementDate';
 
   final Set<PromptKind> _shownThisSession = {};
-  final Map<PromptKind, ({DateTime? previous, DateTime written})> _undo = {};
-
-  /// Set when the rider saw an error this session; no review prompt then.
-  bool sawErrorThisSession = false;
 
   DateTime? get lastEngagement =>
       DateTime.tryParse(_store.readStringValue(_kLastEngagement) ?? '');
 
   bool canShowReviewPrompt() {
-    if (_shownThisSession.isNotEmpty || sawErrorThisSession) return false;
+    if (_shownThisSession.isNotEmpty) return false;
     final last = lastEngagement;
     if (last != null && clock.now().isBefore(last.add(engagementCooldown))) {
       return false;
@@ -201,18 +197,7 @@ class PromptCoordinator {
   void noteShown(PromptKind kind) {
     _shownThisSession.add(kind);
     if (kind != PromptKind.review) {
-      final written = clock.now();
-      _undo[kind] = (previous: lastEngagement, written: written);
-      _store.writeJson(_kLastEngagement, written.toIso8601String());
-    }
-  }
-
-  /// The prompt turned out not to be shown after all: undo its engagement.
-  void noteNotShown(PromptKind kind) {
-    _shownThisSession.remove(kind);
-    final pending = _undo.remove(kind);
-    if (pending != null && lastEngagement == pending.written) {
-      _store.writeJson(_kLastEngagement, pending.previous?.toIso8601String());
+      _store.writeJson(_kLastEngagement, clock.now().toIso8601String());
     }
   }
 
@@ -220,11 +205,7 @@ class PromptCoordinator {
   void noteSurveyEngaged() =>
       _store.writeJson(_kLastEngagement, clock.now().toIso8601String());
 
-  void beginNewSession() {
-    _shownThisSession.clear();
-    sawErrorThisSession = false;
-    _undo.clear();
-  }
+  void beginNewSession() => _shownThisSession.clear();
 
   void reset() {
     _store.writeJson(_kLastEngagement, null);

@@ -185,13 +185,14 @@ void main() {
     service.result = sdPlan();
     await controller.plan();
     controller.selectItinerary(2);
+    expect(controller.state.selectedIndex, 2);
     expect(
-      controller.state.selectedItinerary,
-      same(controller.state.itineraries[2]),
+      controller.state.itineraries,
+      hasLength(sdPlan().itineraries.length),
     );
     expect(controller.state.status, TripPlannerStatus.loaded);
     controller.selectItinerary(null);
-    expect(controller.state.selectedItinerary, isNull);
+    expect(controller.state.selectedIndex, isNull);
   });
 
   test('setOriginIfEmpty never overwrites a chosen origin', () {

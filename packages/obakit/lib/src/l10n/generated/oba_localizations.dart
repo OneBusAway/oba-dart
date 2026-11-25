@@ -179,24 +179,6 @@ abstract class ObaLocalizations {
   /// **'Something went wrong'**
   String get commonErrorTitle;
 
-  /// Generic title of an empty list.
-  ///
-  /// In en, this message translates to:
-  /// **'Nothing here yet'**
-  String get commonEmptyTitle;
-
-  /// Title of a placeholder screen that is not built yet.
-  ///
-  /// In en, this message translates to:
-  /// **'Coming soon'**
-  String get commonComingSoon;
-
-  /// Body of a placeholder screen that is not built yet.
-  ///
-  /// In en, this message translates to:
-  /// **'This screen isn\'t available yet.'**
-  String get commonComingSoonBody;
-
   /// Error body when the device has no network.
   ///
   /// In en, this message translates to:
@@ -365,12 +347,6 @@ abstract class ObaLocalizations {
   /// **'Vehicle'**
   String get mapVehicle;
 
-  /// Appended to a stop marker's screen reader label when it is the selected stop.
-  ///
-  /// In en, this message translates to:
-  /// **'Selected'**
-  String get mapSelectedStop;
-
   /// Appended to a stop marker's screen reader label when the stop is bookmarked.
   ///
   /// In en, this message translates to:
@@ -419,29 +395,11 @@ abstract class ObaLocalizations {
   /// **'Hybrid'**
   String get mapTypeHybrid;
 
-  /// Map setting: show the scale bar.
-  ///
-  /// In en, this message translates to:
-  /// **'Show scale'**
-  String get mapShowScale;
-
   /// Map setting: show which way the device faces.
   ///
   /// In en, this message translates to:
   /// **'Show heading'**
   String get mapShowHeading;
-
-  /// Map setting: show stop names under pins.
-  ///
-  /// In en, this message translates to:
-  /// **'Show stop labels'**
-  String get mapShowStopLabels;
-
-  /// Screen reader label of a marker for a coordinate.
-  ///
-  /// In en, this message translates to:
-  /// **'Location at {lat}, {lon}'**
-  String mapPlaceAt(String lat, String lon);
 
   /// Stop direction.
   ///
@@ -868,12 +826,6 @@ abstract class ObaLocalizations {
   /// In en, this message translates to:
   /// **'Google Maps'**
   String get stopPageGoogleMaps;
-
-  /// Shown when a link fails to open.
-  ///
-  /// In en, this message translates to:
-  /// **'Couldn\'t open that link.'**
-  String get stopPageCannotOpen;
 
   /// Banner when the stop was opened as a transfer.
   ///
@@ -1834,12 +1786,6 @@ abstract class ObaLocalizations {
   /// **'Shows the direction you are facing on the map.'**
   String get settingsHeadingHelp;
 
-  /// Helper text under the Show stop labels switch.
-  ///
-  /// In en, this message translates to:
-  /// **'Shows route names next to stops on the map.'**
-  String get settingsStopLabelsHelp;
-
   /// Label of the setting that picks which app gives walking directions.
   ///
   /// In en, this message translates to:
@@ -1906,18 +1852,6 @@ abstract class ObaLocalizations {
   /// **'Scheduled only'**
   String get settingsFilterScheduled;
 
-  /// Label of the switch that shows clock times in the transit region time zone.
-  ///
-  /// In en, this message translates to:
-  /// **'Show times in the region\'s time zone'**
-  String get settingsRegionTimeZone;
-
-  /// Helper text under the region time zone switch.
-  ///
-  /// In en, this message translates to:
-  /// **'Clock times use the transit region\'s time zone, with a note when it differs from your device.'**
-  String get settingsRegionTimeZoneHelp;
-
   /// Settings section title for accessibility options.
   ///
   /// In en, this message translates to:
@@ -1935,18 +1869,6 @@ abstract class ObaLocalizations {
   /// In en, this message translates to:
   /// **'Shows route badges in one neutral style.'**
   String get settingsReducedColorsHelp;
-
-  /// Label of the switch that tightens spacing on stop and trip pages.
-  ///
-  /// In en, this message translates to:
-  /// **'Compact stop and trip pages'**
-  String get settingsCompactMode;
-
-  /// Helper text under the compact mode switch.
-  ///
-  /// In en, this message translates to:
-  /// **'Tightens spacing so more fits on screen.'**
-  String get settingsCompactModeHelp;
 
   /// Settings section title for walking speed.
   ///
@@ -2380,11 +2302,11 @@ abstract class ObaLocalizations {
   /// **'Continue and don\'t show again'**
   String get moreFareDontShowAgain;
 
-  /// Shown when a link cannot be opened.
+  /// Shown (and announced) when a web, mail, phone, maps or store link can't be opened.
   ///
   /// In en, this message translates to:
   /// **'Couldn\'t open that link.'**
-  String get moreCantOpenLink;
+  String get commonCantOpenLink;
 
   /// Switch in the region picker that selects the region from the rider location.
   ///
@@ -3034,54 +2956,6 @@ abstract class ObaLocalizations {
   /// **'Updated'**
   String get dataUpdated;
 
-  /// Minutes until a departure, shown in a compact badge, when it is leaving this minute.
-  ///
-  /// In en, this message translates to:
-  /// **'Now'**
-  String get bookmarksEtaNow;
-
-  /// Minutes until a departure, shown in a compact badge.
-  ///
-  /// In en, this message translates to:
-  /// **'{minutes} min'**
-  String bookmarksEtaMinutes(int minutes);
-
-  /// Spoken form of the time until a departure, read after the route name.
-  ///
-  /// In en, this message translates to:
-  /// **'{minutes, plural, =0{now} =1{in 1 minute} other{in {minutes} minutes}}'**
-  String bookmarksEtaSemantic(int minutes);
-
-  /// Real-time status of a departure that is on schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'On time'**
-  String get bookmarksStatusOnTime;
-
-  /// Real-time status of a departure that is behind schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'{minutes, plural, =1{1 min late} other{{minutes} min late}}'**
-  String bookmarksStatusLate(int minutes);
-
-  /// Real-time status of a departure that is ahead of schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'{minutes, plural, =1{1 min early} other{{minutes} min early}}'**
-  String bookmarksStatusEarly(int minutes);
-
-  /// Status of a departure that has no real-time prediction, only a timetable time.
-  ///
-  /// In en, this message translates to:
-  /// **'Scheduled'**
-  String get bookmarksStatusScheduled;
-
-  /// Status of a departure whose trip was canceled.
-  ///
-  /// In en, this message translates to:
-  /// **'Canceled'**
-  String get bookmarksStatusCanceled;
-
   /// A route and its destination, for example 'Route 10 to Downtown'.
   ///
   /// In en, this message translates to:
@@ -3274,12 +3148,6 @@ abstract class ObaLocalizations {
   /// **'Moved to {group}'**
   String bookmarksMoved(String group);
 
-  /// Spoken label of a bookmark card: its name then its details.
-  ///
-  /// In en, this message translates to:
-  /// **'{name}, {details}'**
-  String bookmarksStopLine(String name, String details);
-
   /// Label of the text field for the bookmark's name.
   ///
   /// In en, this message translates to:
@@ -3381,12 +3249,6 @@ abstract class ObaLocalizations {
   /// In en, this message translates to:
   /// **'Groups'**
   String get bookmarksManageGroupsHeader;
-
-  /// Heading above a group's bookmarks on the manage screen.
-  ///
-  /// In en, this message translates to:
-  /// **'Bookmarks'**
-  String get bookmarksManageBookmarksHeader;
 
   /// Button that creates a bookmark group.
   ///
@@ -3538,12 +3400,6 @@ abstract class ObaLocalizations {
   /// **'Couldn\'t delete the alarm. Check your connection and try again.'**
   String get alarmsDeleteFailed;
 
-  /// Hint of an alarm row.
-  ///
-  /// In en, this message translates to:
-  /// **'Opens the trip'**
-  String get alarmsOpen;
-
   /// Title shown when there are no active alerts.
   ///
   /// In en, this message translates to:
@@ -3670,12 +3526,6 @@ abstract class ObaLocalizations {
   /// **'Stops'**
   String get alertsDetailStops;
 
-  /// Heading of the agencies an alert affects.
-  ///
-  /// In en, this message translates to:
-  /// **'Agencies'**
-  String get alertsDetailAgencies;
-
   /// Button that opens the alert's web page.
   ///
   /// In en, this message translates to:
@@ -3693,12 +3543,6 @@ abstract class ObaLocalizations {
   /// In en, this message translates to:
   /// **'Issued {date}'**
   String alertsDetailUpdated(String date);
-
-  /// Shown when a web, phone or email link can't be opened.
-  ///
-  /// In en, this message translates to:
-  /// **'Couldn\'t open that link.'**
-  String get alertsCouldNotOpen;
 
   /// Title shown when the agency list is empty.
   ///
@@ -4066,12 +3910,6 @@ abstract class ObaLocalizations {
   /// **'Loading departures'**
   String get searchNearbyLoadingDepartures;
 
-  /// Screen-reader announcement after nearby departures refreshed.
-  ///
-  /// In en, this message translates to:
-  /// **'Nearby departures updated'**
-  String get searchNearbyUpdated;
-
   /// Screen-reader announcement after the nearby stops list refreshed.
   ///
   /// In en, this message translates to:
@@ -4131,54 +3969,6 @@ abstract class ObaLocalizations {
   /// In en, this message translates to:
   /// **'Departures near you'**
   String get searchNearbyCardTitle;
-
-  /// Short countdown to a departure.
-  ///
-  /// In en, this message translates to:
-  /// **'{minutes} min'**
-  String searchEtaMinutes(int minutes);
-
-  /// Countdown for a departure leaving this minute.
-  ///
-  /// In en, this message translates to:
-  /// **'Now'**
-  String get searchEtaNow;
-
-  /// Spoken countdown to a departure.
-  ///
-  /// In en, this message translates to:
-  /// **'{minutes, plural, =1{in 1 minute} other{in {minutes} minutes}}'**
-  String searchEtaMinutesSpoken(int minutes);
-
-  /// Spoken countdown for a departure leaving this minute.
-  ///
-  /// In en, this message translates to:
-  /// **'leaving now'**
-  String get searchEtaNowSpoken;
-
-  /// Real-time status: on schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'On time'**
-  String get searchStatusOnTime;
-
-  /// Real-time status: behind schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'{minutes, plural, =1{1 min late} other{{minutes} min late}}'**
-  String searchStatusLate(int minutes);
-
-  /// Real-time status: ahead of schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'{minutes, plural, =1{1 min early} other{{minutes} min early}}'**
-  String searchStatusEarly(int minutes);
-
-  /// Status of a departure with no real-time prediction.
-  ///
-  /// In en, this message translates to:
-  /// **'Scheduled'**
-  String get searchStatusScheduled;
 
   /// Explore shortcut that opens the trip planner.
   ///
@@ -4479,102 +4269,6 @@ abstract class ObaLocalizations {
   /// **'Bookmarked stops appear here.'**
   String get bookmarksSectionEmpty;
 
-  /// Compass direction a stop faces (N), spoken in a stop's screen-reader label.
-  ///
-  /// In en, this message translates to:
-  /// **'North'**
-  String get coreDirectionNameN;
-
-  /// Compass direction a stop faces (NE), spoken in a stop's screen-reader label.
-  ///
-  /// In en, this message translates to:
-  /// **'Northeast'**
-  String get coreDirectionNameNE;
-
-  /// Compass direction a stop faces (E), spoken in a stop's screen-reader label.
-  ///
-  /// In en, this message translates to:
-  /// **'East'**
-  String get coreDirectionNameE;
-
-  /// Compass direction a stop faces (SE), spoken in a stop's screen-reader label.
-  ///
-  /// In en, this message translates to:
-  /// **'Southeast'**
-  String get coreDirectionNameSE;
-
-  /// Compass direction a stop faces (S), spoken in a stop's screen-reader label.
-  ///
-  /// In en, this message translates to:
-  /// **'South'**
-  String get coreDirectionNameS;
-
-  /// Compass direction a stop faces (SW), spoken in a stop's screen-reader label.
-  ///
-  /// In en, this message translates to:
-  /// **'Southwest'**
-  String get coreDirectionNameSW;
-
-  /// Compass direction a stop faces (W), spoken in a stop's screen-reader label.
-  ///
-  /// In en, this message translates to:
-  /// **'West'**
-  String get coreDirectionNameW;
-
-  /// Compass direction a stop faces (NW), spoken in a stop's screen-reader label.
-  ///
-  /// In en, this message translates to:
-  /// **'Northwest'**
-  String get coreDirectionNameNW;
-
-  /// Short compass direction (North) after a stop name, e.g. 'Pine St & 3rd Ave (N)'.
-  ///
-  /// In en, this message translates to:
-  /// **'N'**
-  String get coreDirectionAbbrN;
-
-  /// Short compass direction (Northeast) after a stop name, e.g. 'Pine St & 3rd Ave (NE)'.
-  ///
-  /// In en, this message translates to:
-  /// **'NE'**
-  String get coreDirectionAbbrNE;
-
-  /// Short compass direction (East) after a stop name, e.g. 'Pine St & 3rd Ave (E)'.
-  ///
-  /// In en, this message translates to:
-  /// **'E'**
-  String get coreDirectionAbbrE;
-
-  /// Short compass direction (Southeast) after a stop name, e.g. 'Pine St & 3rd Ave (SE)'.
-  ///
-  /// In en, this message translates to:
-  /// **'SE'**
-  String get coreDirectionAbbrSE;
-
-  /// Short compass direction (South) after a stop name, e.g. 'Pine St & 3rd Ave (S)'.
-  ///
-  /// In en, this message translates to:
-  /// **'S'**
-  String get coreDirectionAbbrS;
-
-  /// Short compass direction (Southwest) after a stop name, e.g. 'Pine St & 3rd Ave (SW)'.
-  ///
-  /// In en, this message translates to:
-  /// **'SW'**
-  String get coreDirectionAbbrSW;
-
-  /// Short compass direction (West) after a stop name, e.g. 'Pine St & 3rd Ave (W)'.
-  ///
-  /// In en, this message translates to:
-  /// **'W'**
-  String get coreDirectionAbbrW;
-
-  /// Short compass direction (Northwest) after a stop name, e.g. 'Pine St & 3rd Ave (NW)'.
-  ///
-  /// In en, this message translates to:
-  /// **'NW'**
-  String get coreDirectionAbbrNW;
-
   /// Direction of travel at a stop facing North, e.g. 'Stop #1234 — Northbound'. Short forms follow the iOS app.
   ///
   /// In en, this message translates to:
@@ -4623,54 +4317,6 @@ abstract class ObaLocalizations {
   /// **'NW bound'**
   String get coreDirectionBoundNW;
 
-  /// Kind of transit route, shown instead of route numbers when a route has none (e.g. ferries).
-  ///
-  /// In en, this message translates to:
-  /// **'Light Rail'**
-  String get coreRouteTypeLightRail;
-
-  /// Kind of transit route, shown instead of route numbers when a route has none (e.g. ferries).
-  ///
-  /// In en, this message translates to:
-  /// **'Subway'**
-  String get coreRouteTypeSubway;
-
-  /// Kind of transit route, shown instead of route numbers when a route has none (e.g. ferries).
-  ///
-  /// In en, this message translates to:
-  /// **'Rail'**
-  String get coreRouteTypeRail;
-
-  /// Kind of transit route, shown instead of route numbers when a route has none (e.g. ferries).
-  ///
-  /// In en, this message translates to:
-  /// **'Bus'**
-  String get coreRouteTypeBus;
-
-  /// Kind of transit route, shown instead of route numbers when a route has none (e.g. ferries).
-  ///
-  /// In en, this message translates to:
-  /// **'Ferry'**
-  String get coreRouteTypeFerry;
-
-  /// Kind of transit route, shown instead of route numbers when a route has none (e.g. ferries).
-  ///
-  /// In en, this message translates to:
-  /// **'Cable Car'**
-  String get coreRouteTypeCableCar;
-
-  /// Kind of transit route, shown instead of route numbers when a route has none (e.g. ferries).
-  ///
-  /// In en, this message translates to:
-  /// **'Gondola'**
-  String get coreRouteTypeGondola;
-
-  /// Kind of transit route, shown instead of route numbers when a route has none (e.g. ferries).
-  ///
-  /// In en, this message translates to:
-  /// **'Funicular'**
-  String get coreRouteTypeFunicular;
-
   /// Numeric stop code, e.g. 'Stop #1234'.
   ///
   /// In en, this message translates to:
@@ -4682,66 +4328,6 @@ abstract class ObaLocalizations {
   /// In en, this message translates to:
   /// **'Stop: \'{code}\''**
   String coreStopCodeNonNumeric(String code);
-
-  /// Stop code in a stop's screen-reader label.
-  ///
-  /// In en, this message translates to:
-  /// **'Stop ID: {code}'**
-  String coreStopId(String code);
-
-  /// Routes serving a stop; routes is a comma-separated list such as '10, 12, 49'.
-  ///
-  /// In en, this message translates to:
-  /// **'Routes: {routes}'**
-  String coreRoutesLabel(String routes);
-
-  /// Routes serving a stop when the list is cut short; count is how many routes are not listed.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, other{Routes: {routes}, + {count} more}}'**
-  String coreRoutesLabelPlusMore(String routes, int count);
-
-  /// Route list on a map pin when more routes are not shown.
-  ///
-  /// In en, this message translates to:
-  /// **'{routes}…'**
-  String coreMapRoutesOverflow(String routes);
-
-  /// Placeholder of the search field; region is the transit region's name.
-  ///
-  /// In en, this message translates to:
-  /// **'Search in {region}'**
-  String coreSearchPlaceholder(String region);
-
-  /// Compact countdown for a vehicle arriving or departing now. Capitals follow the iOS app.
-  ///
-  /// In en, this message translates to:
-  /// **'NOW'**
-  String get coreNow;
-
-  /// Compact countdown in minutes, e.g. '7m' (negative for a past departure).
-  ///
-  /// In en, this message translates to:
-  /// **'{minutes}m'**
-  String coreShortMinutes(int minutes);
-
-  /// Spoken countdown of one minute.
-  ///
-  /// In en, this message translates to:
-  /// **'One minute'**
-  String get coreOneMinute;
-
-  /// Spoken time of a departure one minute ago.
-  ///
-  /// In en, this message translates to:
-  /// **'One minute ago'**
-  String get coreOneMinuteAgo;
-
-  /// Spoken countdown in minutes (never one: that has its own string).
-  ///
-  /// In en, this message translates to:
-  /// **'{minutes, plural, other{{minutes} minutes}}'**
-  String coreMinutes(int minutes);
 
   /// Relative time under five seconds ago. Capitals follow the iOS app.
   ///
@@ -4773,126 +4359,6 @@ abstract class ObaLocalizations {
   /// **'{days, plural, =1{1 day ago} other{{days} days ago}}'**
   String coreDaysAgo(int days);
 
-  /// When data was last updated; ago is a relative time such as '4 min. ago'.
-  ///
-  /// In en, this message translates to:
-  /// **'Updated: {ago}'**
-  String coreUpdatedAt(String ago);
-
-  /// Status of a departure with no real-time prediction.
-  ///
-  /// In en, this message translates to:
-  /// **'Scheduled/not real-time'**
-  String get coreScheduledNotRealTime;
-
-  /// A vehicle that already arrived.
-  ///
-  /// In en, this message translates to:
-  /// **'Arrived {minutes} min ago'**
-  String coreArrivedMinAgo(int minutes);
-
-  /// A vehicle that already departed.
-  ///
-  /// In en, this message translates to:
-  /// **'Departed {minutes} min ago'**
-  String coreDepartedMinAgo(int minutes);
-
-  /// A vehicle arriving now.
-  ///
-  /// In en, this message translates to:
-  /// **'Arriving now'**
-  String get coreArrivingNow;
-
-  /// A vehicle departing now.
-  ///
-  /// In en, this message translates to:
-  /// **'Departing now'**
-  String get coreDepartingNow;
-
-  /// A vehicle arriving in some minutes.
-  ///
-  /// In en, this message translates to:
-  /// **'Arrives in {minutes} min'**
-  String coreArrivesInMin(int minutes);
-
-  /// A vehicle departing in some minutes.
-  ///
-  /// In en, this message translates to:
-  /// **'Departs in {minutes} min'**
-  String coreDepartsInMin(int minutes);
-
-  /// Schedule deviation: arrived behind schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'arrived {minutes} min late'**
-  String coreArrivedLate(int minutes);
-
-  /// Schedule deviation: arrived ahead of schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'arrived {minutes} min early'**
-  String coreArrivedEarly(int minutes);
-
-  /// Schedule deviation: arrived on schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'arrived on time'**
-  String get coreArrivedOnTime;
-
-  /// Schedule deviation: departed behind schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'departed {minutes} min late'**
-  String coreDepartedLate(int minutes);
-
-  /// Schedule deviation: departed ahead of schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'departed {minutes} min early'**
-  String coreDepartedEarly(int minutes);
-
-  /// Schedule deviation: departed on schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'departed on time'**
-  String get coreDepartedOnTime;
-
-  /// Schedule deviation: arrives behind schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'arrives {minutes} min late'**
-  String coreArrivesLate(int minutes);
-
-  /// Schedule deviation: arrives ahead of schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'arrives {minutes} min early'**
-  String coreArrivesEarly(int minutes);
-
-  /// Schedule deviation: arrives on schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'arrives on time'**
-  String get coreArrivesOnTime;
-
-  /// Schedule deviation: departs behind schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'departs {minutes} min late'**
-  String coreDepartsLate(int minutes);
-
-  /// Schedule deviation: departs ahead of schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'departs {minutes} min early'**
-  String coreDepartsEarly(int minutes);
-
-  /// Schedule deviation: departs on schedule.
-  ///
-  /// In en, this message translates to:
-  /// **'departs on time'**
-  String get coreDepartsOnTime;
-
   /// A distance in metres; value is already formatted, e.g. '350 m'.
   ///
   /// In en, this message translates to:
@@ -4916,12 +4382,6 @@ abstract class ObaLocalizations {
   /// In en, this message translates to:
   /// **'{value} mi'**
   String coreMiles(String value);
-
-  /// Alarm lead time: how long before a departure the alarm rings.
-  ///
-  /// In en, this message translates to:
-  /// **'{minutes, plural, =1{1 minute} other{{minutes} minutes}}'**
-  String coreAlarmMinutes(int minutes);
 
   /// Arrivals panel countdown for a vehicle arriving now.
   ///

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../widgets/states.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
 import '../../navigation/oba_navigator.dart';
@@ -18,18 +19,15 @@ class AlarmsSection extends StatelessWidget {
 
   Future<void> _remove(BuildContext context, StoredAlarm alarm) async {
     final l10n = context.obaL10n;
-    final messenger = ScaffoldMessenger.maybeOf(context);
     final alarms = ObaScope.of(context).core.alarms;
+    String message;
     try {
       await alarms.removeAlarm(alarm);
-      messenger
-        ?..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(l10n.alarmsDeleted)));
+      message = l10n.alarmsDeleted;
     } on Object {
-      messenger
-        ?..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(l10n.alarmsDeleteFailed)));
+      message = l10n.alarmsDeleteFailed;
     }
+    if (context.mounted) obaNotify(context, message);
   }
 
   @override
@@ -71,10 +69,7 @@ class _AlarmRow extends StatelessWidget {
     final link = alarm.deepLink!;
     final time = alarm.tripDate == null
         ? ''
-        : MaterialLocalizations.of(context).formatTimeOfDay(
-            TimeOfDay.fromDateTime(alarm.tripDate!.toLocal()),
-            alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
-          );
+        : obaClockTime(context, alarm.tripDate!);
     final minutes = alarm.leadTimeMinutes;
     final details = minutes == null
         ? time

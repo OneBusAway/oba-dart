@@ -10,9 +10,8 @@ import 'oba_route.dart';
 /// Maps every [ObaRoute] to its page. The switch is exhaustive, so adding a
 /// route variant without a page fails to compile.
 ///
-/// Each feature area owns one file (see the README's "Contributing a
-/// screen"); this registry only forwards. Feature agents edit their own
-/// file, not this one.
+/// Each feature area keeps its `build...Route` functions in one file (see
+/// the README's "Contributing a screen"); this registry only forwards.
 abstract final class ObaRouteBuilder {
   static Widget build(BuildContext context, ObaRoute route) => switch (route) {
     // search_routes.dart
@@ -46,7 +45,7 @@ abstract final class ObaRouteBuilder {
     CustomRegionRoute() => buildCustomRegionRoute(context, route),
     CreditsRoute() => buildCreditsRoute(context, route),
     OnboardingRoute() => buildOnboardingRoute(context, route),
-    // map_routes.dart (scaffold-owned)
+    // map_routes.dart
     MapSettingsRoute() => buildMapSettingsRoute(context, route),
     StopsOnMapRoute() => buildStopsOnMapRoute(context, route),
     // Extension point.

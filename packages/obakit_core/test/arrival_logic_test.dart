@@ -1,4 +1,5 @@
 import 'package:obakit_core/obakit_core.dart';
+import 'package:obakit_core/src/arrivals/walk_time.dart';
 import 'package:test/test.dart';
 
 import 'support/support.dart';
@@ -225,25 +226,7 @@ void main() {
         arrivalsMatchingTripKey([rt, sched, second], key).map((a) => a.tripId),
         ['rt2', 'rt'],
       );
-      final grouped = groupArrivalsByTripKey([rt, sched, second]);
-      expect(grouped, hasLength(2));
-      expect(grouped[key]!.first.tripId, 'rt2');
       expect(key.routeAndHeadsign, '10 - Downtown');
-      final noName = arrival(routeShortName: null, headsign: null);
-      final refs = References(
-        routes: {
-          '1_10': const Route(id: '1_10', agencyId: '1', shortName: '10'),
-        },
-      );
-      expect(
-        groupArrivalsByTripKey([noName], references: refs).keys.single,
-        const TripBookmarkKey(
-          stopId: '1_100',
-          routeShortName: '10',
-          routeId: '1_10',
-          tripHeadsign: '',
-        ),
-      );
     });
   });
 
@@ -284,22 +267,13 @@ void main() {
       expect(travelTimeSeconds(user, stop, metersPerSecond: -1), isNull);
     });
 
-    test('partition and divider index', () {
+    test('divider index', () {
       final rows = [
         arrival(tripId: 'past', scheduled: at(-3)),
         arrival(tripId: 'soon', scheduled: at(2)),
         arrival(tripId: 'edge', scheduled: at(5)),
         arrival(tripId: 'later', scheduled: at(12)),
       ];
-      final p = partitionByWalkTime(rows.reversed, now: t0, walkMinutes: 5);
-      expect(p.past.map((a) => a.tripId), ['past']);
-      expect(p.missed.map((a) => a.tripId), ['soon']);
-      expect(p.reachable.map((a) => a.tripId), ['edge', 'later']);
-      expect(p.showsWalkDivider, isTrue);
-      final none = partitionByWalkTime(rows, now: t0);
-      expect(none.missed, isEmpty);
-      expect(none.reachable, hasLength(3));
-
       expect(walkTimeDividerIndex(rows, now: t0, walkMinutes: 5), 2);
       expect(walkTimeDividerIndex(rows, now: t0, walkMinutes: 1), isNull);
       expect(walkTimeDividerIndex(rows, now: t0, walkMinutes: 60), 4);

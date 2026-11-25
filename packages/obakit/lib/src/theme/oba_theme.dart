@@ -1,9 +1,13 @@
-import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
 import 'package:oba_arrivals/oba_arrivals.dart'
-    show ObaArrivalsTheme, ensureContrast;
+    show
+        ObaArrivalsTheme,
+        contrastRatio,
+        contrastingTextColor,
+        ensureContrast,
+        readableTextColor;
 
 /// OneBusAway-specific colours and metrics, as a [ThemeExtension].
 ///
@@ -218,15 +222,6 @@ class ObaTheme extends ThemeExtension<ObaTheme> {
   final double wideLayoutBreakpoint;
   final double routeLineWidth;
 
-  /// Colour for an arrival status, as `ObaArrivalsTheme` classifies it.
-  Color statusColor(String kind) => switch (kind) {
-    'onTime' => onTime,
-    'late' => late,
-    'early' => early,
-    'canceled' => canceled,
-    _ => scheduled,
-  };
-
   /// The matching [ObaArrivalsTheme], so the reused arrivals widgets use
   /// the same (accessible) status colours.
   ObaArrivalsTheme toArrivalsTheme() => ObaArrivalsTheme(
@@ -361,34 +356,19 @@ class ObaTheme extends ThemeExtension<ObaTheme> {
   }
 }
 
-/// WCAG 2.1 contrast helpers.
+/// WCAG 2.1 contrast helpers. Thin forwarders to `oba_arrivals`'
+/// `color_utils.dart`, kept so obakit code and hosts have one name for them.
 abstract final class ObaContrast {
   /// Relative luminance of an opaque colour.
-  static double luminance(Color c) {
-    double ch(double v) => v <= 0.03928
-        ? v / 12.92
-        : math.pow((v + 0.055) / 1.055, 2.4).toDouble();
-    return 0.2126 * ch(c.r) + 0.7152 * ch(c.g) + 0.0722 * ch(c.b);
-  }
+  static double luminance(Color c) => c.computeLuminance();
 
   /// Contrast ratio (1 to 21) between two colours; translucent [a] is
   /// composited over [b] first.
-  static double ratio(Color a, Color b) {
-    final fg = a.a < 1 ? Color.alphaBlend(a, b) : a;
-    final l1 = luminance(fg);
-    final l2 = luminance(b);
-    final hi = math.max(l1, l2);
-    final lo = math.min(l1, l2);
-    return (hi + 0.05) / (lo + 0.05);
-  }
+  static double ratio(Color a, Color b) => contrastRatio(a, b);
 
   /// Black or white, whichever is more readable on [background]. Use it for
   /// text on route colours from the feed.
-  static Color readableOn(Color background) =>
-      ratio(const Color(0xFFFFFFFF), background) >=
-          ratio(const Color(0xFF000000), background)
-      ? const Color(0xFFFFFFFF)
-      : const Color(0xFF000000);
+  static Color readableOn(Color background) => contrastingTextColor(background);
 
   /// [preferred] when it reaches [minRatio] on [background], otherwise
   /// [readableOn]. For GTFS `route_text_color`, which feeds sometimes get
@@ -397,10 +377,5 @@ abstract final class ObaContrast {
     Color? preferred,
     Color background, {
     double minRatio = 4.5,
-  }) {
-    if (preferred != null && ratio(preferred, background) >= minRatio) {
-      return preferred;
-    }
-    return readableOn(background);
-  }
+  }) => readableTextColor(preferred, background, minRatio: minRatio);
 }

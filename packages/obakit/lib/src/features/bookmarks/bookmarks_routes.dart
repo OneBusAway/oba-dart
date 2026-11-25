@@ -24,7 +24,7 @@ export 'bookmarks_page.dart'
     show BookmarksPage, BookmarksSection, ObaBookmarksCard;
 export 'manage_bookmarks.dart' show ManageBookmarksPage;
 export 'recent_stops.dart' show RecentStopsPage, RecentStopsSection;
-export 'url_opener.dart' show ObaUrlOpener;
+export '../../widgets/link_opener.dart' show ObaUrlOpener;
 
 Widget buildRecentStopsRoute(BuildContext context, RecentStopsRoute route) =>
     const RecentStopsPage();

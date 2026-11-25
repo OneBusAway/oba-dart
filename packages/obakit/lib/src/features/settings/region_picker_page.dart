@@ -62,30 +62,16 @@ class _RegionPickerPageState extends State<RegionPickerPage> {
     final l10n = context.obaL10n;
     final core = _core;
     if (core.regions.currentRegion?.id == region.id) {
-      final message = l10n.regionPickerCantDeleteCurrent;
-      obaAnnounce(context, message);
-      ScaffoldMessenger.maybeOf(context)
-          ?.showSnackBar(SnackBar(content: Text(message)));
+      obaNotify(context, l10n.regionPickerCantDeleteCurrent);
       return;
     }
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.regionPickerDeleteTitle(region.regionName)),
-        content: Text(l10n.regionPickerDeleteBody),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(l10n.commonCancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(l10n.regionPickerDeleteConfirm),
-          ),
-        ],
-      ),
+    final confirmed = await obaConfirm(
+      context,
+      title: l10n.regionPickerDeleteTitle(region.regionName),
+      message: l10n.regionPickerDeleteBody,
+      confirmLabel: l10n.regionPickerDeleteConfirm,
     );
-    if (confirmed == true) core.regions.deleteCustomRegion(region.id);
+    if (confirmed) core.regions.deleteCustomRegion(region.id);
   }
 
   @override

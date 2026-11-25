@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../app/polling.dart';
+import '../../widgets/heading.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
 import '../map/map_coordinator.dart';
 import '../../widgets/sheet_page.dart';
 import '../../widgets/states.dart';
-import 'url_opener.dart';
+import '../../widgets/link_opener.dart';
 
 /// The transit agencies of the current region (agencies with coverage joined
 /// with the agency details): name, website, phone, email, fare information
@@ -15,7 +17,7 @@ import 'url_opener.dart';
 class AgenciesPage extends StatefulWidget {
   const AgenciesPage({super.key, this.urlOpener});
 
-  /// Replaces `url_launcher`.
+  /// Overrides the [ObaLinkOpenerScope] opener for this page.
   final ObaUrlOpener? urlOpener;
 
   @override
@@ -33,7 +35,7 @@ class _AgenciesPageState extends State<AgenciesPage> {
 
   Future<List<({Agency agency, AgencyWithCoverage? coverage})>> _load() async {
     final client = ObaScope.of(context).core.restClient;
-    if (client == null) throw StateError('No region selected');
+    if (client == null) throw const ObaNoRegionException();
     final response = await client.agencies.withCoverage();
     final list =
         [
@@ -50,14 +52,8 @@ class _AgenciesPageState extends State<AgenciesPage> {
 
   void _retry() => setState(() => _future = _load());
 
-  Future<void> _open(Uri uri) async {
-    final ok = await (widget.urlOpener ?? defaultUrlOpener)(uri);
-    if (!ok && mounted) {
-      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-        SnackBar(content: Text(context.obaL10n.alertsCouldNotOpen)),
-      );
-    }
-  }
+  Future<void> _open(Uri uri) =>
+      obaOpenLink(context, uri, opener: widget.urlOpener);
 
   @override
   Widget build(BuildContext context) {
@@ -153,11 +149,7 @@ class _AgencyCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Semantics(
-              container: true,
-              header: true,
-              child: Text(agency.name, style: theme.textTheme.titleMedium),
-            ),
+            ObaHeading(obaBidiIsolate(context, agency.name)),
             if (site != null) action(Icons.public, l10n.agenciesWebsite, site),
             if (phone != null && phone.isNotEmpty)
               action(

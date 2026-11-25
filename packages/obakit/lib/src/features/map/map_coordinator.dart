@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 import 'package:obakit_core/obakit_core.dart' as core show Route;
 
+import '../../widgets/frame.dart';
 import 'map_logic.dart';
 
 /// A line on the map (a route shape, a trip, an itinerary leg).
@@ -270,7 +271,6 @@ class ObaMapCoordinator extends ChangeNotifier {
   void showRoute({
     required List<ObaMapPolyline> shapes,
     List<Stop> stops = const [],
-    core.Route? route,
   }) {
     setOverlay(
       _imperativeOwner,
@@ -366,9 +366,7 @@ class ObaMapCoordinator extends ChangeNotifier {
   @override
   void notifyListeners() {
     if (_disposed) return;
-    final phase = SchedulerBinding.instance.schedulerPhase;
-    if (phase == SchedulerPhase.persistentCallbacks ||
-        phase == SchedulerPhase.midFrameMicrotasks) {
+    if (obaIsMidFrame) {
       if (_notifyScheduled) return;
       _notifyScheduled = true;
       SchedulerBinding.instance.addPostFrameCallback((_) {

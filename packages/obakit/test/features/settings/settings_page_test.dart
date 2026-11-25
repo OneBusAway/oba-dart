@@ -34,8 +34,6 @@ void main() {
     await tapSwitch(tester, 'Show heading');
     expect(s.mapShowsHeading, isFalse);
     expect(find.text('Show stop labels'), findsNothing);
-    await tapSwitch(tester, "Show times in the region's time zone");
-    expect(s.showRegionTimeZone, isTrue);
     await tapSwitch(tester, 'Reduce colors on stop pages');
     expect(s.reducedColors, isTrue);
     expect(find.text('Compact stop and trip pages'), findsNothing);
@@ -90,9 +88,7 @@ void main() {
 
   testWidgets('a synced walking speed shows as custom', (tester) async {
     await boot();
-    env.core.settings
-      ..walkingSpeedMetersPerSecond = 1.2
-      ..walkingSpeedSource = SpeedSource.synced;
+    env.core.settings.walkingSpeedMetersPerSecond = 1.2;
     await env.pump(tester, const SettingsPage());
     expect(find.text('Custom (1.2 m/s)'), findsOneWidget);
   });

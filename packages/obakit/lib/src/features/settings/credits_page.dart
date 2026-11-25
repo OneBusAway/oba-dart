@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../../widgets/heading.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
 import '../../navigation/oba_navigator.dart';
@@ -9,7 +10,7 @@ import '../../navigation/sheet_detents.dart';
 import '../../widgets/rows.dart';
 import '../../widgets/sheet_page.dart';
 import '../../widgets/states.dart';
-import 'link_opener.dart';
+import '../../widgets/link_opener.dart';
 
 /// The license text of OneBusAway itself, from iOS `OBAKit_Credits.plist`.
 /// The other plist entries credit Swift libraries that this app does not
@@ -55,13 +56,9 @@ class CreditsPage extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 0),
-              child: Semantics(
-                container: true,
-                header: true,
-                child: Text(
-                  l10n.creditsLicenseTitle,
-                  style: theme.textTheme.titleSmall,
-                ),
+              child: ObaHeading(
+                l10n.creditsLicenseTitle,
+                style: theme.textTheme.titleSmall,
               ),
             ),
             Padding(
@@ -79,7 +76,7 @@ class CreditsPage extends StatelessWidget {
                   : const ExcludeSemantics(child: Icon(Icons.open_in_new)),
               onTap: attributionUrl == null
                   ? null
-                  : () => ObaLinkOpenerScope.of(context).open(attributionUrl),
+                  : () => obaOpenLink(context, attributionUrl),
             ),
             ObaSectionHeader(title: l10n.creditsLicenses),
             ObaListRow(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../widgets/heading.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
 import '../../navigation/oba_navigator.dart';
@@ -8,7 +9,7 @@ import '../../navigation/oba_route.dart';
 import '../../navigation/sheet_detents.dart';
 import '../../widgets/sheet_page.dart';
 import 'contact_us.dart';
-import 'link_opener.dart';
+import '../../widgets/link_opener.dart';
 
 /// A card asking riders to donate. Shows nothing unless donations are on
 /// (`ObaAppConfig.donations.enabled`) and `DonationPromptState.shouldRequest`
@@ -58,14 +59,7 @@ class _ObaDonationCardState extends State<ObaDonationCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Semantics(
-                container: true,
-                header: true,
-                child: Text(
-                  l10n.donationTitle(core.config.appName),
-                  style: theme.textTheme.titleMedium,
-                ),
-              ),
+              ObaHeading(l10n.donationTitle(core.config.appName)),
               const SizedBox(height: 8),
               Text(l10n.donationBody, style: theme.textTheme.bodyMedium),
               const SizedBox(height: 8),
@@ -161,13 +155,9 @@ class ObaDonationPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Semantics(
-                    container: true,
-                    header: true,
-                    child: Text(
-                      l10n.donationHeader,
-                      style: theme.textTheme.titleLarge,
-                    ),
+                  ObaHeading(
+                    l10n.donationHeader,
+                    style: theme.textTheme.titleLarge,
                   ),
                   const SizedBox(height: 12),
                   Text(
@@ -302,15 +292,10 @@ class _ObaFeedbackPromptState extends State<ObaFeedbackPrompt> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Semantics(
-                  container: true,
-                  header: true,
-                  child: Text(
-                    negative
-                        ? l10n.feedbackNegativeTitle
-                        : l10n.feedbackTitle(core.config.appName),
-                    style: theme.textTheme.titleMedium,
-                  ),
+                ObaHeading(
+                  negative
+                      ? l10n.feedbackNegativeTitle
+                      : l10n.feedbackTitle(core.config.appName),
                 ),
                 if (negative) ...[
                   const SizedBox(height: 4),

@@ -271,10 +271,12 @@ Scaffold(
 );
 ```
 
-Embedded pages show only their body by default, so the page's title and
-header actions (refresh, bookmark, the overflow menu) are hidden. Pass
-`showsHeader: true` when your screen has no title of its own for the page.
-The header has no back button; your app bar handles back.
+Embedded pages have no header by default: the page's title is left to
+your app bar, and its header actions (refresh, bookmark, the overflow menu)
+and any pinned controls lead the list instead. Pass `showsHeader: true`
+when your screen has no title of its own for the page; the title and
+actions then sit in a compact header, once. The header has no back button;
+your app bar handles back.
 
 ### 1. A stop page pushed from host code
 
@@ -430,13 +432,14 @@ ObaScope(
 // Full pages, as widgets in your own routes (all need only an ObaScope):
 const BookmarksPage();              // grouped or by distance, pinned first, sort persisted
 const AlertsListPage(stopId: '1_75403');   // or routeId:, or neither for the region
-const AgenciesPage();               // phone / email / fares open through url_launcher
+const AgenciesPage();               // phone / email / fares open through ObaLinkOpener
 ```
 
 Bookmark departures are fetched once per stop, at most three requests at a
 time, and refreshed every 30 seconds only while the widget is on screen and
-the app is in the foreground. Pass `urlOpener:` to `AlertDetailPage` or
-`AgenciesPage` to open links yourself. Region-wide alerts come from the
+the app is in the foreground. Links open through the `ObaLinkOpenerScope`
+opener (see below); pass `urlOpener:` to `AlertDetailPage` or
+`AgenciesPage` to override it for that page. Region-wide alerts come from the
 arrivals of the rider's bookmarked, recent and nearby stops, because the
 GTFS-realtime alerts feed is not ported.
 
@@ -467,9 +470,12 @@ ObaNavigator.of(context).push(const RegionPickerRoute());
   (a stop loaded, a bookmark saved) for the feedback prompt to ever appear.
   `app.core.prompts` keeps cards from piling up (one review prompt per
   session, a 14-day quiet period after any inline card).
-- Links (donate, privacy, store, mail, phone, fare payment app) open through
-  an `ObaLinkOpener`. The default uses `url_launcher`. Install your own
-  (in-app browser, test fake) with `ObaLinkOpenerScope(opener: ..., child: ...)`.
+- Every link the SDK opens (donate, privacy, store, mail, phone, fare
+  payment app, alert and agency links, directions, maps, map attribution)
+  goes through an `ObaLinkOpener`. The default uses `url_launcher`. Install
+  your own (in-app browser, test fake) with
+  `ObaLinkOpenerScope(opener: ..., child: ...)`. When a link can't be
+  opened the rider is told (snack bar and screen-reader announcement).
   When no mail app exists, "Contact us" offers to copy the address and the
   debug info.
 - Settings are `app.core.settings` (`ObaSettings`). Onboarding steps are
@@ -700,7 +706,8 @@ new public widgets to the `show` list for your file in `lib/obakit.dart`.
 2. **Use `ObaSheetPage`** as the page scaffold. Give it a `title`,
    `actions` (`IconButton` with a `tooltip`) and `slivers`. It adapts by
    itself: a compact draggable header in the sheet, an `AppBar` as a page,
-   and the body alone when embedded. If you pass `body:` instead of
+   and, embedded, either the compact header or (with no header) the
+   actions at the top of the list. Don't add them to the list yourself. If you pass `body:` instead of
    `slivers:`, the scrollable must use the primary controller (`primary:
    true`, or no `controller:`), so that dragging the content drags the sheet.
 3. **The map is optional.** Use `ObaMapCoordinator.maybeOf(context)?.…` and
@@ -751,7 +758,7 @@ Every `ObaMapMarker` needs a `label`, because screen readers announce it.
 | `ObaStopRow(stop:, routes:)` | A stop with its route-type icon, code, direction and routes. Tapping it pushes `StopRoute` |
 | `ObaRouteBadge` / `ObaRouteBadge.forRoute(route)` | Route short-name badge that grows with the text size and picks a readable text colour |
 | `ObaRouteTypeIcon`, `routeTypeIconData`, `routeTypeLabel`, `stopDirectionLabel`, `prioritizedRouteType` | Mode icons and labels |
-| `ObaLoadingState`, `ObaErrorState`, `ObaEmptyState`, `ObaComingSoonPage` (placeholder; no screen uses it now) | States |
+| `ObaLoadingState`, `ObaErrorState`, `ObaEmptyState` | States |
 | `obaAnnounce(context, message)` | Polite screen-reader announcement, for example after a refresh |
 | `oba_arrivals`: `ArrivalsController`, `ObaArrivalsPanel` | Reuse them for departures. Its `RouteBadge` also grows with the text size, but takes its colours from `ObaArrivalsTheme`; inside obakit screens use `ObaRouteBadge`, which reads `ObaTheme` and the reduced-colours setting |
 

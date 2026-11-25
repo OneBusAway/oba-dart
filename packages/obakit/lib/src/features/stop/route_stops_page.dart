@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:oba_arrivals/oba_arrivals.dart' show parseHexColor;
 import 'package:obakit_core/obakit_core.dart' hide Route;
 import 'package:obakit_core/obakit_core.dart' as oba show Route;
 
+import '../../app/polling.dart';
+import '../../widgets/loader.dart';
+import '../../widgets/heading.dart';
 import '../../app/application.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
@@ -14,47 +18,6 @@ import '../../widgets/sheet_page.dart';
 import '../../widgets/states.dart';
 import '../map/map_coordinator.dart';
 import '../map/map_logic.dart';
-
-/// Loads one value once, with retry. A tiny controller for the
-/// non-polling pages (route stops, schedules).
-class ObaLoader<T> extends ChangeNotifier {
-  ObaLoader(this._load);
-
-  final Future<T> Function() _load;
-  T? value;
-  Object? error;
-  bool loading = false;
-  int _generation = 0;
-  bool _disposed = false;
-
-  Future<void> load() async {
-    final g = ++_generation;
-    loading = true;
-    error = null;
-    notifyListeners();
-    try {
-      final v = await _load();
-      if (_disposed || g != _generation) return;
-      value = v;
-    } catch (e) {
-      if (_disposed || g != _generation) return;
-      error = e;
-    }
-    loading = false;
-    notifyListeners();
-  }
-
-  @override
-  void notifyListeners() {
-    if (!_disposed) super.notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
-  }
-}
 
 /// A route's stops by direction, with a direction switcher; the route's
 /// shape and stops show on the map (iOS route stops / `StopRouteFocus`).
@@ -98,7 +61,7 @@ class _RouteStopsPageState extends State<RouteStopsPage> {
   ObaLoader<ObaEntryResponse<StopsForRoute>> _make() => ObaLoader(() {
     final core = _app?.core;
     final client = core?.restClient;
-    if (core == null || client == null) throw StateError('no region');
+    if (core == null || client == null) throw const ObaNoRegionException();
     // Shared, cached per region (the stop page fetched it for its shapes).
     return core.stopsForRoute.get(client, widget.routeId);
   });
@@ -146,12 +109,7 @@ class _RouteStopsPageState extends State<RouteStopsPage> {
     final slivers = <Widget>[];
     if (r == null) {
       slivers.add(
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: _loader.error != null
-              ? ObaErrorState(error: _loader.error, onRetry: _loader.load)
-              : const ObaLoadingState(),
-        ),
+        ObaLoadingOrErrorSliver(error: _loader.error, onRetry: _loader.load),
       );
     } else if (stops.isEmpty) {
       slivers.add(
@@ -172,13 +130,9 @@ class _RouteStopsPageState extends State<RouteStopsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Semantics(
-                    container: true,
-                    header: true,
-                    child: Text(
-                      l10n.stopRouteStopsDirection,
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
+                  ObaHeading(
+                    l10n.stopRouteStopsDirection,
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
                   const SizedBox(height: 4),
                   Wrap(
@@ -272,9 +226,6 @@ class _RouteStopsPageState extends State<RouteStopsPage> {
     );
   }
 
-  Color _routeColor(BuildContext context, oba.Route? route) {
-    final hex = route?.color;
-    final v = hex == null ? null : int.tryParse(hex, radix: 16);
-    return v == null ? ObaTheme.of(context).routeLine : Color(0xFF000000 | v);
-  }
+  Color _routeColor(BuildContext context, oba.Route? route) =>
+      parseHexColor(route?.color) ?? ObaTheme.of(context).routeLine;
 }

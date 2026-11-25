@@ -73,62 +73,20 @@ final directions = [
 ];
 
 final Cases<ObaCoreStrings> coreCases = {
-  'directionName': (s) => [for (final d in directions) s.directionName(d)],
-  'directionAbbreviation': (s) => [
-    for (final d in directions) s.directionAbbreviation(d),
-  ],
   'directionAdjective': (s) => [
     for (final d in directions) s.directionAdjective(d),
   ],
-  'routeTypeName': (s) => [
-    for (final t in RouteType.values)
-      if (t != RouteType.unknown) s.routeTypeName(t),
-  ],
   'stopCodeNumeric': (s) => [s.stopCodeNumeric('1234')],
   'stopCodeNonNumeric': (s) => [s.stopCodeNonNumeric('Old Library')],
-  'stopId': (s) => [s.stopId('1234')],
-  'routesLabel': (s) => [s.routesLabel('10, 12')],
-  'routesLabelPlusMore': (s) => [
-    s.routesLabelPlusMore('10, 12', 1),
-    s.routesLabelPlusMore('10, 12', 3),
-  ],
-  'mapRoutesOverflow': (s) => [s.mapRoutesOverflow('10, 12, 49')],
-  'searchPlaceholder': (s) => [s.searchPlaceholder('Puget Sound')],
-  'now': (s) => [s.now],
-  'shortMinutes': (s) => [s.shortMinutes(7), s.shortMinutes(-3)],
-  'oneMinute': (s) => [s.oneMinute],
-  'oneMinuteAgo': (s) => [s.oneMinuteAgo],
-  'minutes': (s) => [s.minutes(2), s.minutes(7)],
   'justNow': (s) => [s.justNow],
   'secondsAgo': (s) => [s.secondsAgo(31)],
   'minutesAgo': (s) => [s.minutesAgo(4)],
   'hoursAgo': (s) => [s.hoursAgo(2)],
   'daysAgo': (s) => [s.daysAgo(1), s.daysAgo(3)],
-  'updatedAt': (s) => [s.updatedAt('4 min. ago')],
-  'scheduledNotRealTime': (s) => [s.scheduledNotRealTime],
-  'arrivedMinAgo': (s) => [s.arrivedMinAgo(2)],
-  'departedMinAgo': (s) => [s.departedMinAgo(2)],
-  'arrivingNow': (s) => [s.arrivingNow],
-  'departingNow': (s) => [s.departingNow],
-  'arrivesInMin': (s) => [s.arrivesInMin(5)],
-  'departsInMin': (s) => [s.departsInMin(5)],
-  'arrivedLate': (s) => [s.arrivedLate(3)],
-  'arrivedEarly': (s) => [s.arrivedEarly(3)],
-  'arrivedOnTime': (s) => [s.arrivedOnTime],
-  'departedLate': (s) => [s.departedLate(3)],
-  'departedEarly': (s) => [s.departedEarly(3)],
-  'departedOnTime': (s) => [s.departedOnTime],
-  'arrivesLate': (s) => [s.arrivesLate(3)],
-  'arrivesEarly': (s) => [s.arrivesEarly(3)],
-  'arrivesOnTime': (s) => [s.arrivesOnTime],
-  'departsLate': (s) => [s.departsLate(3)],
-  'departsEarly': (s) => [s.departsEarly(3)],
-  'departsOnTime': (s) => [s.departsOnTime],
   'meters': (s) => [s.meters('350')],
   'kilometers': (s) => [s.kilometers('1.2')],
   'feet': (s) => [s.feet('500')],
   'miles': (s) => [s.miles('0.3')],
-  'alarmMinutes': (s) => [s.alarmMinutes(1), s.alarmMinutes(10)],
 };
 
 final Cases<ObaArrivalsStrings> arrivalsCases = {
@@ -510,7 +468,7 @@ void main() {
         final exempt = i > 0 && lines[i - 1].contains('l10n-exempt');
         if (exempt) continue;
         if (RegExp(
-          r'\.formatters\b|ObaFormatters\(|ObaCoreStrings\(|'
+          r'ObaFormatters\(|ObaCoreStrings\(|'
           r'TripPlannerStrings\(|ObaArrivalsStrings\(',
         ).hasMatch(line)) {
           offenders.add('${file.path}:${i + 1}: ${line.trim()}');

@@ -10,7 +10,7 @@ import '../../widgets/rows.dart';
 import '../../widgets/sheet_page.dart';
 import '../../widgets/states.dart';
 import 'contact_us.dart';
-import 'link_opener.dart';
+import '../../widgets/link_opener.dart';
 
 /// The More screen: support text, donations, alerts, region and fare
 /// payment, agencies, contact links, volunteer links, agency resources and
@@ -40,8 +40,7 @@ class MorePage extends StatelessWidget {
     final appName = config.appName;
     final reviewUrl = ObaSupport.reviewUrl(config);
 
-    Widget link(String title, Uri url, {String? analyticsPage}) =>
-        _LinkRow(title: title, url: url);
+    Widget link(String title, Uri url) => _LinkRow(title: title, url: url);
 
     return [
       _Header(text: more.headerSupportText ?? l10n.moreHeaderSupport),
@@ -230,18 +229,13 @@ class MorePage extends StatelessWidget {
       );
       if (target.storeUri != null) opened = await opener.open(target.storeUri!);
     }
-    if (!opened && context.mounted) _linkFailed(context);
+    if (!opened && context.mounted) {
+      obaNotify(context, l10n.commonCantOpenLink);
+    }
   }
 }
 
 enum _FareChoice { proceed, continueAlways }
-
-void _linkFailed(BuildContext context) {
-  final message = context.obaL10n.moreCantOpenLink;
-  obaAnnounce(context, message);
-  ScaffoldMessenger.maybeOf(context)
-      ?.showSnackBar(SnackBar(content: Text(message)));
-}
 
 class _Header extends StatelessWidget {
   const _Header({required this.text});
@@ -314,9 +308,7 @@ class _LinkRow extends StatelessWidget {
       if (a != null) {
         core.analytics.reportEvent(pageUrl: a.page, label: a.label);
       }
-      final ok = await ObaLinkOpenerScope.of(context).open(url);
-      if (ok) onOpened?.call();
-      if (!ok && context.mounted) _linkFailed(context);
+      if (await obaOpenLink(context, url)) onOpened?.call();
     },
   );
 }

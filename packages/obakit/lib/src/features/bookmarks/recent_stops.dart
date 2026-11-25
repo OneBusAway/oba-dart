@@ -6,7 +6,6 @@ import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
 import '../../navigation/oba_navigator.dart';
 import '../../navigation/oba_route.dart';
-import '../../navigation/presentation.dart';
 import '../../platform/listenable_adapter.dart';
 import '../../widgets/rows.dart';
 import '../../widgets/sheet_page.dart';
@@ -90,39 +89,25 @@ class RecentStopsPage extends StatelessWidget {
   Future<void> _clearAll(BuildContext context, int count) async {
     final l10n = context.obaL10n;
     final store = ObaScope.of(context).core.userData;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.recentsClearTitle),
-        content: Text(l10n.recentsClearBody(count)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(l10n.commonCancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(l10n.recentsClearAll),
-          ),
-        ],
-      ),
+    final confirmed = await obaConfirm(
+      context,
+      title: l10n.recentsClearTitle,
+      message: l10n.recentsClearBody(count),
+      confirmLabel: l10n.recentsClearAll,
     );
-    if (confirmed == true) store.deleteAllRecentStops();
+    if (confirmed) store.deleteAllRecentStops();
   }
 
   void _remove(BuildContext context, StoredStop stop) {
     final store = ObaScope.of(context).core.userData;
     final l10n = context.obaL10n;
     store.deleteRecentStop(stop.id);
-    ScaffoldMessenger.maybeOf(context)
-      ?..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(l10n.recentsRemoved(stop.name))));
+    obaNotify(context, l10n.recentsRemoved(stop.name));
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.obaL10n;
-    final embedded = ObaPresentation.of(context) == ObaPresentation.embedded;
     return ListenableBuilder(
       listenable: _recentSources(context),
       builder: (context, _) {
@@ -141,16 +126,6 @@ class RecentStopsPage extends StatelessWidget {
               ),
           ],
           slivers: [
-            if (embedded && clear != null)
-              SliverToBoxAdapter(
-                child: Align(
-                  alignment: AlignmentDirectional.centerEnd,
-                  child: TextButton(
-                    onPressed: clear,
-                    child: Text(l10n.recentsClearAll),
-                  ),
-                ),
-              ),
             if (stops.isEmpty)
               SliverFillRemaining(
                 hasScrollBody: false,

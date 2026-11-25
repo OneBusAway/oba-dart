@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../widgets/states.dart';
 import '../l10n/l10n.dart';
 import '../navigation/oba_route.dart';
 import '../shell/home_shell.dart';
@@ -114,9 +115,13 @@ class _ObaAppState extends State<ObaApp> {
         case UnknownRegionAction():
           final context = _messengerKey.currentContext;
           if (context != null) {
+            // The messenger's own context can't find it, so this is
+            // obaNotify written out.
+            final message = context.obaL10n.deepLinkOtherRegion;
             _messengerKey.currentState?.showSnackBar(
-              SnackBar(content: Text(context.obaL10n.deepLinkOtherRegion)),
+              SnackBar(content: Text(message)),
             );
+            obaAnnounce(context, message);
           }
         case null:
           break;

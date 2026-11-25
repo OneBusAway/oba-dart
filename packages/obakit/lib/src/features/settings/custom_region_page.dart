@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
 
+import '../../widgets/heading.dart';
 import '../../app/scope.dart';
 import '../../l10n/l10n.dart';
 import '../../navigation/oba_navigator.dart';
@@ -358,14 +359,7 @@ class _CustomRegionPageState extends State<CustomRegionPage> {
             ),
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 0),
-              child: Semantics(
-                container: true,
-                header: true,
-                child: Text(
-                  l10n.customRegionServiceArea,
-                  style: theme.textTheme.titleMedium,
-                ),
-              ),
+              child: ObaHeading(l10n.customRegionServiceArea),
             ),
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(16, 2, 16, 0),

@@ -1,10 +1,8 @@
-// OWNER: search agent (search, search results, nearby stops, places, trip
-// planner, weather, and the Nearby / Explore home sections). Replace the
-// placeholders; keep the function and public class names. Extra files go
-// in lib/src/features/search/.
+// Search routes (search, search results, nearby stops, places, trip
+// planner, weather) and the Nearby / Explore home sections.
 //
-// `buildHomeRoute` returns the scaffold's home sheet (tabs + search
-// field); contribute Home tab content through `searchHomeSections`.
+// `buildHomeRoute` returns the shell's home sheet (tabs + search field);
+// Home tab content comes from `searchHomeSections`.
 
 import 'package:flutter/material.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
@@ -127,9 +125,7 @@ class TripPlannerPage extends StatelessWidget {
         strings: strings,
         placeSearch: app.tripPlaceSearch ?? const _NoPlaceSearch(),
         mapConfig: mapConfig,
-        distanceUnits: obaDistanceUnits(context) == DistanceUnits.imperial
-            ? tp.DistanceUnits.imperial
-            : tp.DistanceUnits.metric,
+        distanceUnits: context.obaTripPlannerDistanceUnits,
         // Through ObaNavigator, so in the shell the details open as a sheet
         // page with the trip drawn on the main map (not a second map under
         // a full-screen app bar), and a host's onNavigate can take over.
@@ -207,9 +203,7 @@ class _ItineraryPageState extends State<_ItineraryPage> {
         body: tp.ItineraryDetailView(
           itinerary: itinerary,
           mapConfig: widget.mapConfig,
-          distanceUnits: obaDistanceUnits(context) == DistanceUnits.imperial
-              ? tp.DistanceUnits.imperial
-              : tp.DistanceUnits.metric,
+          distanceUnits: context.obaTripPlannerDistanceUnits,
           showMap: !hasMap,
           strings: strings,
         ),

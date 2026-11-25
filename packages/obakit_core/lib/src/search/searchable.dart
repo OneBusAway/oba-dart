@@ -1,5 +1,3 @@
-import 'package:onebusaway/onebusaway.dart';
-
 import '../user_data/stored_stop.dart';
 
 bool _has(String? haystack, String needle) =>
@@ -7,12 +5,6 @@ bool _has(String? haystack, String needle) =>
 
 /// Case-insensitive match on a route's description, long or short name
 /// (iOS `Route.matchesQuery`).
-bool routeMatchesQuery(Route route, String? query) =>
-    query == null ||
-    _has(route.description, query) ||
-    _has(route.longName, query) ||
-    _has(route.shortName, query);
-
 bool storedRouteMatchesQuery(StoredRoute route, String? query) =>
     query == null ||
     _has(route.description, query) ||

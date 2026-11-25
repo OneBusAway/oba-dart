@@ -2,22 +2,10 @@ import 'dart:math' as math;
 
 import 'package:onebusaway/onebusaway.dart';
 
-/// Mean Earth radius in metres (IUGG), matching `Region.distanceFrom`.
-const double earthRadiusMeters = 6371008.8;
-
 double _rad(double d) => d * math.pi / 180;
 
-/// Great-circle (haversine) distance in metres.
-double distanceBetween(Coordinate a, Coordinate b) {
-  final dLat = _rad(b.lat - a.lat);
-  final dLon = _rad(b.lon - a.lon);
-  final h =
-      math.pow(math.sin(dLat / 2), 2) +
-      math.cos(_rad(a.lat)) *
-          math.cos(_rad(b.lat)) *
-          math.pow(math.sin(dLon / 2), 2);
-  return 2 * earthRadiusMeters * math.asin(math.min(1, math.sqrt(h)));
-}
+/// Great-circle (haversine) distance in metres ([Coordinate.distanceTo]).
+double distanceBetween(Coordinate a, Coordinate b) => a.distanceTo(b);
 
 /// Squared planar distance with longitude scaled by `cos(latitude)`, for
 /// ordering only (iOS `Stop.squaredDistance`).

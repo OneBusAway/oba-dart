@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 
 import '../features/map/map_coordinator.dart';
 import '../navigation/oba_navigator.dart';
@@ -8,16 +7,7 @@ import '../navigation/presentation.dart';
 import '../navigation/route_builder.dart';
 import '../navigation/sheet_controller.dart';
 import '../navigation/sheet_detents.dart';
-
-void _afterBuild(VoidCallback fn) {
-  final phase = SchedulerBinding.instance.schedulerPhase;
-  if (phase == SchedulerPhase.persistentCallbacks ||
-      phase == SchedulerPhase.midFrameMicrotasks) {
-    SchedulerBinding.instance.addPostFrameCallback((_) => fn());
-  } else {
-    fn();
-  }
-}
+import '../widgets/frame.dart';
 
 /// The page route used inside the sheet / side panel.
 class ObaSheetPageRoute<T> extends PageRoute<T> {
@@ -57,6 +47,8 @@ class ObaSheetPageRoute<T> extends PageRoute<T> {
   /// `_updateSemanticsNodeGeometry` (flutter/flutter#186178, fixed after
   /// 3.47). The pages are opaque, so once the transition ends the page
   /// below is offstage and out of the semantics tree anyway.
+  // TODO(flutter-upgrade): drop this override once the pinned Flutter
+  // includes the fix for flutter/flutter#186178.
   @override
   Widget buildModalBarrier() => const AbsorbPointer(child: SizedBox.expand());
 
@@ -105,7 +97,6 @@ class ObaSheetNavigatorHost extends StatefulWidget {
     required this.coordinator,
     this.sheet,
     this.handleHeight = 0,
-    this.initialRoute = const HomeRoute(),
   });
 
   final ObaPresentation presentation;
@@ -114,7 +105,6 @@ class ObaSheetNavigatorHost extends StatefulWidget {
 
   /// Height of the sheet's drag handle row (added to the collapsed detent).
   final double handleHeight;
-  final ObaRoute initialRoute;
 
   @override
   State<ObaSheetNavigatorHost> createState() => ObaSheetNavigatorHostState();
@@ -134,8 +124,6 @@ class ObaSheetNavigatorHostState extends State<ObaSheetNavigatorHost> {
     for (final r in _stack)
       if (r.settings.arguments case final ObaRoute o) o,
   ];
-
-  ObaRoute? get topRoute => routeStack.lastOrNull;
 
   Route<T> _pageRoute<T>(ObaRoute route) {
     final reduceMotion = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
@@ -201,7 +189,7 @@ class ObaSheetNavigatorHostState extends State<ObaSheetNavigatorHost> {
     final top = _stack.lastOrNull;
     final obaRoute = top?.settings.arguments as ObaRoute?;
     final coordinator = widget.coordinator;
-    _afterBuild(() {
+    obaRunWhenSafe(() {
       if (!mounted) return;
       if (popped != null) coordinator.removeOverlay(popped);
       coordinator.setActiveOwner(top);
@@ -251,7 +239,7 @@ class ObaSheetNavigatorHostState extends State<ObaSheetNavigatorHost> {
         key: _navigatorKey,
         observers: [_observer],
         onGenerateInitialRoutes: (_, _) => [
-          _pageRoute<void>(widget.initialRoute),
+          _pageRoute<void>(const HomeRoute()),
         ],
         onGenerateRoute: (settings) => switch (settings.arguments) {
           final ObaRoute r => _pageRoute<Object?>(r),

@@ -116,13 +116,7 @@ void main() {
           '808d3a515daa39f4c15a',
         ),
       );
-      expect(
-        env.core.userData.isSurveyCompleted(
-          1,
-          env.core.userData.surveyUserIdentifier,
-        ),
-        isTrue,
-      );
+      expect(env.core.userData.isSurveyCompleted(1), isTrue);
       // The card is gone.
       expect(find.text('Help improve transit'), findsNothing);
     });
@@ -255,13 +249,7 @@ void main() {
         env.opener.opened.single.toString(),
         'https://forms.example.com/s?stop_id=STOP_1',
       );
-      expect(
-        env.core.userData.isSurveyCompleted(
-          1,
-          env.core.userData.surveyUserIdentifier,
-        ),
-        isTrue,
-      );
+      expect(env.core.userData.isSurveyCompleted(1), isTrue);
     });
 
     testWidgets('external survey link failure shows an error', (tester) async {
@@ -288,13 +276,7 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(
-        env.core.userData.isSurveyCompleted(
-          1,
-          env.core.userData.surveyUserIdentifier,
-        ),
-        isFalse,
-      );
+      expect(env.core.userData.isSurveyCompleted(1), isFalse);
     });
 
     testWidgets('not now postpones, dismiss completes', (tester) async {
@@ -304,13 +286,7 @@ void main() {
       await tester.tap(find.text('Not now'));
       await tester.pumpAndSettle();
       expect(env.core.userData.nextSurveyReminderDate, isNotNull);
-      expect(
-        env.core.userData.isSurveyMarkedForLater(
-          1,
-          env.core.userData.surveyUserIdentifier,
-        ),
-        isTrue,
-      );
+      expect(env.core.userData.isSurveyMarkedForLater(1), isTrue);
       expect(find.text('Help improve transit'), findsNothing);
 
       env.dispose();
@@ -319,13 +295,7 @@ void main() {
       await pumpCard(tester);
       await tester.tap(find.byTooltip('Dismiss survey'));
       await tester.pumpAndSettle();
-      expect(
-        env.core.userData.isSurveyCompleted(
-          1,
-          env.core.userData.surveyUserIdentifier,
-        ),
-        isTrue,
-      );
+      expect(env.core.userData.isSurveyCompleted(1), isTrue);
     });
 
     testWidgets('accessibility', (tester) async {
@@ -385,13 +355,7 @@ void main() {
       expect(put.url.path, endsWith('/survey_responses/abc'));
       final answers = _answersOf(put);
       expect(answers.map((a) => a['answer']), ['Yes', '["1","2"]']);
-      expect(
-        env.core.userData.isSurveyCompleted(
-          1,
-          env.core.userData.surveyUserIdentifier,
-        ),
-        isTrue,
-      );
+      expect(env.core.userData.isSurveyCompleted(1), isTrue);
     });
 
     testWidgets('accessibility', (tester) async {
