@@ -27,9 +27,12 @@ class Alarm {
   factory Alarm.fromJson(JsonMap json) {
     final raw = readString(json, 'url');
     // The alarm is cancelled by a DELETE to this URL, so it must be one a
-    // request can be sent to.
+    // request can be sent to: an HTTP client rejects any other scheme with
+    // an error, and the alarm could then never be removed.
     final url = Uri.tryParse(raw);
-    if (url == null || !url.hasScheme || url.host.isEmpty) {
+    if (url == null ||
+        !(url.isScheme('http') || url.isScheme('https')) ||
+        url.host.isEmpty) {
       throw ObaFormatException('Invalid alarm "url": $raw');
     }
     return Alarm(

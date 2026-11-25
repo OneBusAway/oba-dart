@@ -358,6 +358,55 @@ void main() {
       expect(env.core.userData.isSurveyCompleted(1), isTrue);
     });
 
+    testWidgets('a retry after the follow-up answers failed adds to the '
+        'response already created, not a second one', (tester) async {
+      // The POST that creates the response succeeds; the PUT with the other
+      // answers gets a 404.
+      env = await SettingsEnv.create(
+        responses: {
+          'surveys.json': fixture('surveys_always_visible_one_time.json'),
+          'survey_responses/?': fixture('survey_submission_response.json'),
+        },
+      );
+      addTearDown(env.dispose);
+      final s = await survey();
+      // No hero response: the card's "Take survey" path.
+      await env.pump(tester, ObaSurveyPage(survey: s));
+      await tester.enterText(find.byType(TextField), 'Love it');
+      await tester.tap(find.text('Yes'));
+      await tester.tap(find.text('1'));
+      await tester.pump();
+
+      Iterable<http.Request> sent(String method) =>
+          env.requests.where((r) => r.method == method);
+      await tester.tap(find.text('Submit survey'));
+      await SettingsEnv.settle(tester);
+      expect(sent('POST'), hasLength(1));
+      expect(sent('PUT'), hasLength(1));
+      expect(
+        find.text("Your answers couldn't be sent. Please try again."),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.text('Submit survey'));
+      await SettingsEnv.settle(tester);
+      expect(
+        sent('POST'),
+        hasLength(1),
+        reason: 'the retry created a second survey response',
+      );
+      expect(sent('PUT'), hasLength(2));
+      expect(
+        sent('PUT').last.url.path,
+        endsWith('/survey_responses/808d3a515daa39f4c15a'),
+      );
+      // The first answer went with the POST; the retry sends the others.
+      expect(_answersOf(sent('PUT').last).map((a) => a['answer']), [
+        'Yes',
+        '["1"]',
+      ]);
+    });
+
     testWidgets('accessibility', (tester) async {
       await boot();
       final s = await survey();

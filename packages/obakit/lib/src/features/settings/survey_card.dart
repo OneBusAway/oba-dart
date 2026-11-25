@@ -52,15 +52,20 @@ class _ObaSurveyCardState extends State<ObaSurveyCard> {
 
   ObaListenable? _clients;
 
+  /// The region the card last saw: [_survey] is one of its surveys.
+  int? _regionId;
+
   SurveyService get _service => ObaScope.of(context).core.surveys;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final clients = ObaScope.of(context).core.clientsListenable;
+    final core = ObaScope.of(context).core;
+    final clients = core.clientsListenable;
     if (!identical(clients, _clients)) {
-      _clients?.removeListener(_onRegionChanged);
-      _clients = clients..addListener(_onRegionChanged);
+      _clients?.removeListener(_onClientsChanged);
+      _clients = clients..addListener(_onClientsChanged);
+      _regionId = core.currentRegion?.id;
     }
     if (!_fetchStarted) {
       _fetchStarted = true;
@@ -78,8 +83,15 @@ class _ObaSurveyCardState extends State<ObaSurveyCard> {
   /// on screen: the survey it picked is the old region's, and nothing else
   /// asks the new region for its surveys. Drop the survey (unless the rider
   /// is already done with this card) and ask again.
-  void _onRegionChanged() {
+  ///
+  /// The clients are also rebuilt for the same region, when a regions
+  /// refresh brings new details for it. Its surveys are still the ones to
+  /// offer, and the answer the rider has typed so far must stay.
+  void _onClientsChanged() {
     if (!mounted) return;
+    final regionId = ObaScope.of(context).core.currentRegion?.id;
+    if (regionId == _regionId) return;
+    _regionId = regionId;
     if (!_finished && !_busy) {
       setState(() {
         _survey = null;
@@ -92,7 +104,7 @@ class _ObaSurveyCardState extends State<ObaSurveyCard> {
 
   @override
   void dispose() {
-    _clients?.removeListener(_onRegionChanged);
+    _clients?.removeListener(_onClientsChanged);
     super.dispose();
   }
 
@@ -497,6 +509,12 @@ class _ObaSurveyPageState extends State<ObaSurveyPage> {
   bool _showRequired = false;
   String? _error;
 
+  /// The response this page created with its first answer (when the card
+  /// sent none), and that answer's question. When the answers after it fail
+  /// to send, a retry adds them to this response: creating a second one
+  /// would record the rider twice.
+  ({String id, int questionId})? _created;
+
   List<SurveyQuestion> get _questions {
     final all = surveyQuestionsInOrder(widget.survey);
     return widget.heroResponseId == null ? all : all.skip(1).toList();
@@ -533,19 +551,25 @@ class _ObaSurveyPageState extends State<ObaSurveyPage> {
     });
     try {
       var responseId = widget.heroResponseId;
-      if (responseId == null) {
+      final created = _created;
+      if (created != null) {
+        // A retry: the response exists, with this question's answer in it.
+        responseId = created.id;
+        answers.removeWhere((a) => a.questionId == created.questionId);
+      } else if (responseId == null) {
         // No hero response yet: the first answer creates the response.
         if (answers.isEmpty) {
           if (mounted) ObaNavigator.of(context).pop();
           return;
         }
+        final first = answers.removeAt(0);
         final response = await core.surveys.submitHeroQuestion(
           survey: widget.survey,
-          answer: answers.first,
+          answer: first,
           stopId: widget.stopId,
         );
         responseId = response.id;
-        answers.removeAt(0);
+        _created = (id: response.id, questionId: first.questionId);
       }
       if (answers.isNotEmpty) {
         await core.surveys.submitAdditionalQuestions(

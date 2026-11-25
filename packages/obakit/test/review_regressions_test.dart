@@ -299,6 +299,50 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
+    testWidgets('ObaSurveyCard: new details for the same region (a regions '
+        'refresh) keep the survey and the answer typed so far', (tester) async {
+      final env = await ObaTestEnv.create(
+        responses: {
+          'regions/1/surveys.json': fixture(
+            'surveys_always_visible_one_time.json',
+          ),
+        },
+      );
+      addTearDown(env.dispose);
+      final core = env.app.core;
+      core.userData.alwaysShowSurveysOnStops = true;
+      await env.pumpPage(
+        tester,
+        Material(child: ListView(children: const [ObaSurveyCard()])),
+      );
+      await tester.enterText(find.byType(TextField), 'Love it');
+      await tester.pump();
+      VoidCallback? next() => tester
+          .widget<FilledButton>(find.widgetWithText(FilledButton, 'Next'))
+          .onPressed;
+      expect(next(), isNotNull);
+
+      // What a regions refresh does when the server's entry for the current
+      // region changed: the same region, with new clients.
+      final before = core.clients;
+      final region = core.currentRegion!;
+      core.regions.setCurrentRegion(
+        Region.fromJson({...region.toJson(), 'contactEmail': 'new@x.test'}),
+      );
+      await ObaTestEnv.settle(tester);
+      expect(core.clients, isNot(same(before)));
+      expect(core.currentRegion?.id, region.id);
+
+      expect(find.text('Do you like OBA IOS App ?'), findsOneWidget);
+      expect(find.text('Love it'), findsOneWidget);
+      expect(
+        next(),
+        isNotNull,
+        reason: 'the answer was dropped: the field still shows it',
+      );
+      expect(tester.takeException(), isNull);
+    });
+
     test('SurveyService: a fetch overtaken by a region change', () async {
       final gate = Completer<void>();
       final paths = <String>[];

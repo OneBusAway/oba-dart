@@ -443,7 +443,14 @@ void main() {
     });
 
     test('an alarm URL nothing can be sent to is ObaFormatException', () {
-      for (final url in ['http://[bad', '/regions/1/alarms/9', '']) {
+      for (final url in [
+        'http://[bad',
+        '/regions/1/alarms/9',
+        '',
+        // Not HTTP: the client would throw an Error on the DELETE.
+        'ftp://a.test/alarms/9',
+        'mailto:alarms@a.test',
+      ]) {
         expect(
           () => Alarm.fromJson({'url': url}),
           throwsA(isA<ObaFormatException>()),

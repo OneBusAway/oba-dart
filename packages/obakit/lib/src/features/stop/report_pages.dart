@@ -20,6 +20,19 @@ mixin _ReportForm<W extends StatefulWidget> on State<W> {
   _SendState sendState = _SendState.idle;
   String? validation;
 
+  /// The region the form was opened in. The stop or trip belongs to it,
+  /// so a report must not go to another region's server.
+  int? _regionId;
+  bool _regionCaptured = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_regionCaptured) return;
+    _regionCaptured = true;
+    _regionId = ObaScope.of(context).core.currentRegion?.id;
+  }
+
   @override
   void dispose() {
     comment.dispose();
@@ -41,6 +54,9 @@ mixin _ReportForm<W extends StatefulWidget> on State<W> {
     });
     obaAnnounce(context, l10n.stopReportSending);
     try {
+      if (ObaScope.of(context).core.currentRegion?.id != _regionId) {
+        throw const ProblemReportUnavailableException('Region changed');
+      }
       await action();
       if (!mounted) return;
       setState(() => sendState = _SendState.sent);

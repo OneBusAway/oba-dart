@@ -62,6 +62,31 @@ void main() {
       );
     });
 
+    testWidgets('a report is not sent after the region changes', (
+      tester,
+    ) async {
+      env = await ObaTestEnv.create(
+        responses: {'report-problem': fixture('report_stop_problem.json')},
+      );
+      await env.pumpPage(tester, const ReportStopProblemPage(stopId: '1_1'));
+      await tester.tap(find.text('Something else'));
+      final regions = env.app.core.regions;
+      regions.automaticallySelectRegion = false;
+      regions.setCurrentRegion(
+        regions.regions.firstWhere((r) => r.id != regions.currentRegion!.id),
+      );
+      await ObaTestEnv.settle(tester);
+      await scrollTap(tester, find.text('Send report'));
+      expect(
+        env.requests.where((r) => r.url.path.contains('report-problem')),
+        isEmpty,
+      );
+      expect(
+        find.text("Couldn't send the report. Please try again."),
+        findsOneWidget,
+      );
+    });
+
     for (final mode in [ThemeMode.light, ThemeMode.dark]) {
       testWidgets('accessibility (${mode.name})', (tester) async {
         env = await ObaTestEnv.create();
