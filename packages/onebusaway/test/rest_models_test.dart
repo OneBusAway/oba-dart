@@ -152,6 +152,22 @@ void main() {
       expect(seconds.from, _ms(1474434000000));
     });
 
+    test('a "to" of 0 is an open end, not 1970', () {
+      for (final to in [0, null]) {
+        final window = TimeWindow.fromJson({'from': 1474434000, 'to': to});
+        expect(window.to, isNull, reason: '$to');
+        expect(window.contains(_ms(1474434000000 + 1)), isTrue, reason: '$to');
+      }
+      final alert = Situation.fromJson({
+        'id': '1_1',
+        'activeWindows': [
+          {'from': 1474434000000, 'to': 0},
+        ],
+      });
+      expect(alert.isActiveAt(_ms(1800000000000)), isTrue);
+      expect(alert.isActiveAt(_ms(1474433999000)), isFalse);
+    });
+
     test('open-ended and inverted windows', () {
       final open = TimeWindow.fromJson({'from': 100});
       expect(open.to, isNull);

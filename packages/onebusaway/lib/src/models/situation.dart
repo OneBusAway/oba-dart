@@ -74,13 +74,22 @@ typedef ServiceAlert = Situation;
 
 /// A time range. Servers send `from`/`to` in epoch seconds or milliseconds;
 /// values above 1e10 are read as milliseconds, smaller ones as seconds.
+///
+/// An open end is sent as a missing or null `to`, or (by servers whose
+/// time range holds plain numbers) as `0`, OBA's usual "no value": all
+/// three become a null [to]. A `to` of 0 read as 1970 would end every such
+/// alert before it began.
 class TimeWindow {
   const TimeWindow({required this.from, this.to});
 
   factory TimeWindow.fromJson(JsonMap json) {
     final from = _readTimestamp(json, 'from');
     if (from == null) throw const ObaFormatException('Missing "from"');
-    return TimeWindow(from: from, to: _readTimestamp(json, 'to'));
+    final to = _readTimestamp(json, 'to');
+    return TimeWindow(
+      from: from,
+      to: to == null || to.millisecondsSinceEpoch == 0 ? null : to,
+    );
   }
 
   static DateTime? _readTimestamp(JsonMap json, String key) {

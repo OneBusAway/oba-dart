@@ -9,7 +9,7 @@ import 'scope.dart';
 /// Shows the onboarding steps that still need showing before [child]
 /// (normally the shell). Only `ObaApp` uses it: hosts embedding single
 /// screens skip onboarding entirely.
-class ObaOnboardingGate extends StatelessWidget {
+class ObaOnboardingGate extends StatefulWidget {
   const ObaOnboardingGate({
     super.key,
     required this.child,
@@ -50,6 +50,37 @@ class ObaOnboardingGate extends StatelessWidget {
   }
 
   @override
+  State<ObaOnboardingGate> createState() => _ObaOnboardingGateState();
+}
+
+class _ObaOnboardingGateState extends State<ObaOnboardingGate> {
+  /// The step the last build showed (null: the child).
+  OnboardingStep? _shown;
+
+  /// "Allow" grants the permission, which takes the location step off the
+  /// pending list at once: before its page, still waiting for the first
+  /// fix, can report that it is done (it is unmounted by then). Record the
+  /// step here. Otherwise it would come back whenever the permission
+  /// lapses, which on iOS is every launch after "Allow Once".
+  void _completeGrantedLocationStep(
+    ObaCoreApplication app,
+    OnboardingStep? next,
+  ) {
+    const step = OnboardingStep.location;
+    if (_shown != step || next == step) return;
+    if (!app.locationPermission.isGranted) return;
+    if (!app.settings.needsOnboardingStep(step.settingsKey, step.version)) {
+      return;
+    }
+    // Marking it notifies the builder below: after this frame.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        app.settings.markOnboardingStepSeen(step.settingsKey, step.version);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final app = ObaScope.of(context).core;
     return ListenableBuilder(
@@ -59,9 +90,14 @@ class ObaOnboardingGate extends StatelessWidget {
         app.listenable,
       ]),
       builder: (context, _) {
-        final pending = pendingSteps(app, enabled: steps);
-        if (pending.isEmpty) return child;
-        final step = pending.first;
+        final pending = ObaOnboardingGate.pendingSteps(
+          app,
+          enabled: widget.steps,
+        );
+        final step = pending.firstOrNull;
+        _completeGrantedLocationStep(app, step);
+        _shown = step;
+        if (step == null) return widget.child;
         return KeyedSubtree(
           key: ValueKey(step),
           child: buildOnboardingStep(

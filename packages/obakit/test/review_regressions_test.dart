@@ -15,6 +15,7 @@ import 'package:obakit/src/features/bookmarks/bookmark_card.dart';
 import 'package:obakit/src/features/bookmarks/departure_line.dart';
 import 'package:obakit/src/features/bookmarks/departures_loader.dart';
 import 'package:obakit/src/features/map/stops_loader.dart';
+import 'package:obakit_trip_planner/obakit_trip_planner.dart' as tp;
 
 import 'support/oba_test_harness.dart';
 
@@ -258,6 +259,44 @@ void main() {
       expect(requests(), 2);
       expect(env.requests.last.url.path, contains('/11/'));
       expect(surveys.allSurveys, isNotEmpty);
+    });
+
+    testWidgets('ObaSurveyCard: a card that stays on screen drops the old '
+        'region\'s survey and asks the new region', (tester) async {
+      final none = jsonEncode({
+        ...jsonDecode(fixture('surveys_always_visible_one_time.json'))
+            as Map<String, Object?>,
+        'surveys': <Object?>[],
+      });
+      final env = await ObaTestEnv.create(
+        responses: {
+          'regions/1/surveys.json': fixture(
+            'surveys_always_visible_one_time.json',
+          ),
+          'regions/11/surveys.json': none,
+        },
+      );
+      addTearDown(env.dispose);
+      env.app.core.userData.alwaysShowSurveysOnStops = true;
+      Iterable<String> surveyPaths() => env.requests
+          .where((r) => r.url.path.contains('surveys'))
+          .map((r) => r.url.path);
+      await env.pumpPage(
+        tester,
+        Material(child: ListView(children: const [ObaSurveyCard()])),
+      );
+      expect(find.text('Do you like OBA IOS App ?'), findsOneWidget);
+      expect(surveyPaths().single, contains('/regions/1/'));
+
+      env.app.core.regions.setCurrentRegion(_sanDiego(env.app));
+      await ObaTestEnv.settle(tester);
+      expect(
+        find.text('Do you like OBA IOS App ?'),
+        findsNothing,
+        reason: 'the card still offers Puget Sound\'s survey in San Diego',
+      );
+      expect(surveyPaths().last, contains('/regions/11/'));
+      expect(tester.takeException(), isNull);
     });
 
     test('SurveyService: a fetch overtaken by a region change', () async {
@@ -610,6 +649,78 @@ void main() {
       await tester.tap(find.text('Item 3'));
       await ObaTestEnv.settle(tester);
       expect(find.text('Item 3'), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('the sheet: pages and pickers over it', () {
+    late ObaTestEnv env;
+    setUp(() async => env = await ObaTestEnv.create());
+    tearDown(() => env.dispose());
+
+    Future<ObaHomeShellState> pumpShell(WidgetTester tester) async {
+      await env.pumpPage(
+        tester,
+        const ObaHomeShell(),
+        surfaceSize: const Size(390, 844),
+      );
+      return tester.state<ObaHomeShellState>(find.byType(ObaHomeShell));
+    }
+
+    testWidgets('the trip planner\'s place picker covers the screen: in the '
+        'half-height sheet the keyboard would hide its field', (tester) async {
+      final shell = await pumpShell(tester);
+      shell.navigator.push(const TripPlannerRoute());
+      await ObaTestEnv.settle(tester);
+      // The planner opens at half height.
+      expect(shell.sheet.height, lessThan(shell.sheet.maxHeight * 0.6));
+
+      // A keyboard 336dp tall (the test view is 3 physical pixels per dp).
+      tester.view.viewInsets = const FakeViewPadding(bottom: 336 * 3);
+      addTearDown(tester.view.reset);
+      await tester.tap(find.bySemanticsLabel(RegExp('^From: ')));
+      await ObaTestEnv.settle(tester);
+      expect(
+        tester.getRect(find.byType(tp.TripPlaceSearchPage)),
+        const Rect.fromLTWH(0, 0, 390, 844),
+      );
+      expect(
+        tester.getRect(find.byType(TextField)).bottom,
+        lessThan(844 - 336),
+        reason: 'the search field is under the keyboard',
+      );
+      // Still a sheet page underneath: the picker is not one of its pages.
+      expect(shell.routeStack.last, const TripPlannerRoute());
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('a page pushed while a menu is open: the page under the menu '
+        'keeps the height to come back to', (tester) async {
+      final shell = await pumpShell(tester);
+      shell.navigator.push(const _MenuRoute());
+      await ObaTestEnv.settle(tester);
+      shell.sheet.expandFully();
+      await ObaTestEnv.settle(tester);
+      expect(shell.sheet.restingDetent, ObaSheetDetent.large);
+
+      await tester.tap(find.byTooltip('More'));
+      await ObaTestEnv.settle(tester);
+      expect(find.text('Item 0'), findsOneWidget);
+      // A deep link, say: a page arrives while the menu is still open.
+      shell.navigator.push(const SettingsRoute());
+      await ObaTestEnv.settle(tester);
+      expect(shell.routeStack.last, const SettingsRoute());
+      shell.sheet.animateTo(shell.sheet.minHeight);
+      await ObaTestEnv.settle(tester);
+
+      shell.navigator.pop();
+      await ObaTestEnv.settle(tester);
+      expect(shell.routeStack.last, const _MenuRoute());
+      expect(
+        shell.sheet.restingDetent,
+        ObaSheetDetent.large,
+        reason: 'the menu page reopened at its initial height',
+      );
       expect(tester.takeException(), isNull);
     });
   });

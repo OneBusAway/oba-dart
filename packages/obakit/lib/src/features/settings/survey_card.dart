@@ -50,19 +50,50 @@ class _ObaSurveyCardState extends State<ObaSurveyCard> {
   Object? _answer;
   bool _fetchStarted = false;
 
+  ObaListenable? _clients;
+
   SurveyService get _service => ObaScope.of(context).core.surveys;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final clients = ObaScope.of(context).core.clientsListenable;
+    if (!identical(clients, _clients)) {
+      _clients?.removeListener(_onRegionChanged);
+      _clients = clients..addListener(_onRegionChanged);
+    }
     if (!_fetchStarted) {
       _fetchStarted = true;
-      // The fetch notifies the service's listeners at once (another card
-      // already on screen, say), so never start it mid-build.
-      obaRunWhenSafe(() {
-        if (mounted) _service.fetchSurveys();
+      _fetchWhenSafe();
+    }
+  }
+
+  /// The fetch notifies the service's listeners at once (another card
+  /// already on screen, say), so never start it mid-build.
+  void _fetchWhenSafe() => obaRunWhenSafe(() {
+    if (mounted) _service.fetchSurveys();
+  });
+
+  /// The region (and so the survey server) changed under a card that stays
+  /// on screen: the survey it picked is the old region's, and nothing else
+  /// asks the new region for its surveys. Drop the survey (unless the rider
+  /// is already done with this card) and ask again.
+  void _onRegionChanged() {
+    if (!mounted) return;
+    if (!_finished && !_busy) {
+      setState(() {
+        _survey = null;
+        _answer = null;
+        _error = null;
       });
     }
+    _fetchWhenSafe();
+  }
+
+  @override
+  void dispose() {
+    _clients?.removeListener(_onRegionChanged);
+    super.dispose();
   }
 
   void _pick() {

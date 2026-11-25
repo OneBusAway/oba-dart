@@ -205,10 +205,15 @@ class ObaSheetNavigatorHostState extends State<ObaSheetNavigatorHost> {
     });
   }
 
-  void _didPush(Route<dynamic> route, Route<dynamic>? previous) {
+  void _didPush(Route<dynamic> route) {
     final sheet = widget.sheet;
-    if (previous != null && sheet != null) {
-      _restingDetents[previous] = sheet.restingDetent;
+    // The page this one covers, not the navigator's previous route: that
+    // is a menu or bottom sheet when a page is pushed while one is open (a
+    // deep link, say). A popup is never popped from these maps, and the
+    // page under it would lose the height to come back to.
+    final below = _stack.lastOrNull;
+    if (below != null && sheet != null) {
+      _restingDetents[below] = sheet.restingDetent;
     }
     _stack.add(route);
     _onTopChanged();
@@ -273,7 +278,7 @@ class _Observer extends NavigatorObserver {
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
     if (route is PopupRoute) return host._didPushPopup();
-    host._didPush(route, previousRoute);
+    host._didPush(route);
   }
 
   @override

@@ -177,15 +177,24 @@ class _TripPlannerViewState extends State<TripPlannerView> {
         : pageStrings.destinationLabel;
     final near = origin ? state.destination : state.origin;
     final currentLocation = widget.currentLocation;
-    final place = await Navigator.of(context).push<TripPlace>(
+    // On the root navigator: the picker is a full-screen dialog with a
+    // keyboard. On the nearest navigator it would open inside whatever box
+    // the planner sits in (a bottom sheet, a tab's body), where the
+    // keyboard can cover the field and every result. The themes between
+    // here and the root navigator are carried over.
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final themes = InheritedTheme.capture(from: context, to: navigator.context);
+    final place = await navigator.push<TripPlace>(
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (_) => TripPlaceSearchPage(
-          search: search,
-          title: title,
-          near: near,
-          currentLocation: currentLocation,
-          strings: pageStrings,
+        builder: (_) => themes.wrap(
+          TripPlaceSearchPage(
+            search: search,
+            title: title,
+            near: near,
+            currentLocation: currentLocation,
+            strings: pageStrings,
+          ),
         ),
       ),
     );

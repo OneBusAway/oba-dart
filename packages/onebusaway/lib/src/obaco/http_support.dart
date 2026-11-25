@@ -57,11 +57,13 @@ class HttpSupport {
 
   /// Decodes a 2xx body as JSON of any shape.
   static Object? decodeJson(http.Response response) {
-    final body = utf8.decode(response.bodyBytes);
-    if (body.trim().isEmpty) {
-      throw const ObaApiException(ObaApiErrorKind.emptyResponse);
-    }
     try {
+      // Decoding the bytes is inside the `try` too: a body that is not
+      // UTF-8 is a format error like any other, not a bare FormatException.
+      final body = utf8.decode(response.bodyBytes);
+      if (body.trim().isEmpty) {
+        throw const ObaApiException(ObaApiErrorKind.emptyResponse);
+      }
       return jsonDecode(body);
     } on FormatException catch (e) {
       throw ObaFormatException('Response is not valid JSON: ${e.message}');

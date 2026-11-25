@@ -24,11 +24,20 @@ DateTime? _optEpochSeconds(JsonMap json, String key) {
 class Alarm {
   const Alarm({required this.url, this.tripDate, this.alarmDate});
 
-  factory Alarm.fromJson(JsonMap json) => Alarm(
-    url: Uri.parse(readString(json, 'url')),
-    tripDate: _optEpochSeconds(json, 'tripDate'),
-    alarmDate: _optEpochSeconds(json, 'alarmDate'),
-  );
+  factory Alarm.fromJson(JsonMap json) {
+    final raw = readString(json, 'url');
+    // The alarm is cancelled by a DELETE to this URL, so it must be one a
+    // request can be sent to.
+    final url = Uri.tryParse(raw);
+    if (url == null || !url.hasScheme || url.host.isEmpty) {
+      throw ObaFormatException('Invalid alarm "url": $raw');
+    }
+    return Alarm(
+      url: url,
+      tripDate: _optEpochSeconds(json, 'tripDate'),
+      alarmDate: _optEpochSeconds(json, 'alarmDate'),
+    );
+  }
 
   final Uri url;
   final DateTime? tripDate;

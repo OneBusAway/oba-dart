@@ -43,6 +43,58 @@ Future<void> _pump(
 }
 
 void main() {
+  testWidgets('the place picker is a full-screen dialog even when the planner '
+      'sits in a nested navigator (a bottom sheet, a tab)', (tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.5;
+    addTearDown(tester.view.reset);
+    final scheme = ColorScheme.fromSeed(seedColor: Colors.purple);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Column(
+            children: [
+              const Expanded(child: SizedBox()),
+              // The planner in the bottom half, under its own theme.
+              Expanded(
+                child: Theme(
+                  data: ThemeData(colorScheme: scheme),
+                  child: Navigator(
+                    onGenerateRoute: (_) => MaterialPageRoute<void>(
+                      builder: (_) => Material(
+                        child: TripPlannerView(
+                          service: FakeTripPlanService(),
+                          placeSearch: FakeTripPlaceSearch(),
+                          mapConfig: testMapConfig(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.tap(find.bySemanticsLabel('To: Choose destination'));
+    await tester.pumpAndSettle();
+
+    final page = find.byType(TripPlaceSearchPage);
+    expect(tester.getRect(page), const Rect.fromLTWH(0, 0, 432, 960));
+    expect(Theme.of(tester.element(page)).colorScheme.primary, scheme.primary);
+
+    // Picking a place closes it and fills the field, as before.
+    await tester.enterText(find.byType(TextField), 'horton');
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump();
+    await tester.tap(find.text('Horton Plaza'));
+    await tester.pumpAndSettle();
+    expect(page, findsNothing);
+    expect(find.bySemanticsLabel('To: Horton Plaza'), findsOneWidget);
+  });
+
   testWidgets('form → results → detail', (tester) async {
     final handle = tester.ensureSemantics();
     final search = FakeTripPlaceSearch();

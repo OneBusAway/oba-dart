@@ -100,7 +100,11 @@ class _RegionPickerPageState extends State<RegionPickerPage> {
         return ObaSheetPage(
           title: l10n.titleRegionPicker,
           actions: [
-            if (regions.isRefreshing)
+            // No regions server (the host ships its own list): a refresh
+            // would do nothing, and then announce "Regions updated".
+            if (!regions.canRefresh)
+              const SizedBox.shrink()
+            else if (regions.isRefreshing)
               Semantics(
                 label: l10n.commonLoading,
                 liveRegion: true,

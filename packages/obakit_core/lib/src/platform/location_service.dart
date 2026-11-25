@@ -94,18 +94,33 @@ class LocationService extends ObaChangeNotifier {
 
   /// Asks for permission. When granted, takes a one-shot fix (which centres
   /// the map and selects the region) and starts updates if a lease is held.
+  ///
+  /// Like [checkPermission], a provider that throws reads as denied: the
+  /// callers are buttons ("Allow location", "Show my location") with
+  /// nothing to do about a host's platform error.
   Future<LocationPermissionStatus> requestPermission() async {
     if (!isAvailable) return _setPermission(LocationPermissionStatus.denied);
-    final status = _setPermission(await provider.requestPermission());
+    final LocationPermissionStatus status;
+    try {
+      status = _setPermission(await provider.requestPermission());
+    } catch (_) {
+      return _setPermission(LocationPermissionStatus.denied);
+    }
     if (status.isGranted) await requestFix();
     return status;
   }
 
-  /// A one-shot fix (null without permission or when none arrives). It
-  /// updates [currentLocation] but holds no subscription.
+  /// A one-shot fix (null without permission, when none arrives, or when
+  /// the provider fails). It updates [currentLocation] but holds no
+  /// subscription.
   Future<ObaLocation?> requestFix() async {
     if (!_permission.isGranted || isDisposed) return null;
-    final fix = await provider.currentPosition();
+    final ObaLocation? fix;
+    try {
+      fix = await provider.currentPosition();
+    } catch (_) {
+      return null;
+    }
     if (fix != null && !isDisposed) _location.value = fix;
     return fix;
   }

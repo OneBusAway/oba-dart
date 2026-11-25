@@ -155,4 +155,55 @@ void main() {
       lease.release();
     });
   });
+
+  group('a host provider that throws', () {
+    test('requestPermission reads as denied, like checkPermission', () async {
+      final service = LocationService(_ThrowingProvider(throwOnRequest: true));
+      addTearDown(service.dispose);
+      expect(
+        await service.requestPermission(),
+        LocationPermissionStatus.denied,
+      );
+      expect(service.permission, LocationPermissionStatus.denied);
+    });
+
+    test('a failed fix after the grant is no fix, not an error', () async {
+      final service = LocationService(_ThrowingProvider());
+      addTearDown(service.dispose);
+      expect(
+        await service.requestPermission(),
+        LocationPermissionStatus.whileInUse,
+      );
+      expect(service.currentLocation, isNull);
+      expect(await service.requestFix(), isNull);
+    });
+  });
+}
+
+/// Grants permission (unless [throwOnRequest]) and fails every fix, as a
+/// host's own location plugin can.
+class _ThrowingProvider implements LocationProvider {
+  _ThrowingProvider({this.throwOnRequest = false});
+
+  final bool throwOnRequest;
+
+  @override
+  Future<LocationPermissionStatus> checkPermission() async =>
+      LocationPermissionStatus.notDetermined;
+
+  @override
+  Future<LocationPermissionStatus> requestPermission() async {
+    if (throwOnRequest) throw StateError('permission request in progress');
+    return LocationPermissionStatus.whileInUse;
+  }
+
+  @override
+  Future<ObaLocation?> currentPosition() async =>
+      throw StateError('location services are off');
+
+  @override
+  Stream<ObaLocation> get positionStream => const Stream.empty();
+
+  @override
+  ObaLocation? get lastKnownLocation => null;
 }

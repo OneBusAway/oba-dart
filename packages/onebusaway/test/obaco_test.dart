@@ -435,6 +435,23 @@ void main() {
       await expectLater(c.getWeather(), throwsA(isA<ObaFormatException>()));
     });
 
+    test('a body that is not UTF-8 is ObaFormatException', () async {
+      // 0xC3 opens a two-byte sequence that 0x28 does not continue.
+      final c = make((_) => http.Response.bytes([0x7B, 0xC3, 0x28, 0x7D], 200));
+      await expectLater(c.getWeather(), throwsA(isA<ObaFormatException>()));
+      await expectLater(c.getVehicles('x'), throwsA(isA<ObaFormatException>()));
+    });
+
+    test('an alarm URL nothing can be sent to is ObaFormatException', () {
+      for (final url in ['http://[bad', '/regions/1/alarms/9', '']) {
+        expect(
+          () => Alarm.fromJson({'url': url}),
+          throwsA(isA<ObaFormatException>()),
+          reason: url,
+        );
+      }
+    });
+
     test('transport failure is ObaNetworkException', () async {
       final c = ObacoClient(
         baseUrl: Uri.parse('https://x.test'),

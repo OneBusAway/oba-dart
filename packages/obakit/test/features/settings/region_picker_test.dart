@@ -165,6 +165,24 @@ void main() {
     );
   });
 
+  testWidgets('no refresh button without a regions server: it would do '
+      'nothing and announce "Regions updated"', (tester) async {
+    await boot();
+    expect(env.core.regions.canRefresh, isFalse);
+    await env.pump(tester, const RegionPickerPage());
+    expect(find.text('Puget Sound'), findsOneWidget);
+    expect(find.byTooltip('Refresh regions'), findsNothing);
+
+    env.dispose();
+    await boot(
+      regionsPath: '/regions-v3.json',
+      responses: {'regions-v3.json': fixture('regions-v3.json')},
+    );
+    expect(env.core.regions.canRefresh, isTrue);
+    await env.pump(tester, const RegionPickerPage());
+    expect(find.byTooltip('Refresh regions'), findsOneWidget);
+  });
+
   testWidgets('works embedded and in the sheet', (tester) async {
     await boot();
     for (final p in [ObaPresentation.embedded, ObaPresentation.sheet]) {

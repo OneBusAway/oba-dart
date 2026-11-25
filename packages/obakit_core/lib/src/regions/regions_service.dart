@@ -119,6 +119,11 @@ class RegionsService extends ObaChangeNotifier {
 
   bool get isRefreshing => _isRefreshing;
 
+  /// Whether there is a regions server to refresh from. False for a host
+  /// that ships its own list (`regionsPath: null`): [refreshRegions] then
+  /// does nothing, so a screen should not offer (or report) a refresh.
+  bool get canRefresh => _client != null;
+
   /// The error from the most recent refresh, cleared by a successful one.
   Object? get lastRefreshError => _lastRefreshError;
 
