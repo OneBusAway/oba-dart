@@ -352,6 +352,105 @@ void main() {
     );
   });
 
+  testWidgets('shapes: one request per route, cached for other pages', (
+    tester,
+  ) async {
+    env = await makeEnv(
+      responses: {
+        'arrivals-and-departures-for-stop': fixture(
+          'arrivals_and_departures_for_stop_1_10020.json',
+        ),
+        'stops-for-route': fixture('stops_for_route_1_44.json'),
+      },
+    );
+    int shapeRequests() => env.requests
+        .where((r) => r.url.path.contains('stops-for-route'))
+        .length;
+    final map = ObaMapCoordinator();
+    addTearDown(map.dispose);
+    await env.pumpPage(
+      tester,
+      const StopPage(stopId: stopId),
+      coordinator: map,
+    );
+    // The stop's three routes, fetched once each.
+    expect(shapeRequests(), 3);
+    expect(env.app.core.stopsForRoute.length, 3);
+    // The route's stops page reuses the cached response.
+    await env.pumpPage(
+      tester,
+      const RouteStopsPage(routeId: '1_30'),
+      coordinator: map,
+    );
+    expect(shapeRequests(), 3);
+    expect(map.overlay.polylines, isNotEmpty);
+  });
+
+  testWidgets('a location fix leaves the page and its map overlay alone', (
+    tester,
+  ) async {
+    final stop = (lat: 47.6685829, lon: -122.2883);
+    ObaLocation at(double metersNorth) => ObaLocation(
+      lat: stop.lat + metersNorth / 111320,
+      lon: stop.lon,
+      timestamp: DateTime.utc(2024).add(Duration(seconds: metersNorth.round())),
+    );
+    env = await makeEnv(location: at(1806));
+    final map = ObaMapCoordinator();
+    addTearDown(map.dispose);
+    await env.pumpPage(
+      tester,
+      const StopPage(stopId: stopId),
+      coordinator: map,
+    );
+    expect(find.textContaining('22 min walk'), findsWidgets);
+    final overlay = map.overlay;
+    var notified = 0;
+    map.addListener(() => notified++);
+    final row = tester.widget(find.byType(ObaDepartureRow).first);
+
+    // A few metres closer: the same walk minutes.
+    env.location.setLocation(at(1800));
+    await tester.pump();
+    expect(identical(map.overlay, overlay), isTrue);
+    expect(notified, 0);
+    expect(
+      identical(tester.widget(find.byType(ObaDepartureRow).first), row),
+      isTrue,
+      reason: 'the rows were not rebuilt',
+    );
+
+    // Far enough to change the walk minutes: the rows follow.
+    env.location.setLocation(at(600));
+    await tester.pump();
+    expect(find.byType(WalkTimeDivider), findsNothing);
+    expect(find.textContaining('8 min walk'), findsWidgets);
+  });
+
+  testWidgets('lazily built row actions still reach screen readers', (
+    tester,
+  ) async {
+    env = await makeEnv();
+    await env.pumpPage(tester, const StopPage(stopId: stopId));
+    final handle = tester.ensureSemantics();
+    await tester.pump();
+    final node = tester.getSemantics(
+      find
+          .descendant(
+            of: find.byType(ObaDepartureRow).first,
+            matching: find.byType(InkWell),
+          )
+          .first,
+    );
+    final labels = [
+      for (final id in node.getSemanticsData().customSemanticsActionIds ?? [])
+        CustomSemanticsAction.getAction(id)!.label,
+    ];
+    expect(labels, contains('Show trip details'));
+    expect(labels, contains('Bookmark this trip'));
+    handle.dispose();
+  });
+
   testWidgets('no map: no shapes requested', (tester) async {
     env = await makeEnv();
     await env.pumpPage(tester, const StopPage(stopId: stopId));

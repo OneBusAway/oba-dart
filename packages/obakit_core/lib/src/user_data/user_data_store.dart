@@ -116,6 +116,9 @@ class UserDataStore extends ObaChangeNotifier {
   static const maximumRecentPlaces = 10;
   static const maximumRecentSearches = 10;
 
+  /// How many read service-alert ids are remembered (oldest dropped first).
+  static const maximumReadAlerts = 500;
+
   final KeyValueStore _store;
 
   late List<Bookmark> _bookmarks;
@@ -527,7 +530,10 @@ class UserDataStore extends ObaChangeNotifier {
 
   // -- Alarms -----------------------------------------------------------------
 
-  List<StoredAlarm> get alarms => List.unmodifiable(_alarms);
+  List<StoredAlarm> get alarms => _alarmsView ??= List.unmodifiable(_alarms);
+
+  /// Cached [alarms] copy (read per departure row); reset on every change.
+  List<StoredAlarm>? _alarmsView;
 
   void addAlarm(StoredAlarm alarm) {
     _alarms = [..._alarms.where((a) => a.url != alarm.url), alarm];
@@ -560,7 +566,7 @@ class UserDataStore extends ObaChangeNotifier {
 
   void markAlertRead(String alertId) {
     if (!_readAlertIds.add(alertId)) return;
-    _store.writeJson(_kReadAlerts, _readAlertIds.toList());
+    _saveReadAlerts();
     notifyListeners();
   }
 
@@ -568,8 +574,18 @@ class UserDataStore extends ObaChangeNotifier {
     final before = _readAlertIds.length;
     _readAlertIds.addAll(alertIds);
     if (_readAlertIds.length == before) return;
-    _store.writeJson(_kReadAlerts, _readAlertIds.toList());
+    _saveReadAlerts();
     notifyListeners();
+  }
+
+  /// Drops the oldest read ids (the set keeps insertion order) beyond
+  /// [maximumReadAlerts], then writes the set through.
+  void _saveReadAlerts() {
+    final excess = _readAlertIds.length - maximumReadAlerts;
+    if (excess > 0) {
+      _readAlertIds = _readAlertIds.skip(excess).toSet();
+    }
+    _store.writeJson(_kReadAlerts, _readAlertIds.toList());
   }
 
   // -- Trip planning ----------------------------------------------------------
@@ -700,8 +716,10 @@ class UserDataStore extends ObaChangeNotifier {
     for (final r in _recentStops) r.toJson(),
   ]);
 
-  void _saveAlarms() =>
-      _store.writeJson(_kAlarms, [for (final a in _alarms) a.toJson()]);
+  void _saveAlarms() {
+    _alarmsView = null;
+    _store.writeJson(_kAlarms, [for (final a in _alarms) a.toJson()]);
+  }
 
   void _saveSurveys() {
     _store.writeJson(_kCompletedSurveys, [

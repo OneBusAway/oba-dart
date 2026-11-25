@@ -108,7 +108,8 @@ class AlertsLoader extends ChangeNotifier {
     if (stopId != null) return [stopId!];
     final routeId = this.routeId;
     if (routeId != null) {
-      final response = await client.stops.forRoute(routeId);
+      // Shared, cached per region with the stop and route stops pages.
+      final response = await app.core.stopsForRoute.get(client, routeId);
       final ids = response.entry.stopIds;
       if (ids.length <= 3) return ids;
       return [ids.first, ids[ids.length ~/ 2], ids.last];

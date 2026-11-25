@@ -102,3 +102,85 @@ class StopDepartures {
   bool get isEmptyBecauseOfFilter =>
       all.isEmpty && hiddenByRoutes == 0 && hiddenByFilter > 0;
 }
+
+/// Remembers the last [StopDepartures.build] and returns it again while its
+/// inputs are unchanged: the same `raw` and `references` objects (one
+/// arrivals response), equal preferences, filter, hidden-routes flag and
+/// walk minutes, and a `now` that has not crossed any time the result
+/// depends on (a departure leaving, or entering the walk window).
+///
+/// A stop page rebuilds for many reasons (user data, settings, expanding a
+/// section); this keeps those rebuilds from re-running the pipeline.
+class StopDeparturesMemo {
+  Iterable<ArrivalAndDeparture>? _raw;
+  References? _references;
+  StopPreferences? _preferences;
+  ArrivalDepartureFilter? _filter;
+  bool? _showHidden;
+  int? _walk;
+  int _validFrom = 0;
+  int _validUntil = 0;
+  StopDepartures? _value;
+
+  /// How many times the pipeline actually ran (for tests).
+  int computeCount = 0;
+
+  /// [StopDepartures.build], or the previous result when nothing it
+  /// depends on changed.
+  StopDepartures build(
+    Iterable<ArrivalAndDeparture> raw, {
+    required References references,
+    required DateTime now,
+    StopPreferences preferences = const StopPreferences(),
+    ArrivalDepartureFilter filter = ArrivalDepartureFilter.all,
+    bool showHiddenRoutes = false,
+    int? walkMinutes,
+  }) {
+    final t = now.millisecondsSinceEpoch;
+    final cached = _value;
+    if (cached != null &&
+        identical(raw, _raw) &&
+        identical(references, _references) &&
+        preferences == _preferences &&
+        filter == _filter &&
+        showHiddenRoutes == _showHidden &&
+        walkMinutes == _walk &&
+        t >= _validFrom &&
+        t <= _validUntil) {
+      return cached;
+    }
+    computeCount++;
+    final value = StopDepartures.build(
+      raw,
+      references: references,
+      now: now,
+      preferences: preferences,
+      filter: filter,
+      showHiddenRoutes: showHiddenRoutes,
+      walkMinutes: walkMinutes,
+    );
+    // The result only depends on `now` through `minutesUntil(now) < 0`
+    // (past vs upcoming, flips once now > departure) and
+    // `minutesUntil(now) < walkMinutes` (flips once now > departure - walk).
+    var until = 8640000000000000; // DateTime's max milliseconds.
+    final walkMs = walkMinutes == null ? null : walkMinutes * 60000;
+    for (final a in value.all) {
+      final d = a.bestDate?.millisecondsSinceEpoch;
+      if (d == null) continue;
+      if (d >= t && d < until) until = d;
+      if (walkMs != null) {
+        final w = d - walkMs;
+        if (w >= t && w < until) until = w;
+      }
+    }
+    _raw = raw;
+    _references = references;
+    _preferences = preferences;
+    _filter = filter;
+    _showHidden = showHiddenRoutes;
+    _walk = walkMinutes;
+    _validFrom = t;
+    _validUntil = until;
+    return _value = value;
+  }
+}

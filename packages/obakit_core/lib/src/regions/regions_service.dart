@@ -35,8 +35,11 @@ class RegionsService extends ObaChangeNotifier {
     ObaLocation? initialLocation,
     FixedRegionConfig? fixedRegion,
     this.refreshInterval = const Duration(days: 1),
+    List<Region>? cachedRegions,
   }) : _location = initialLocation {
-    final cached = _loadCachedRegions();
+    final cached = cachedRegions != null
+        ? List.of(cachedRegions)
+        : _loadCachedRegions();
     _regions = cached.isNotEmpty ? cached : _parseBundled(bundledRegionsJson);
     _customRegions = _loadCustomRegions();
 
@@ -72,10 +75,13 @@ class RegionsService extends ObaChangeNotifier {
 
   /// Whether [store] holds a downloaded regions list (which wins over the
   /// bundled one).
-  static bool hasCachedRegions(KeyValueStore store) => parseObjects(
-    store.readList(cachedRegionsKey),
-    Region.fromJson,
-  ).isNotEmpty;
+  static bool hasCachedRegions(KeyValueStore store) =>
+      loadCachedRegions(store).isNotEmpty;
+
+  /// The downloaded regions list cached in [store] (empty when none). Pass
+  /// it to the constructor's `cachedRegions` to avoid parsing it twice.
+  static List<Region> loadCachedRegions(KeyValueStore store) =>
+      parseObjects(store.readList(cachedRegionsKey), Region.fromJson);
 
   static const currentRegionIdKey = 'oba.regions.currentRegionId';
   static const cachedRegionsKey = 'oba.regions.cachedRegions';
@@ -293,8 +299,7 @@ class RegionsService extends ObaChangeNotifier {
               a.regionName.toLowerCase().compareTo(b.regionName.toLowerCase()),
         );
 
-  List<Region> _loadCachedRegions() =>
-      parseObjects(_store.readList(cachedRegionsKey), Region.fromJson);
+  List<Region> _loadCachedRegions() => loadCachedRegions(_store);
 
   List<Region> _loadCustomRegions() =>
       parseObjects(_store.readList(customRegionsKey), Region.fromJson);

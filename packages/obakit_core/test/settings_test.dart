@@ -71,6 +71,17 @@ void main() {
     expect(s.walkingSpeedMetersPerSecond, 1.4);
   });
 
+  test('cached reads still see writes made directly to the store', () {
+    expect(s.mapType, MapType.standard);
+    expect(s.onboardingSeenVersion('welcome'), 0);
+    kv.writeJson('oba.settings.mapType', 'satellite');
+    kv.writeJson('oba.settings.onboardingSeenVersions', {'welcome': 3});
+    expect(s.mapType, MapType.satellite);
+    expect(s.onboardingSeenVersion('welcome'), 3);
+    s.mapType = MapType.satellite;
+    expect(n, 0, reason: 'unchanged value does not notify');
+  });
+
   test('onboarding step versions', () {
     expect(s.needsOnboardingStep('welcome', 1), isTrue);
     s.markOnboardingStepSeen('welcome', 1);

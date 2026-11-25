@@ -106,9 +106,6 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
     final lifecycle = WidgetsBinding.instance.lifecycleState;
     _appActive = lifecycle == null || _isActive(lifecycle);
     WidgetsBinding.instance.addObserver(this);
-    _tick = Timer.periodic(_tickInterval, (_) {
-      if (mounted) setState(() {});
-    });
   }
 
   @override
@@ -184,14 +181,37 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
   }
 
   /// Holds the controller while visible and the app is active, and
-  /// releases it otherwise.
+  /// releases it otherwise. The countdown tick follows the same rule.
   void _syncRunning() {
     final want = _appActive && _visible;
+    _syncTick(want);
     if (want && !_holding) {
       _holding = true;
       _controller.acquire();
     } else if (!want) {
       _releaseController();
+    }
+  }
+
+  /// Whether the tick was stopped (hidden or backgrounded) since it last ran.
+  bool _tickPaused = false;
+
+  /// Runs the 30 s countdown tick only while the panel is shown. Coming
+  /// back, the countdown is rebuilt at once instead of at the next tick.
+  void _syncTick(bool want) {
+    if (want) {
+      if (_tick != null) return;
+      _tick = Timer.periodic(_tickInterval, (_) {
+        if (mounted) setState(() {});
+      });
+      if (_tickPaused) {
+        _tickPaused = false;
+        setState(() {});
+      }
+    } else if (_tick != null) {
+      _tick!.cancel();
+      _tick = null;
+      _tickPaused = true;
     }
   }
 

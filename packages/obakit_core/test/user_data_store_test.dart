@@ -325,6 +325,17 @@ void main() {
     expect(reload().isAlertUnread('c'), isFalse);
   });
 
+  test('read alerts keep only the newest ids', () {
+    const cap = UserDataStore.maximumReadAlerts;
+    store.markAlertsRead([for (var i = 0; i < cap; i++) 'a$i']);
+    store.markAlertRead('new');
+    expect(store.isAlertUnread('a0'), isTrue);
+    expect(store.isAlertUnread('a1'), isFalse);
+    expect(store.isAlertUnread('new'), isFalse);
+    expect(kv.readList('oba.userData.readServiceAlerts'), hasLength(cap));
+    expect(reload().isAlertUnread('a0'), isTrue);
+  });
+
   test('trip planning defaults on per region', () {
     expect(store.isTripPlanningEnabled(1), isTrue);
     store.setTripPlanningEnabled(1, false);

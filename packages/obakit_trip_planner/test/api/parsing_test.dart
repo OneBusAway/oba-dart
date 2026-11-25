@@ -40,6 +40,10 @@ void main() {
       expect(tram.from.stopId, '2:77781');
       expect(tram.intermediateStops, hasLength(12));
       expect(tram.geometry, hasLength(213));
+      // Decoded once and reused.
+      expect(identical(tram.geometry, tram.geometry), isTrue);
+      final copy = tram.copyWith(encodedGeometry: '');
+      expect(copy.geometry, [copy.from.point, copy.to.point]);
     });
 
     test('parses the OTPKit success fixture', () {

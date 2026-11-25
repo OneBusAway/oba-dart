@@ -11,6 +11,7 @@ import '../../navigation/oba_navigator.dart';
 import '../../navigation/oba_route.dart';
 import '../../platform/listenable_adapter.dart';
 import '../../theme/oba_theme.dart';
+import '../../widgets/memo.dart';
 import '../../widgets/rows.dart';
 import '../../widgets/sheet_page.dart';
 import '../../widgets/states.dart';
@@ -41,8 +42,12 @@ class _TripPageState extends State<TripPage> {
   late TripController _controller;
   ObaApplication? _app;
   final Set<String> _expanded = {};
-  String? _shape;
+
+  /// The trip's shape, decoded once when it arrives.
+  List<Coordinate>? _shape;
   bool _shapeRequested = false;
+  final ObaMemo<ObaMapOverlay> _overlayMemo = ObaMemo();
+  Listenable? _listenable;
 
   @override
   void initState() {
@@ -68,6 +73,7 @@ class _TripPageState extends State<TripPage> {
         ..removeListener(_onData)
         ..dispose();
       _controller = _make()..addListener(_onData);
+      _listenable = null;
       _expanded.clear();
       _shape = null;
       _shapeRequested = false;
@@ -94,7 +100,9 @@ class _TripPageState extends State<TripPage> {
       client.shapes
           .byId(shapeId)
           .then((r) {
-            if (mounted) setState(() => _shape = r.entry.points);
+            if (!mounted) return;
+            final points = Polyline.decode(r.entry.points);
+            setState(() => _shape = points);
           })
           .catchError((Object _) {}),
     );
@@ -106,7 +114,7 @@ class _TripPageState extends State<TripPage> {
     return ObaPollingHolder(
       controller: _controller,
       child: ListenableBuilder(
-        listenable: Listenable.merge([
+        listenable: _listenable ??= Listenable.merge([
           _controller,
           ObaListenableAdapter(core.userData),
         ]),
@@ -208,8 +216,18 @@ class _TripPageState extends State<TripPage> {
       ]);
     }
 
+    // Unchanged between responses (a user-data change or an expanded group
+    // rebuilds the page without touching the map).
+    final overlay = _overlayMemo([
+      s.details,
+      s.arrival,
+      s.references,
+      _shape,
+      routeName,
+      Localizations.localeOf(context),
+    ], () => _overlay(context, s, list, routeName));
     return ObaMapOverlays(
-      overlay: _overlay(context, s, list, routeName),
+      overlay: overlay,
       child: ObaSheetPage(
         title: title.isEmpty ? l10n.titleTrip : title,
         actions: [
@@ -239,7 +257,7 @@ class _TripPageState extends State<TripPage> {
     final orientation = status?.orientation ?? status?.lastKnownOrientation;
     final shape = _shape;
     final line = shape != null
-        ? ObaMapPolyline.encoded(shape)
+        ? ObaMapPolyline(points: shape)
         : stops.length > 1
         ? ObaMapPolyline(points: [for (final st in stops) st.coordinate])
         : null;

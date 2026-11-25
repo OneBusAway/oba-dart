@@ -1,6 +1,11 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:obakit/obakit.dart';
+import 'package:obakit_core/obakit_core.dart' as oba show Route;
 
 import '../../support/oba_test_harness.dart';
 
@@ -122,6 +127,84 @@ void main() {
     await tester.pump(const Duration(seconds: 61));
     await ObaTestEnv.settle(tester);
     expect(count(env, 'arrivals-and-departures-for-stop'), before);
+  });
+
+  testWidgets('controller: stops fetched together; refreshed every 30 s', (
+    tester,
+  ) async {
+    env = await makeEnv();
+    var arrivals = 0, inFlight = 0, maxInFlight = 0;
+    var failNext = false;
+    final client = OneBusAwayClient(
+      baseUrl: Uri.parse('https://api.example.org/'),
+      apiKey: 'k',
+      httpClient: MockClient((r) async {
+        if (r.url.path.contains('stops-for-location')) {
+          return http.Response(fixture('stops_for_location_seattle.json'), 200);
+        }
+        arrivals++;
+        inFlight++;
+        maxInFlight = math.max(maxInFlight, inFlight);
+        final fail = failNext && arrivals % 3 == 1;
+        // A slow server: responses take two seconds.
+        await Future<void>.delayed(const Duration(seconds: 2));
+        inFlight--;
+        if (fail) return http.Response('boom', 500);
+        return http.Response(
+          fixture('arrivals-and-departures-for-stop-1_10914.json'),
+          200,
+        );
+      }),
+    );
+    final c = NearbyDeparturesController(client: () => client);
+    addTearDown(c.dispose);
+    c.visible = true;
+    c.setCenter(udistrict.coordinate);
+    await tester.pump();
+    var notified = 0;
+    c.addListener(() => notified++);
+    await tester.pump(const Duration(seconds: 3));
+    expect(arrivals, 3);
+    expect(maxInFlight, 3, reason: 'all three stops at once');
+    expect(notified, 1, reason: 'one notification for the round');
+
+    // The section re-checks every 30 s from when the round started; the
+    // slow responses must not push the refresh to the following tick.
+    await tester.pump(const Duration(seconds: 27));
+    c.loadIfNeeded();
+    await tester.pump(const Duration(seconds: 3));
+    expect(arrivals, 6);
+
+    // A failure ends the round without retrying; the others still land.
+    failNext = true;
+    await tester.pump(const Duration(seconds: 27));
+    notified = 0;
+    c.loadIfNeeded();
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pump(const Duration(seconds: 3));
+    expect(arrivals, 9);
+    expect(notified, 1);
+  });
+
+  testWidgets('controller: map-centre stops do not pile up routes', (
+    tester,
+  ) async {
+    env = await makeEnv();
+    final c = NearbyDeparturesController(client: () => null);
+    addTearDown(c.dispose);
+    Stop stop(String id, double lat, String route) =>
+        Stop(id: id, name: id, lat: lat, lon: -122.3, routeIds: [route]);
+    oba.Route route(String id) => oba.Route(id: id, agencyId: '1');
+    for (var i = 0; i < 20; i++) {
+      final lat = 47.0 + i;
+      c.useStops(
+        Coordinate(lat, -122.3),
+        [stop('s$i', lat, 'r$i')],
+        {'r$i': route('r$i')},
+      );
+    }
+    expect(c.stops.single.id, 's19');
+    expect(c.routes.keys, ['r19']);
   });
 
   testWidgets('section: no refresh in a hidden IndexedStack child', (

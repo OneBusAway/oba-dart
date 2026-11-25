@@ -64,6 +64,11 @@ class AlarmService {
   bool canCreateAlarm(ArrivalAndDeparture arrival, DateTime now) =>
       isAvailable && (arrival.minutesUntil(now) ?? 0) > 1;
 
+  /// [alarmFor] for many departures at once: one pass over the stored
+  /// alarms, then a map lookup per departure. Take a fresh one per build
+  /// (it does not follow later changes).
+  AlarmLookup lookup() => AlarmLookup(userData.alarms);
+
   /// The stored alarm for this departure, matched by trip, stop, service
   /// date and stop sequence.
   StoredAlarm? alarmFor(ArrivalAndDeparture arrival) => userData.alarms
@@ -160,4 +165,40 @@ class AlarmService {
 
   /// Drops alarms whose departure has passed.
   void pruneExpiredAlarms() => userData.deleteExpiredAlarms();
+}
+
+/// A snapshot of stored alarms indexed for [AlarmService.alarmFor]-style
+/// matching (trip, stop, stop sequence, service date).
+class AlarmLookup {
+  AlarmLookup(Iterable<StoredAlarm> alarms) {
+    for (final a in alarms) {
+      final link = a.deepLink;
+      if (link == null) continue;
+      _byKey.putIfAbsent(
+        _key(link.tripId, link.stopId, link.stopSequence, link.serviceDate),
+        () => a,
+      );
+    }
+  }
+
+  final Map<(String, String, int, int), StoredAlarm> _byKey = {};
+
+  static (String, String, int, int) _key(
+    String tripId,
+    String stopId,
+    int stopSequence,
+    DateTime serviceDate,
+  ) => (tripId, stopId, stopSequence, serviceDate.microsecondsSinceEpoch);
+
+  bool get isEmpty => _byKey.isEmpty;
+
+  /// The stored alarm for this departure, or null.
+  StoredAlarm? alarmFor(ArrivalAndDeparture arrival) => _byKey.isEmpty
+      ? null
+      : _byKey[_key(
+          arrival.tripId,
+          arrival.stopId,
+          arrival.stopSequence,
+          arrival.serviceDate,
+        )];
 }

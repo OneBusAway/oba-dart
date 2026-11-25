@@ -35,6 +35,7 @@ export 'src/services/alarm_service.dart';
 export 'src/services/contact_us.dart';
 export 'src/services/fare_payments.dart';
 export 'src/services/problem_report_service.dart';
+export 'src/services/stops_for_route_cache.dart';
 export 'src/settings/settings.dart';
 export 'src/surveys/survey_service.dart';
 export 'src/user_data/bookmark.dart';

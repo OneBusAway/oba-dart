@@ -7,6 +7,7 @@ import 'package:obakit_core/obakit_core.dart' hide Route;
 
 import '../../app/application.dart';
 import '../../app/scope.dart';
+import '../bookmarks/visibility.dart';
 import '../../l10n/l10n.dart';
 import '../../navigation/oba_navigator.dart';
 import '../../navigation/oba_route.dart';
@@ -195,16 +196,30 @@ class ObaWeatherButton extends StatefulWidget {
 }
 
 class _ObaWeatherButtonState extends State<ObaWeatherButton>
-    with _WeatherServiceListening {
+    with _WeatherServiceListening, ObaVisibilityAware {
   Timer? _timer;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     attachWeather();
-    _timer ??= Timer.periodic(const Duration(minutes: 5), (_) {
+  }
+
+  /// Re-checks the forecast every 5 minutes, only while the button is on
+  /// screen and the app is in the foreground; coming back, it reloads at
+  /// once if the forecast went stale meanwhile.
+  @override
+  void onVisibilityChanged(bool visible) {
+    if (visible) {
+      _timer ??= Timer.periodic(const Duration(minutes: 5), (_) {
+        service?.load();
+      });
+      // Returns the cached forecast while it is fresh.
       service?.load();
-    });
+    } else {
+      _timer?.cancel();
+      _timer = null;
+    }
   }
 
   @override

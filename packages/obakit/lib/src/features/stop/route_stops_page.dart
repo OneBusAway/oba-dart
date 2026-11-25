@@ -8,6 +8,7 @@ import '../../l10n/l10n.dart';
 import '../../navigation/oba_navigator.dart';
 import '../../navigation/oba_route.dart';
 import '../../theme/oba_theme.dart';
+import '../../widgets/memo.dart';
 import '../../widgets/rows.dart';
 import '../../widgets/sheet_page.dart';
 import '../../widgets/states.dart';
@@ -73,6 +74,11 @@ class _RouteStopsPageState extends State<RouteStopsPage> {
   bool _started = false;
   int _direction = 0;
 
+  /// The selected direction's decoded shapes and the overlay drawn from
+  /// them, recomputed only when the response, direction or colour change.
+  final ObaMemo<List<List<Coordinate>>> _decoded = ObaMemo();
+  final ObaMemo<ObaMapOverlay> _overlay = ObaMemo();
+
   @override
   void initState() {
     super.initState();
@@ -90,9 +96,11 @@ class _RouteStopsPageState extends State<RouteStopsPage> {
   }
 
   ObaLoader<ObaEntryResponse<StopsForRoute>> _make() => ObaLoader(() {
-    final client = _app?.core.restClient;
-    if (client == null) throw StateError('no region');
-    return client.stops.forRoute(widget.routeId);
+    final core = _app?.core;
+    final client = core?.restClient;
+    if (core == null || client == null) throw StateError('no region');
+    // Shared, cached per region (the stop page fetched it for its shapes).
+    return core.stopsForRoute.get(client, widget.routeId);
   });
 
   @override
@@ -220,24 +228,31 @@ class _RouteStopsPageState extends State<RouteStopsPage> {
     }
 
     final color = _routeColor(context, route);
-    final points = [
-      for (final p in polylines) ...Polyline.decode(p),
-      for (final s in stops) s.coordinate,
-    ];
     final supportsSchedule =
         core.currentRegion?.supportsScheduleForRoute ?? false;
+    final overlay = _overlay([r, dir, color], () {
+      if (r == null) return ObaMapOverlay.empty;
+      // Each shape decoded once (it used to be decoded for the lines and
+      // again for the bounds).
+      final lines = _decoded([
+        r,
+        dir,
+      ], () => [for (final p in polylines) Polyline.decode(p)]);
+      return ObaMapOverlay(
+        polylines: [
+          for (final points in lines)
+            ObaMapPolyline(points: points, color: color),
+        ],
+        stops: stops,
+        hideStopPins: true,
+        fitBounds: ObaMapLogic.boundsOf([
+          for (final points in lines) ...points,
+          for (final s in stops) s.coordinate,
+        ]),
+      );
+    });
     return ObaMapOverlays(
-      overlay: r == null
-          ? ObaMapOverlay.empty
-          : ObaMapOverlay(
-              polylines: [
-                for (final p in polylines)
-                  ObaMapPolyline.encoded(p, color: color),
-              ],
-              stops: stops,
-              hideStopPins: true,
-              fitBounds: ObaMapLogic.boundsOf(points),
-            ),
+      overlay: overlay,
       child: ObaSheetPage(
         title: name == null
             ? l10n.titleRouteStops

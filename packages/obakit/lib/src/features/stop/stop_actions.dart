@@ -199,19 +199,22 @@ class _AlarmPicker extends StatelessWidget {
 }
 
 /// The actions a departure row offers (iOS `DepartureRowActions`).
+/// [hasAlarm] skips the alarm lookup when the caller already did it.
 List<ObaDepartureAction> departureActions(
   BuildContext context,
   ArrivalAndDeparture arrival, {
   required DateTime now,
   Stop? stop,
   bool includeShowTrip = true,
+  bool? hasAlarm,
 }) {
   final app = ObaScope.of(context);
   final core = app.core;
   final l10n = context.obaL10n;
   final nav = ObaNavigator.of(context);
   final region = core.currentRegion;
-  final hasAlarm = core.alarms.alarmFor(arrival) != null;
+  // Callers listing many rows pass it from one `AlarmService.lookup()`.
+  hasAlarm ??= core.alarms.alarmFor(arrival) != null;
   final shareUrl = region == null
       ? null
       : DeepLinkRouter.tripShareUrl(region: region, arrival: arrival);

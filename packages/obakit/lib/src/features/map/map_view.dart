@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show OrdinalSortKey;
 import 'package:flutter/scheduler.dart';
@@ -61,6 +62,7 @@ class ObaMapView extends StatefulWidget {
     this.onLongPress,
     this.dropsPinOnLongPress = true,
     this.padding = EdgeInsets.zero,
+    this.paddingListenable,
     this.showsUserLocation = true,
     this.showsControls = true,
     this.onOpenMapSettings,
@@ -80,8 +82,14 @@ class ObaMapView extends StatefulWidget {
   final bool dropsPinOnLongPress;
 
   /// The part of the map covered by other UI (the sheet): controls stay
-  /// clear of it and camera moves centre on the uncovered area.
+  /// clear of it and camera moves centre on the uncovered area. Ignored when
+  /// [paddingListenable] is given.
   final EdgeInsets padding;
+
+  /// A [padding] that changes often (a draggable sheet's height). Only the
+  /// floating controls rebuild when it changes, never the map itself, and
+  /// camera moves always use its latest value.
+  final ValueListenable<EdgeInsets>? paddingListenable;
   final bool showsUserLocation;
 
   /// Shows the recentre button (and the optional buttons below).
@@ -280,11 +288,17 @@ class _ObaMapViewState extends State<ObaMapView>
     }
   }
 
+  /// The covered part of the map, as of now.
+  EdgeInsets get _padding => widget.paddingListenable?.value ?? widget.padding;
+
   /// Offset from the widget centre to the centre of the uncovered area.
-  Offset get _visibleCenterShift => Offset(
-    (widget.padding.left - widget.padding.right) / 2,
-    (widget.padding.top - widget.padding.bottom) / 2,
-  );
+  Offset get _visibleCenterShift {
+    final padding = _padding;
+    return Offset(
+      (padding.left - padding.right) / 2,
+      (padding.top - padding.bottom) / 2,
+    );
+  }
 
   void _whenSafe(VoidCallback fn) {
     final phase = SchedulerBinding.instance.schedulerPhase;
@@ -315,7 +329,7 @@ class _ObaMapViewState extends State<ObaMapView>
       bounds: _bounds(bounds),
       // Extra room at the bottom for the attribution chip, which would
       // otherwise cover whatever is fitted to the edge.
-      padding: const EdgeInsets.fromLTRB(48, 48, 48, 88) + widget.padding,
+      padding: const EdgeInsets.fromLTRB(48, 48, 48, 88) + _padding,
       maxZoom: 18,
     ).fit(_map.camera);
     _animateCamera(fitted.center, fitted.zoom);
@@ -497,8 +511,9 @@ class _ObaMapViewState extends State<ObaMapView>
                     sortKey: const OrdinalSortKey(0),
                     container: true,
                     explicitChildNodes: true,
-                    child: Padding(
+                    child: _ChromePadding(
                       padding: widget.padding,
+                      paddingListenable: widget.paddingListenable,
                       child: SafeArea(
                         child: _MapChrome(
                           app: _app,
@@ -524,7 +539,32 @@ class _ObaMapViewState extends State<ObaMapView>
   }
 }
 
-class _StopMarkersLayer extends StatelessWidget {
+/// Pads the map chrome by a fixed [padding], or by [paddingListenable]
+/// (rebuilding only this subtree when it changes).
+class _ChromePadding extends StatelessWidget {
+  const _ChromePadding({
+    required this.padding,
+    required this.paddingListenable,
+    required this.child,
+  });
+
+  final EdgeInsets padding;
+  final ValueListenable<EdgeInsets>? paddingListenable;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final listenable = paddingListenable;
+    if (listenable == null) return Padding(padding: padding, child: child);
+    return ValueListenableBuilder<EdgeInsets>(
+      valueListenable: listenable,
+      builder: (context, value, child) => Padding(padding: value, child: child),
+      child: child,
+    );
+  }
+}
+
+class _StopMarkersLayer extends StatefulWidget {
   const _StopMarkersLayer({
     required this.app,
     required this.loader,
@@ -540,14 +580,38 @@ class _StopMarkersLayer extends StatelessWidget {
   final ValueChanged<Stop> onTap;
 
   @override
+  State<_StopMarkersLayer> createState() => _StopMarkersLayerState();
+}
+
+class _StopMarkersLayerState extends State<_StopMarkersLayer> {
+  late Listenable _listenable = _merge();
+
+  Listenable _merge() => Listenable.merge([
+    widget.loader,
+    widget.coordinator,
+    widget.coordinator.cameraIdle,
+    widget.app.core.userData.listenable,
+  ]);
+
+  @override
+  void didUpdateWidget(_StopMarkersLayer old) {
+    super.didUpdateWidget(old);
+    if (!identical(old.loader, widget.loader) ||
+        !identical(old.coordinator, widget.coordinator) ||
+        !identical(old.app, widget.app)) {
+      _listenable = _merge();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final app = widget.app;
+    final loader = widget.loader;
+    final coordinator = widget.coordinator;
+    final cache = widget.cache;
+    final onTap = widget.onTap;
     return ListenableBuilder(
-      listenable: Listenable.merge([
-        loader,
-        coordinator,
-        coordinator.cameraIdle,
-        app.core.userData.listenable,
-      ]),
+      listenable: _listenable,
       builder: (context, _) {
         final overlay = coordinator.overlay;
         final zoom = coordinator.zoom;
@@ -873,7 +937,7 @@ class ObaMapControlButton extends StatelessWidget {
 
 /// "Zoom in to see stops", a failed stops request (tap to retry), or a
 /// location-permission prompt.
-class ObaMapStatusPill extends StatelessWidget {
+class ObaMapStatusPill extends StatefulWidget {
   const ObaMapStatusPill({
     super.key,
     required this.app,
@@ -889,9 +953,35 @@ class ObaMapStatusPill extends StatelessWidget {
   final ObaMapCoordinator? coordinator;
 
   @override
+  State<ObaMapStatusPill> createState() => _ObaMapStatusPillState();
+}
+
+class _ObaMapStatusPillState extends State<ObaMapStatusPill> {
+  late Listenable _listenable = _merge();
+
+  Listenable _merge() => Listenable.merge([
+    widget.loader,
+    widget.app.core.listenable,
+    widget.coordinator,
+  ]);
+
+  @override
+  void didUpdateWidget(ObaMapStatusPill old) {
+    super.didUpdateWidget(old);
+    if (!identical(old.loader, widget.loader) ||
+        !identical(old.app, widget.app) ||
+        !identical(old.coordinator, widget.coordinator)) {
+      _listenable = _merge();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final app = widget.app;
+    final loader = widget.loader;
+    final coordinator = widget.coordinator;
     return ListenableBuilder(
-      listenable: Listenable.merge([loader, app.core.listenable, coordinator]),
+      listenable: _listenable,
       builder: (context, _) {
         final l10n = context.obaL10n;
         final permission = app.core.locationPermission;

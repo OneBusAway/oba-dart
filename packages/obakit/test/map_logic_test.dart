@@ -189,5 +189,24 @@ void main() {
       loader.reset();
       expect(loader.stops, isEmpty);
     });
+
+    test('routes are trimmed with the stop cache; no copy per read', () async {
+      final client = OneBusAwayClient(
+        baseUrl: Uri.parse('https://api.example.org/'),
+        apiKey: 'k',
+        httpClient: MockClient(
+          (r) async =>
+              http.Response(fixture('stops_for_location_seattle.json'), 200),
+        ),
+      );
+      final small = StopsLoader(client: () => client, maxCached: 1);
+      addTearDown(small.dispose);
+      await small.onCameraIdle(_box(47.6495, -122.3038, 0.01));
+      // 26 stops and 34 routes arrived; only the newest stop (one route)
+      // is kept, and with it only its route.
+      expect(small.routes.keys, ['98_869-28']);
+      expect(identical(small.routes, small.routes), isTrue);
+      expect(() => small.routes.clear(), throwsUnsupportedError);
+    });
   });
 }

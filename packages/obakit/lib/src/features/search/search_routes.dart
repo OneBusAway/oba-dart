@@ -20,6 +20,7 @@ import '../map/map_coordinator.dart';
 import '../map/map_logic.dart';
 import '../../platform/trip_place_search_bridge.dart';
 import '../../shell/home_sheet.dart';
+import '../../widgets/memo.dart';
 import '../../widgets/sheet_page.dart';
 import '../../widgets/states.dart';
 import 'explore_section.dart';
@@ -175,17 +176,51 @@ class ItineraryRoute extends ObaCustomRoute {
       _ItineraryPage(itinerary: itinerary, mapConfig: mapConfig);
 }
 
-class _ItineraryPage extends StatelessWidget {
+class _ItineraryPage extends StatefulWidget {
   const _ItineraryPage({required this.itinerary, required this.mapConfig});
 
   final tp.Itinerary itinerary;
   final tp.TripMapConfig mapConfig;
 
   @override
+  State<_ItineraryPage> createState() => _ItineraryPageState();
+}
+
+class _ItineraryPageState extends State<_ItineraryPage> {
+  /// Rebuilt only for a new itinerary or theme, not on every rebuild (an
+  /// unchanged overlay is not re-applied to the map).
+  final ObaMemo<ObaMapOverlay> _overlay = ObaMemo();
+
+  @override
   Widget build(BuildContext context) {
+    final itinerary = widget.itinerary;
     final strings = context.obaTripPlannerStrings;
     final hasMap = ObaMapCoordinator.maybeOf(context) != null;
     final tripTheme = tp.TripPlannerTheme.of(context);
+    return ObaMapOverlays(
+      overlay: _overlay([
+        itinerary,
+        tripTheme,
+      ], () => _buildOverlay(itinerary, tripTheme)),
+      child: ObaSheetPage(
+        title: strings.tripDetails,
+        body: tp.ItineraryDetailView(
+          itinerary: itinerary,
+          mapConfig: widget.mapConfig,
+          distanceUnits: obaDistanceUnits(context) == DistanceUnits.imperial
+              ? tp.DistanceUnits.imperial
+              : tp.DistanceUnits.metric,
+          showMap: !hasMap,
+          strings: strings,
+        ),
+      ),
+    );
+  }
+
+  static ObaMapOverlay _buildOverlay(
+    tp.Itinerary itinerary,
+    tp.TripPlannerTheme tripTheme,
+  ) {
     Coordinate c(tp.GeoPoint p) => Coordinate(p.lat, p.lon);
     final legs = itinerary.legs;
     final lines = [
@@ -210,25 +245,11 @@ class _ItineraryPage extends StatelessWidget {
         ),
       ],
     ];
-    return ObaMapOverlays(
-      overlay: ObaMapOverlay(
-        polylines: lines,
-        markers: markers,
-        hideStopPins: true,
-        fitBounds: ObaMapLogic.boundsOf([for (final l in lines) ...l.points]),
-      ),
-      child: ObaSheetPage(
-        title: strings.tripDetails,
-        body: tp.ItineraryDetailView(
-          itinerary: itinerary,
-          mapConfig: mapConfig,
-          distanceUnits: obaDistanceUnits(context) == DistanceUnits.imperial
-              ? tp.DistanceUnits.imperial
-              : tp.DistanceUnits.metric,
-          showMap: !hasMap,
-          strings: strings,
-        ),
-      ),
+    return ObaMapOverlay(
+      polylines: lines,
+      markers: markers,
+      hideStopPins: true,
+      fitBounds: ObaMapLogic.boundsOf([for (final l in lines) ...l.points]),
     );
   }
 }

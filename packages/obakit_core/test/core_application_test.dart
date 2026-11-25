@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:obakit_core/obakit_core.dart';
 import 'package:test/test.dart';
 
@@ -272,6 +274,26 @@ void main() {
     expect(app.regionTimeZone, isNull);
   });
 
+  test('unrelated settings changes do not refetch the time zone', () async {
+    final app = ObaCoreApplication(config());
+    await app.start();
+    addTearDown(app.dispose);
+    app.regions.setCurrentRegion(regionNamed('Puget Sound'));
+    app.settings.showRegionTimeZone = true;
+    await Future<void>.delayed(Duration.zero);
+    await Future<void>.delayed(Duration.zero);
+    int coverageRequests() => http.requests
+        .where((r) => r.url.path.contains('agencies-with-coverage'))
+        .length;
+    expect(coverageRequests(), 1);
+    app.settings.compactMode = true;
+    app.settings.mapType = MapType.satellite;
+    app.settings.debugMode = true;
+    await Future<void>.delayed(Duration.zero);
+    expect(coverageRequests(), 1);
+    expect(app.regionTimeZone, 'America/Los_Angeles');
+  });
+
   test('preferredTimeZone picks the most common, ties alphabetically', () {
     expect(ObaCoreApplication.preferredTimeZone(['B', 'A', 'B']), 'B');
     expect(ObaCoreApplication.preferredTimeZone(['B', 'A']), 'A');
@@ -315,6 +337,91 @@ void main() {
     expect(r, isA<RouteSearchResult>());
     expect(http.requests.last.url.host, region(app).obaBaseUrl.host);
   });
+
+  group('startup', () {
+    test('the permission check overlaps the store load and is settled '
+        'when start completes', () async {
+      final gate = Completer<void>();
+      final provider = _RecordingLocationProvider(
+        permission: LocationPermissionStatus.whileInUse,
+      );
+      final app = ObaCoreApplication(
+        ObaAppConfig(
+          appName: 'OBA',
+          apiKey: 'key',
+          appVersion: '1.0',
+          bundledRegionsJson: fixture('regions-v3.json'),
+          keyValueStore: _GatedStore(gate.future),
+          locationProvider: provider,
+          httpClient: http.client,
+          regionsPath: null,
+        ),
+      );
+      addTearDown(app.dispose);
+      final started = app.start();
+      await Future<void>.delayed(Duration.zero);
+      expect(provider.checks, 1, reason: 'checked before the store loaded');
+      gate.complete();
+      await started;
+      expect(provider.checks, 1);
+      expect(app.locationPermission, LocationPermissionStatus.whileInUse);
+    });
+
+    test('the cached regions list is read once', () async {
+      final counting = _CountingStore();
+      counting.writeJson(RegionsService.cachedRegionsKey, [
+        regionNamed('Puget Sound').toJson(),
+      ]);
+      final app = ObaCoreApplication(
+        ObaAppConfig(
+          appName: 'OBA',
+          apiKey: 'key',
+          appVersion: '1.0',
+          keyValueStore: counting,
+          locationProvider: location,
+          httpClient: http.client,
+          regionsPath: null,
+          fixedRegion: const FixedRegionConfig(name: 'Puget Sound'),
+        ),
+        bundledRegionsLoader: () async => fixture('regions-v3.json'),
+      );
+      await app.start();
+      addTearDown(app.dispose);
+      expect(app.currentRegion!.regionName, 'Puget Sound');
+      expect(counting.reads[RegionsService.cachedRegionsKey], 1);
+    });
+  });
 }
 
 Region region(ObaCoreApplication app) => app.currentRegion!;
+
+class _GatedStore extends InMemoryKeyValueStore {
+  _GatedStore(this._gate);
+
+  final Future<void> _gate;
+
+  @override
+  Future<void> load() => _gate;
+}
+
+class _CountingStore extends InMemoryKeyValueStore {
+  final Map<String, int> reads = {};
+
+  @override
+  String? getString(String key) {
+    reads[key] = (reads[key] ?? 0) + 1;
+    return super.getString(key);
+  }
+}
+
+class _RecordingLocationProvider extends FakeLocationProvider {
+  _RecordingLocationProvider({super.permission});
+
+  int checks = 0;
+
+  @override
+  Future<LocationPermissionStatus> checkPermission() {
+    checks++;
+    return super.checkPermission();
+  }
+}

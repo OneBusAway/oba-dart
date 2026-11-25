@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 
@@ -39,6 +41,11 @@ class ObaHomeShellState extends State<ObaHomeShell>
   static const double handleHeight = 24;
 
   late final ObaSheetController sheet = ObaSheetController(vsync: this);
+
+  /// The map's bottom padding in the narrow layout, derived from [sheet].
+  /// Notifies only when the padding changes, and only the map's floating
+  /// controls listen: dragging the sheet never rebuilds the map itself.
+  late final _SheetMapPadding _mapPadding = _SheetMapPadding(sheet);
   late ObaMapCoordinator _coordinator =
       widget.coordinator ?? (_owned = ObaMapCoordinator());
   ObaMapCoordinator? _owned;
@@ -67,14 +74,15 @@ class ObaHomeShellState extends State<ObaHomeShell>
 
   @override
   void dispose() {
+    _mapPadding.dispose();
     sheet.dispose();
     _owned?.dispose();
     super.dispose();
   }
 
-  Widget _map({required EdgeInsets padding}) => ObaMapView(
+  Widget _map({ValueListenable<EdgeInsets>? padding}) => ObaMapView(
     coordinator: _coordinator,
-    padding: padding,
+    paddingListenable: padding,
     onOpenMapSettings: () => _navigator.push(const MapSettingsRoute()),
     onShowStopsList: () => _navigator.push(const StopsOnMapRoute()),
     topStartAccessory: buildWeatherAccessory(context),
@@ -123,7 +131,7 @@ class ObaHomeShellState extends State<ObaHomeShell>
             ),
           ),
           VerticalDivider(width: 1, color: scheme.outlineVariant),
-          Expanded(child: _map(padding: EdgeInsets.zero)),
+          Expanded(child: _map()),
         ],
       ),
     );
@@ -140,6 +148,7 @@ class ObaHomeShellState extends State<ObaHomeShell>
       constraints.maxHeight - media.padding.top - 12,
     );
     final scheme = Theme.of(context).colorScheme;
+    _mapPadding.maxHeight = maxHeight;
     // The status bar always sits over the map (the sheet stops below it).
     return _StatusBarOverMap(
       child: Scaffold(
@@ -150,21 +159,14 @@ class ObaHomeShellState extends State<ObaHomeShell>
           child: Stack(
             children: [
               Positioned.fill(
-                child: ListenableBuilder(
-                  listenable: sheet,
-                  builder: (context, _) => Semantics(
-                    // Screen readers read the sheet first, then the map: the
-                    // sheet holds the page the rider opened, and the map's
-                    // pins (dozens of them, some under the sheet) come last.
-                    sortKey: const OrdinalSortKey(1),
-                    container: true,
-                    explicitChildNodes: true,
-                    child: _map(
-                      padding: EdgeInsets.only(
-                        bottom: math.min(sheet.height, maxHeight * 0.5),
-                      ),
-                    ),
-                  ),
+                child: Semantics(
+                  // Screen readers read the sheet first, then the map: the
+                  // sheet holds the page the rider opened, and the map's
+                  // pins (dozens of them, some under the sheet) come last.
+                  sortKey: const OrdinalSortKey(1),
+                  container: true,
+                  explicitChildNodes: true,
+                  child: _map(padding: _mapPadding),
                 ),
               ),
               Positioned.fill(
@@ -178,6 +180,8 @@ class ObaHomeShellState extends State<ObaHomeShell>
                       maxHeight: maxHeight,
                       headerHeight: header + media.padding.bottom,
                     );
+                    // updateMetrics may move the sheet without notifying.
+                    _mapPadding.refresh();
                     return Align(
                       alignment: Alignment.bottomCenter,
                       child: SizedBox(
@@ -258,6 +262,61 @@ class ObaHomeShellState extends State<ObaHomeShell>
         ),
       ),
     );
+  }
+}
+
+/// The map padding under the sheet: `min(sheet height, half the available
+/// height)` at the bottom.
+class _SheetMapPadding extends ChangeNotifier
+    implements ValueListenable<EdgeInsets> {
+  _SheetMapPadding(this.sheet) {
+    sheet.addListener(refresh);
+  }
+
+  final ObaSheetController sheet;
+  double _maxHeight = 0;
+  EdgeInsets _value = EdgeInsets.zero;
+
+  @override
+  EdgeInsets get value => _value;
+
+  set maxHeight(double v) {
+    if (v == _maxHeight) return;
+    _maxHeight = v;
+    refresh();
+  }
+
+  bool _notifyScheduled = false;
+  bool _disposed = false;
+
+  /// Recomputes the padding. [value] is updated at once (camera moves read
+  /// it); listeners are told after the frame when this runs while the tree
+  /// builds or lays out (the sheet resolves its height there).
+  void refresh() {
+    final next = EdgeInsets.only(
+      bottom: math.min(sheet.height, _maxHeight * 0.5),
+    );
+    if (next == _value) return;
+    _value = next;
+    final phase = SchedulerBinding.instance.schedulerPhase;
+    if (phase == SchedulerPhase.persistentCallbacks ||
+        phase == SchedulerPhase.midFrameMicrotasks) {
+      if (_notifyScheduled) return;
+      _notifyScheduled = true;
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        _notifyScheduled = false;
+        if (!_disposed) notifyListeners();
+      });
+      return;
+    }
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    sheet.removeListener(refresh);
+    super.dispose();
   }
 }
 

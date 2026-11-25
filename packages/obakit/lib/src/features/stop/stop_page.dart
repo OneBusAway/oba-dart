@@ -12,6 +12,7 @@ import '../../navigation/oba_navigator.dart';
 import '../../navigation/oba_route.dart';
 import '../../platform/listenable_adapter.dart';
 import '../../theme/oba_theme.dart';
+import '../../widgets/memo.dart';
 import '../../widgets/sheet_page.dart';
 import '../../widgets/states.dart';
 import '../map/map_coordinator.dart';
@@ -60,8 +61,24 @@ class _StopPageState extends State<StopPage> {
   bool _alertsExpanded = true;
   bool _recorded = false;
   bool _manualRefresh = false;
-  Map<String, List<String>> _shapes = const {};
+
+  /// Each route's shapes, decoded once when they arrive.
+  Map<String, List<List<Coordinate>>> _shapes = const {};
   bool _shapesRequested = false;
+  int _shapesGeneration = 0;
+
+  /// The walk to the stop. A location fix updates only this (and the
+  /// header that shows it); the page itself rebuilds only when the walk's
+  /// whole minutes change ([_walkMinutes]).
+  final ValueNotifier<WalkTime?> _walk = ValueNotifier(null);
+  final ValueNotifier<int?> _walkMinutes = ValueNotifier(null);
+  ObaCoreApplication? _listening;
+
+  /// What the page rebuilds for; created once per controller/application.
+  Listenable? _listenable;
+
+  final StopDeparturesMemo _departures = StopDeparturesMemo();
+  final ObaMemo<ObaMapOverlay> _overlayMemo = ObaMemo();
 
   @override
   void initState() {
@@ -69,6 +86,37 @@ class _StopPageState extends State<StopPage> {
     _controller = _resolve();
     _controller.addListener(_onData);
   }
+
+  void _listenTo(ObaCoreApplication? core) {
+    if (identical(core, _listening)) return;
+    _listening?.locationListenable.removeListener(_updateWalk);
+    _listening?.settings.removeListener(_updateWalk);
+    _listening = core;
+    core?.locationListenable.addListener(_updateWalk);
+    core?.settings.addListener(_updateWalk);
+    _listenable = null;
+    _updateWalk();
+  }
+
+  void _updateWalk() {
+    final core = _listening;
+    if (core == null) return;
+    final walk = WalkTime.compute(
+      user: core.currentLocation?.coordinate,
+      stop: _controller.state.stop?.coordinate,
+      metersPerSecond: core.settings.effectiveTravelSpeedMetersPerSecond,
+    );
+    _walk.value = walk;
+    _walkMinutes.value = walk?.minutes;
+  }
+
+  Listenable _pageListenable(ObaCoreApplication core) =>
+      _listenable ??= Listenable.merge([
+        _controller,
+        ObaListenableAdapter(core.userData),
+        ObaListenableAdapter(core.settings),
+        _walkMinutes,
+      ]);
 
   StopArrivalsController _resolve() {
     final external = widget.controller;
@@ -83,6 +131,7 @@ class _StopPageState extends State<StopPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _app = ObaScope.of(context);
+    _listenTo(_app!.core);
   }
 
   @override
@@ -94,10 +143,13 @@ class _StopPageState extends State<StopPage> {
       _owned = null;
       _controller = _resolve();
       _controller.addListener(_onData);
+      _listenable = null;
       _recorded = false;
       _shapes = const {};
       _shapesRequested = false;
+      _shapesGeneration++;
       _expandedRoutes.clear();
+      _updateWalk();
     }
   }
 
@@ -105,6 +157,9 @@ class _StopPageState extends State<StopPage> {
   void dispose() {
     _controller.removeListener(_onData);
     _owned?.dispose();
+    _listenTo(null);
+    _walk.dispose();
+    _walkMinutes.dispose();
     super.dispose();
   }
 
@@ -112,6 +167,7 @@ class _StopPageState extends State<StopPage> {
     final s = _controller.state;
     final stop = s.stop;
     final core = _app?.core;
+    _updateWalk();
     if (stop != null && !_recorded && core != null) {
       _recorded = true;
       final region = core.currentRegion;
@@ -148,20 +204,36 @@ class _StopPageState extends State<StopPage> {
     }
   }
 
+  /// How many routes' shapes are drawn, and how many are fetched at once.
+  static const _maxShapeRoutes = 8;
+  static const _shapeConcurrency = 3;
+
   Future<void> _loadShapes(Stop stop) async {
     _shapesRequested = true;
-    final client = _app?.core.restClient;
-    if (client == null) return;
-    final out = <String, List<String>>{};
-    for (final id in stop.routeIds.take(8)) {
-      try {
-        final r = await client.stops.forRoute(id);
-        out[id] = r.entry.polylines;
-      } catch (_) {
-        // Shapes are decoration; skip a route that fails.
+    final core = _app?.core;
+    final client = core?.restClient;
+    if (core == null || client == null) return;
+    final generation = ++_shapesGeneration;
+    bool current() => mounted && generation == _shapesGeneration;
+    final ids = stop.routeIds.take(_maxShapeRoutes).toList();
+    final decoded = <String, List<List<Coordinate>>>{};
+    var next = 0;
+    Future<void> worker() async {
+      while (current() && next < ids.length) {
+        final id = ids[next++];
+        try {
+          // Shared, cached per region: other pages ask for the same routes.
+          final r = await core.stopsForRoute.get(client, id);
+          decoded[id] = [for (final p in r.entry.polylines) Polyline.decode(p)];
+        } catch (_) {
+          // Shapes are decoration; skip a route that fails.
+        }
       }
     }
-    if (mounted) setState(() => _shapes = out);
+
+    await Future.wait([for (var i = 0; i < _shapeConcurrency; i++) worker()]);
+    if (!current()) return;
+    setState(() => _shapes = {for (final id in ids) id: ?decoded[id]});
   }
 
   void _refresh() {
@@ -189,16 +261,12 @@ class _StopPageState extends State<StopPage> {
     final app = ObaScope.of(context);
     final core = app.core;
     // Live location for the walk time, only while the page is visible.
+    _listenTo(core);
     return ObaLocationHolder(
       child: ObaPollingHolder(
         controller: _controller,
         child: ListenableBuilder(
-          listenable: Listenable.merge([
-            _controller,
-            ObaListenableAdapter(core.userData),
-            ObaListenableAdapter(core.settings),
-            ObaValueListenableAdapter(core.locationListenable),
-          ]),
+          listenable: _pageListenable(core),
           builder: (context, _) => _build(context, core),
         ),
       ),
@@ -211,19 +279,15 @@ class _StopPageState extends State<StopPage> {
     final stop = s.stop;
     final now = _controller.now();
     final prefs = _prefs(core);
-    final walk = WalkTime.compute(
-      user: core.currentLocation?.coordinate,
-      stop: stop?.coordinate,
-      metersPerSecond: core.settings.effectiveTravelSpeedMetersPerSecond,
-    );
-    final departures = StopDepartures.build(
+    final walkMinutes = _walkMinutes.value;
+    final departures = _departures.build(
       s.rawArrivals,
       references: s.references,
       now: now,
       preferences: prefs,
       filter: core.settings.arrivalDepartureFilter,
       showHiddenRoutes: _showHiddenRoutes,
-      walkMinutes: walk?.minutes,
+      walkMinutes: walkMinutes,
     );
     final alerts = s.entry == null
         ? const <Situation>[]
@@ -250,13 +314,16 @@ class _StopPageState extends State<StopPage> {
       slivers: [
         if (stop != null)
           SliverToBoxAdapter(
-            child: StopHeader(
-              stop: stop,
-              routes: routes,
-              references: s.references,
-              walkTime: walk,
-              bikeMode: core.settings.bikeModeEnabled,
-              transfer: widget.transfer,
+            child: ValueListenableBuilder<WalkTime?>(
+              valueListenable: _walk,
+              builder: (context, walk, _) => StopHeader(
+                stop: stop,
+                routes: routes,
+                references: s.references,
+                walkTime: walk,
+                bikeMode: core.settings.bikeModeEnabled,
+                transfer: widget.transfer,
+              ),
             ),
           ),
         if (s.hasData) ...[
@@ -283,14 +350,30 @@ class _StopPageState extends State<StopPage> {
               ),
             ),
         ],
-        ..._departureSlivers(context, core, s, departures, prefs, now, walk),
+        ..._departureSlivers(
+          context,
+          core,
+          s,
+          departures,
+          prefs,
+          now,
+          walkMinutes,
+        ),
       ],
     );
 
-    return ObaMapOverlays(
-      overlay: _overlay(context, s, routes, departures, now),
-      child: page,
-    );
+    // The same overlay instance while nothing it draws changed, so the map
+    // is not updated on every rebuild. Vehicles still refresh with each
+    // response (new departures).
+    final overlay = _overlayMemo([
+      s.stop,
+      s.references,
+      departures,
+      _shapes,
+      ObaTheme.of(context).routeLine,
+      Localizations.localeOf(context),
+    ], () => _overlay(context, s, routes, departures));
+    return ObaMapOverlays(overlay: overlay, child: page);
   }
 
   // -- Map --------------------------------------------------------------------
@@ -300,7 +383,6 @@ class _StopPageState extends State<StopPage> {
     StopArrivalsState s,
     List<oba.Route> routes,
     StopDepartures departures,
-    DateTime now,
   ) {
     final stop = s.stop;
     if (stop == null) return ObaMapOverlay.empty;
@@ -345,8 +427,8 @@ class _StopPageState extends State<StopPage> {
       ),
       polylines: [
         for (final e in _shapes.entries)
-          for (final p in e.value)
-            ObaMapPolyline.encoded(p, color: colorOf(e.key)),
+          for (final points in e.value)
+            ObaMapPolyline(points: points, color: colorOf(e.key)),
       ],
       markers: vehicles,
     );
@@ -613,7 +695,7 @@ class _StopPageState extends State<StopPage> {
     StopDepartures d,
     StopPreferences prefs,
     DateTime now,
-    WalkTime? walk,
+    int? walkMinutes,
   ) {
     final l10n = context.obaL10n;
     Widget fill(Widget child) =>
@@ -688,48 +770,65 @@ class _StopPageState extends State<StopPage> {
     bool isTransfer(ArrivalAndDeparture a) =>
         transferTrip != null && a.tripId == transferTrip;
 
-    Widget row(ArrivalAndDeparture a, ObaDepartureRowStyle style) =>
-        ObaDepartureRow(
-          key: ValueKey('${a.visitId}-${style.name}'),
-          arrival: a,
-          now: now,
-          references: s.references,
-          style: style,
-          isTransfer: isTransfer(a),
-          hasAlarm: core.alarms.alarmFor(a) != null,
-          onTap: () =>
-              ObaNavigator.of(context).push(TripRoute(TripRef.fromArrival(a))),
-          actions: departureActions(context, a, now: now, stop: s.stop),
-        );
+    // One pass over the stored alarms for every row.
+    final alarms = core.alarms.lookup();
+    // Rows are built lazily (only those on screen), and so are their
+    // actions (see ObaDepartureRow.actionsBuilder).
+    Widget Function() row(ArrivalAndDeparture a, ObaDepartureRowStyle style) =>
+        () {
+          final hasAlarm = alarms.alarmFor(a) != null;
+          return ObaDepartureRow(
+            key: ValueKey('${a.visitId}-${style.name}'),
+            arrival: a,
+            now: now,
+            references: s.references,
+            style: style,
+            isTransfer: isTransfer(a),
+            hasAlarm: hasAlarm,
+            onTap: () =>
+                ObaNavigator.of(context)
+                    .push(TripRoute(TripRef.fromArrival(a))),
+            actionsBuilder: () => departureActions(
+              context,
+              a,
+              now: now,
+              stop: s.stop,
+              hasAlarm: hasAlarm,
+            ),
+          );
+        };
+    Widget Function() fixed(Widget w) =>
+        () => w;
 
-    final children = <Widget>[];
+    final children = <Widget Function()>[];
     if (prefs.sortType == StopSort.time) {
       if (d.past.isNotEmpty) {
         children.add(
-          _ExpandToggle(
-            expanded: _pastExpanded,
-            label: _pastExpanded
-                ? l10n.stopPageHideEarlier
-                : l10n.stopPageEarlier(d.past.length),
-            onPressed: () => setState(() => _pastExpanded = !_pastExpanded),
+          fixed(
+            _ExpandToggle(
+              expanded: _pastExpanded,
+              label: _pastExpanded
+                  ? l10n.stopPageHideEarlier
+                  : l10n.stopPageEarlier(d.past.length),
+              onPressed: () => setState(() => _pastExpanded = !_pastExpanded),
+            ),
           ),
         );
         if (_pastExpanded) {
           children.addAll(d.past.map((a) => row(a, ObaDepartureRowStyle.past)));
-          children.add(const Divider(height: 1));
+          children.add(fixed(const Divider(height: 1)));
         }
       }
+      Widget walkDivider(int minutes) => WalkTimeDivider(
+        minutes: minutes,
+        bike: core.settings.bikeModeEnabled,
+        onTap: s.stop == null
+            ? null
+            : () => openStopDirections(context, s.stop!.coordinate),
+      );
       for (var i = 0; i < d.upcoming.length; i++) {
-        if (i == d.walkDividerIndex && walk != null) {
-          children.add(
-            WalkTimeDivider(
-              minutes: walk.minutes,
-              bike: core.settings.bikeModeEnabled,
-              onTap: s.stop == null
-                  ? null
-                  : () => openStopDirections(context, s.stop!.coordinate),
-            ),
-          );
+        if (i == d.walkDividerIndex && walkMinutes != null) {
+          children.add(fixed(walkDivider(walkMinutes)));
         }
         final missed = d.walkDividerIndex != null && i < d.walkDividerIndex!;
         children.add(
@@ -739,30 +838,24 @@ class _StopPageState extends State<StopPage> {
           ),
         );
       }
-      if (d.walkDividerIndex == d.upcoming.length && walk != null) {
-        children.add(
-          WalkTimeDivider(
-            minutes: walk.minutes,
-            bike: core.settings.bikeModeEnabled,
-            onTap: s.stop == null
-                ? null
-                : () => openStopDirections(context, s.stop!.coordinate),
-          ),
-        );
+      if (d.walkDividerIndex == d.upcoming.length && walkMinutes != null) {
+        children.add(fixed(walkDivider(walkMinutes)));
       }
     } else {
       for (final g in d.groups) {
         final open = _expandedRoutes.contains(g.routeId);
         children.add(
-          RouteGroupHeader(
-            group: g,
-            now: now,
-            expanded: open,
-            onToggle: () => setState(() {
-              if (!_expandedRoutes.remove(g.routeId)) {
-                _expandedRoutes.add(g.routeId);
-              }
-            }),
+          fixed(
+            RouteGroupHeader(
+              group: g,
+              now: now,
+              expanded: open,
+              onToggle: () => setState(() {
+                if (!_expandedRoutes.remove(g.routeId)) {
+                  _expandedRoutes.add(g.routeId);
+                }
+              }),
+            ),
           ),
         );
         if (open) {
@@ -776,10 +869,16 @@ class _StopPageState extends State<StopPage> {
             );
           }
         }
-        children.add(const Divider(height: 1));
+        children.add(fixed(const Divider(height: 1)));
       }
     }
-    return [SliverList.list(children: children), footer];
+    return [
+      SliverList.builder(
+        itemCount: children.length,
+        itemBuilder: (context, i) => children[i](),
+      ),
+      footer,
+    ];
   }
 }
 

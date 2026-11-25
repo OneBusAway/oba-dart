@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 import 'package:obakit_core/obakit_core.dart' hide Route;
@@ -38,7 +39,9 @@ class StopsLoader extends ChangeNotifier {
 
   /// The stops to draw, nearest to the centre first.
   List<Stop> get stops => _stops;
-  Map<String, core.Route> get routes => Map.unmodifiable(_routes);
+
+  /// Routes of the loaded stops, by id: a read-only live view (no copy).
+  late final Map<String, core.Route> routes = UnmodifiableMapView(_routes);
 
   /// True when the camera is too far out to show stops.
   bool get isZoomedOut => _zoomedOut;
@@ -94,8 +97,13 @@ class StopsLoader extends ChangeNotifier {
         _cache[s.id] = s;
       }
       _routes.addAll(response.references.routes);
-      while (_cache.length > maxCached) {
-        _cache.remove(_cache.keys.first);
+      if (_cache.length > maxCached) {
+        while (_cache.length > maxCached) {
+          _cache.remove(_cache.keys.first);
+        }
+        // Drop the routes only evicted stops used.
+        final used = {for (final stop in _cache.values) ...stop.routeIds};
+        _routes.removeWhere((id, _) => !used.contains(id));
       }
       _error = null;
     } catch (e) {

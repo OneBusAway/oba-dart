@@ -460,6 +460,59 @@ void main() {
     expect(requests, 2);
   });
 
+  testWidgets('the countdown tick stops while hidden or backgrounded', (
+    tester,
+  ) async {
+    var requests = 0;
+    final second = Completer<http.Response>();
+    final client = fakeClient((_) {
+      requests++;
+      return requests == 1 ? Future.value(okResponse()) : second.future;
+    });
+    Widget panel({required bool shown}) => host(
+      TickerMode(
+        enabled: shown,
+        child: ObaArrivalsPanel(
+          client: client,
+          stopId: 'MTS_24151',
+          refreshInterval: const Duration(minutes: 10),
+        ),
+      ),
+    );
+    List<String> countdowns() => [
+      for (final t in tester.widgetList<RichText>(find.byType(RichText)))
+        if (RegExp(r'^\d+m$').hasMatch(t.text.toPlainText()))
+          t.text.toPlainText(),
+    ];
+    await tester.pumpWidget(panel(shown: true));
+    await settle(tester);
+    expect(find.text('4m'), findsOneWidget);
+
+    // Hidden: no rebuild is scheduled when the tick would have fired.
+    await tester.pumpWidget(panel(shown: false));
+    await tester.pump();
+    await tester.binding.delayed(const Duration(seconds: 31));
+    expect(tester.binding.hasScheduledFrame, isFalse);
+
+    // Backgrounded while shown: likewise.
+    await tester.pumpWidget(panel(shown: true));
+    await tester.pump();
+    final firstEta = countdowns().first;
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump();
+    await tester.binding.delayed(const Duration(minutes: 2));
+    expect(tester.binding.hasScheduledFrame, isFalse);
+    expect(countdowns().first, firstEta, reason: 'not rebuilt meanwhile');
+
+    // Back in the foreground the countdown is current at once (two minutes
+    // passed), even with the refresh still in flight.
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
+    expect(countdowns().first, isNot(firstEta));
+    second.complete(okResponse());
+    await settle(tester);
+  });
+
   testWidgets('changing stopId reloads', (tester) async {
     final stops = <String>[];
     final client = fakeClient((r) async {

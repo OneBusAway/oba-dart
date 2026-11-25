@@ -15,6 +15,7 @@ import '../../navigation/oba_navigator.dart';
 import '../../navigation/oba_route.dart';
 import '../../platform/listenable_adapter.dart';
 import '../../widgets/feed_card.dart';
+import '../../widgets/memo.dart';
 import '../../widgets/rows.dart';
 import '../../widgets/sheet_page.dart';
 import '../../widgets/states.dart';
@@ -51,8 +52,8 @@ enum NearbyCenterSource {
 /// few (iOS `HomeNearbyDeparturesSectionModel`).
 ///
 /// Polite to the server: one stops request per [refetchDistance] of
-/// movement, arrivals for at most [stopLimit] stops, fetched one after
-/// another, each again only once older than
+/// movement, arrivals for at most [stopLimit] stops (fetched together, one
+/// notification per round), each again only once older than
 /// [NearbyDepartures.staleAfter], and only while [visible].
 class NearbyDeparturesController extends ChangeNotifier {
   NearbyDeparturesController({
@@ -154,6 +155,7 @@ class NearbyDeparturesController extends ChangeNotifier {
     if (same) return;
     _routes.addAll(routes);
     _stops = nearest;
+    _pruneToStops();
     _stopsLoaded = true;
     _loadingStops = false;
     _error = null;
@@ -181,13 +183,7 @@ class NearbyDeparturesController extends ChangeNotifier {
       if (_disposed || generation != _generation) return;
       _routes.addAll(response.references.routes);
       _stops = nearestStops(response.list, c, limit: stopLimit);
-      final ids = {for (final s in _stops) s.id};
-      final t = clock.now();
-      _loaded.removeWhere(
-        (id, v) =>
-            !ids.contains(id) &&
-            t.difference(v.$2) > NearbyDepartures.staleAfter,
-      );
+      _pruneToStops();
       _error = null;
       _stopsLoaded = true;
     } catch (e) {
@@ -204,8 +200,38 @@ class NearbyDeparturesController extends ChangeNotifier {
     if (!_disposed && generation == _generation) await loadIfNeeded();
   }
 
-  /// Fetches departures, one stop at a time, for the stops with none or
-  /// stale ones. Does nothing while hidden.
+  /// Keeps memory bounded as the centre moves (the map centre can wander
+  /// far): departures of stops no longer listed are dropped once stale,
+  /// and routes nothing listed refers to are dropped.
+  void _pruneToStops() {
+    final ids = {for (final s in _stops) s.id};
+    final t = clock.now();
+    _loaded.removeWhere(
+      (id, v) =>
+          !ids.contains(id) && t.difference(v.$2) > NearbyDepartures.staleAfter,
+    );
+    final routeIds = <String>{
+      for (final s in _stops) ...s.routeIds,
+      for (final v in _loaded.values)
+        for (final a in v.$1) a.routeId,
+    };
+    _routes.removeWhere((id, _) => !routeIds.contains(id));
+  }
+
+  /// Slack when deciding whether a stop's departures are stale. They are
+  /// stamped when their request starts and the section re-checks every
+  /// [NearbyDepartures.staleAfter]; without slack, a tick that lands a
+  /// moment early would skip a stop and double its refresh interval.
+  static const _staleSlack = Duration(seconds: 5);
+
+  bool _isDue(String stopId, DateTime t) {
+    final loaded = _loaded[stopId];
+    return loaded == null ||
+        t.difference(loaded.$2) >= NearbyDepartures.staleAfter - _staleSlack;
+  }
+
+  /// Fetches departures for the stops with none or stale ones, all due
+  /// stops at once. Does nothing while hidden.
   Future<void> loadIfNeeded() {
     if (!_visible || _disposed) return Future.value();
     return _arrivalsTask ??= _loadArrivals().whenComplete(
@@ -215,44 +241,55 @@ class NearbyDeparturesController extends ChangeNotifier {
 
   Future<void> _loadArrivals() async {
     while (!_disposed && _visible) {
-      final t = clock.now();
-      final due = _stops
-          .map((s) => s.id)
-          .where(
-            (id) =>
-                !_inFlight.contains(id) &&
-                (_loaded[id] == null ||
-                    t.difference(_loaded[id]!.$2) >=
-                        NearbyDepartures.staleAfter),
-          )
-          .firstOrNull;
-      if (due == null) return;
+      final started = clock.now();
+      final due = [
+        for (final s in _stops)
+          if (!_inFlight.contains(s.id) && _isDue(s.id, started)) s.id,
+      ];
+      if (due.isEmpty) return;
       final api = client();
       if (api == null) return;
-      _inFlight.add(due);
+      _inFlight.addAll(due);
+      var failed = false;
+      final List<ObaEntryResponse<StopWithArrivalsAndDepartures>?> responses;
       try {
-        final response = await api.arrivalsAndDepartures.forStop(
-          due,
-          minutesBefore: 0,
-          minutesAfter: NearbyDepartures.minutesAfter,
-        );
-        if (_disposed) return;
+        responses = await Future.wait([
+          for (final id in due)
+            api.arrivalsAndDepartures
+                .forStop(
+                  id,
+                  minutesBefore: 0,
+                  minutesAfter: NearbyDepartures.minutesAfter,
+                )
+                .then<ObaEntryResponse<StopWithArrivalsAndDepartures>?>(
+                  (r) => r,
+                  onError: (Object _) {
+                    failed = true;
+                    return null;
+                  },
+                ),
+        ]);
+      } finally {
+        _inFlight.removeAll(due);
+      }
+      if (_disposed) return;
+      var changed = false;
+      for (var i = 0; i < due.length; i++) {
+        final response = responses[i];
+        if (response == null) continue;
         _serverOffset = response.currentTime.difference(clock.now());
         _routes.addAll(response.references.routes);
-        _loaded[due] = (
+        _loaded[due[i]] = (
           cleanArrivals(response.entry.arrivalsAndDepartures),
-          clock.now(),
+          started,
         );
-        notifyListeners();
-      } catch (_) {
-        // The stop keeps what it had (or stays a plain stop row) and is due
-        // again on the next activation. Stop this round to avoid a retry
-        // storm.
-        _inFlight.remove(due);
-        return;
-      } finally {
-        _inFlight.remove(due);
+        changed = true;
       }
+      if (changed) notifyListeners();
+      // A failed stop keeps what it had (or stays a plain stop row) and is
+      // due again on the next activation. Stop this round to avoid a retry
+      // storm.
+      if (failed) return;
     }
   }
 
@@ -876,6 +913,11 @@ class _NearbyStopsPageState extends State<NearbyStopsPage> {
   bool _loading = false;
   int _generation = 0;
 
+  /// Location fixes rebuild the page; these keep the grouping and the map
+  /// overlay until the stops or the centre actually change.
+  final ObaMemo<List<NearbyStopGroup>> _groups = ObaMemo();
+  final ObaMemo<ObaMapOverlay> _overlay = ObaMemo();
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -977,7 +1019,9 @@ class _NearbyStopsPageState extends State<NearbyStopsPage> {
     final center = _center;
     final groups = stops == null || center == null
         ? const <NearbyStopGroup>[]
-        : groupNearbyStopsByDirection(stops, center);
+        : _groups([stops, center], () {
+            return groupNearbyStopsByDirection(stops, center);
+          });
 
     final List<Widget> slivers;
     if (center == null) {
@@ -1086,26 +1130,25 @@ class _NearbyStopsPageState extends State<NearbyStopsPage> {
     Coordinate? center,
   ) {
     final l10n = context.obaL10n;
-    return ObaMapOverlays(
-      overlay: stops == null || stops.isEmpty
-          ? ObaMapOverlay.empty
-          : ObaMapOverlay(
-              stops: stops,
-              markers: [
-                if (_source == NearbyCenterSource.explicit && center != null)
-                  ObaMapMarker(
-                    coordinate: center,
-                    label: l10n.titlePlace,
-                    kind: ObaMapMarkerKind.place,
-                  ),
-              ],
-              fitBounds: ObaMapLogic.boundsOf([
-                for (final s in stops) s.coordinate,
-                ?center,
-              ]),
+    final overlay = _overlay([stops, center, _source, l10n.titlePlace], () {
+      if (stops == null || stops.isEmpty) return ObaMapOverlay.empty;
+      return ObaMapOverlay(
+        stops: stops,
+        markers: [
+          if (_source == NearbyCenterSource.explicit && center != null)
+            ObaMapMarker(
+              coordinate: center,
+              label: l10n.titlePlace,
+              kind: ObaMapMarkerKind.place,
             ),
-      child: page,
-    );
+        ],
+        fitBounds: ObaMapLogic.boundsOf([
+          for (final s in stops) s.coordinate,
+          ?center,
+        ]),
+      );
+    });
+    return ObaMapOverlays(overlay: overlay, child: page);
   }
 
   Widget _locationState(BuildContext context) {

@@ -81,6 +81,10 @@ Future<void> showObaActionSheet(
 /// one sentence; tapping runs [onTap]; [actions] appear in an overflow
 /// button, on long press, and as screen-reader custom actions.
 ///
+/// A long list can pass [actionsBuilder] instead of [actions]: the actions
+/// are then built only when needed (the overflow sheet opens, or a screen
+/// reader is on and needs their labels as custom actions).
+///
 /// Embeddable: needs only a `Theme` and the SDK localizations.
 class ObaDepartureRow extends StatelessWidget {
   const ObaDepartureRow({
@@ -90,6 +94,7 @@ class ObaDepartureRow extends StatelessWidget {
     this.references = References.empty,
     this.onTap,
     this.actions = const [],
+    this.actionsBuilder,
     this.style = ObaDepartureRowStyle.normal,
     this.isTransfer = false,
     this.hasAlarm = false,
@@ -104,6 +109,10 @@ class ObaDepartureRow extends StatelessWidget {
   final References references;
   final VoidCallback? onTap;
   final List<ObaDepartureAction> actions;
+
+  /// Builds the row's actions on demand; when set it replaces [actions] and
+  /// must return a non-empty list.
+  final List<ObaDepartureAction> Function()? actionsBuilder;
   final ObaDepartureRowStyle style;
 
   /// Highlights the rider's transfer trip.
@@ -238,29 +247,43 @@ class ObaDepartureRow extends StatelessWidget {
     ].join(', ');
 
     final actionsTitle = l10n.stopRowActions(routeName);
-    void openActions() =>
-        showObaActionSheet(context, title: actionsTitle, actions: actions);
+    final builder = actionsBuilder;
+    final hasActions = builder != null || actions.isNotEmpty;
+    void openActions() => showObaActionSheet(
+      context,
+      title: actionsTitle,
+      actions: builder?.call() ?? actions,
+    );
 
-    Widget main = Semantics(
+    final inkWell = InkWell(
+      onTap: onTap,
+      onLongPress: hasActions ? openActions : null,
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 10, 8, 10),
+        child: content,
+      ),
+    );
+    Widget semantics(List<ObaDepartureAction> semanticActions) => Semantics(
       label: sentence,
       button: onTap != null,
       // excludeSemantics drops the InkWell's actions: carry them here.
       onTap: onTap,
-      onLongPress: actions.isEmpty ? null : openActions,
+      onLongPress: hasActions ? openActions : null,
       excludeSemantics: true,
       customSemanticsActions: {
-        for (final a in actions)
+        for (final a in semanticActions)
           CustomSemanticsAction(label: a.label): a.onSelected,
       },
-      child: InkWell(
-        onTap: onTap,
-        onLongPress: actions.isEmpty ? null : openActions,
-        child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(16, 10, 8, 10),
-          child: content,
-        ),
-      ),
+      child: inkWell,
     );
+
+    final Widget main = builder == null
+        ? semantics(actions)
+        // Built lazily: only a screen reader needs the labels up front.
+        : _WhenSemanticsEnabled(
+            builder: (enabled) =>
+                semantics(enabled ? builder() : const <ObaDepartureAction>[]),
+          );
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -272,7 +295,7 @@ class ObaDepartureRow extends StatelessWidget {
       child: Row(
         children: [
           Expanded(child: main),
-          if (actions.isNotEmpty)
+          if (hasActions)
             IconButton(
               icon: const Icon(Icons.more_vert),
               tooltip: actionsTitle,
@@ -312,4 +335,37 @@ class _IconText extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Rebuilds when the platform turns semantics (a screen reader, switch
+/// access) on or off, passing whether it is on now.
+class _WhenSemanticsEnabled extends StatefulWidget {
+  const _WhenSemanticsEnabled({required this.builder});
+
+  final Widget Function(bool enabled) builder;
+
+  @override
+  State<_WhenSemanticsEnabled> createState() => _WhenSemanticsEnabledState();
+}
+
+class _WhenSemanticsEnabledState extends State<_WhenSemanticsEnabled> {
+  @override
+  void initState() {
+    super.initState();
+    SemanticsBinding.instance.addSemanticsEnabledListener(_changed);
+  }
+
+  void _changed() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    SemanticsBinding.instance.removeSemanticsEnabledListener(_changed);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      widget.builder(SemanticsBinding.instance.semanticsEnabled);
 }

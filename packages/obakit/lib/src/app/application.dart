@@ -34,15 +34,17 @@ class ObaPlatformServices {
     Uri? nominatimEndpoint,
     http.Client? httpClient,
   }) async {
-    final store =
-        keyValueStore ?? await SharedPreferencesKeyValueStore.create();
-    var location = locationProvider;
-    if (location == null) {
-      final geo = GeolocatorLocationProvider();
-      // Seeds the last fix for region selection; never prompts.
-      await geo.warmUp();
-      location = geo;
-    }
+    GeolocatorLocationProvider? geo;
+    final location = locationProvider ?? (geo = GeolocatorLocationProvider());
+    // The store load and the location warm-up (which seeds the last fix for
+    // region selection and never prompts) are independent: run them
+    // together.
+    final (store, _) = await (
+      keyValueStore == null
+          ? SharedPreferencesKeyValueStore.create()
+          : Future<KeyValueStore>.value(keyValueStore),
+      geo?.warmUp() ?? Future<void>.value(),
+    ).wait;
     return ObaPlatformServices(
       keyValueStore: store,
       locationProvider: location,

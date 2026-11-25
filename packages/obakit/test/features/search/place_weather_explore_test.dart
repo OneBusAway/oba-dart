@@ -163,6 +163,37 @@ void main() {
       await expectObaAccessibility(tester);
     });
 
+    testWidgets('button: refreshes only while shown, at once on return', (
+      tester,
+    ) async {
+      env = await weatherEnv();
+      int requests() =>
+          env.requests.where((r) => r.url.path.contains('weather')).length;
+      Widget button({required bool shown}) => Material(
+        child: Center(
+          child: TickerMode(enabled: shown, child: const ObaWeatherButton()),
+        ),
+      );
+      await env.pumpPage(tester, button(shown: true));
+      expect(requests(), 1);
+      // Shown: the 5-minute check refetches once the 15-minute cache is
+      // stale.
+      await tester.pump(const Duration(minutes: 16));
+      await tester.pump();
+      expect(requests(), 2);
+
+      // Hidden (a covering route, an off-screen tab): nothing, however long.
+      await env.pumpPage(tester, button(shown: false));
+      await tester.pump(const Duration(minutes: 40));
+      await tester.pump();
+      expect(requests(), 2);
+
+      // Shown again with a stale forecast: reloads right away.
+      await env.pumpPage(tester, button(shown: true));
+      await tester.pump();
+      expect(requests(), 3);
+    });
+
     testWidgets('button: hidden when the forecast fails', (tester) async {
       env = await weatherEnv(fails: true);
       await env.pumpPage(

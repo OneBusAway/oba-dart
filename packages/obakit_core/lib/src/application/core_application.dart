@@ -19,6 +19,7 @@ import '../search/search_service.dart';
 import '../services/alarm_service.dart';
 import '../services/fare_payments.dart';
 import '../services/problem_report_service.dart';
+import '../services/stops_for_route_cache.dart';
 import '../settings/settings.dart';
 import '../surveys/survey_service.dart';
 import '../user_data/user_data_store.dart';
@@ -108,6 +109,10 @@ class ObaCoreApplication extends ObaChangeNotifier {
   );
   final ObaFormatters formatters = const ObaFormatters();
 
+  /// `stops-for-route` responses for the current region's client, shared
+  /// by every screen. Cleared when the region's clients change.
+  final StopsForRouteCache stopsForRoute = StopsForRouteCache();
+
   final ObaValueNotifier<RegionClients?> _clients = ObaValueNotifier(null);
   final ObaValueNotifier<String?> _regionTimeZone = ObaValueNotifier(null);
   bool _started = false;
@@ -125,6 +130,10 @@ class ObaCoreApplication extends ObaChangeNotifier {
   /// [regions].updateRegionsList yourself if you need it). Call once.
   Future<void> start() async {
     if (_started) return;
+    // The permission check never prompts and does not need the store, so it
+    // runs alongside the store load and regions setup. It is still awaited
+    // before start completes: screens read [locationPermission] right after.
+    final permissionCheck = locationService.checkPermission();
     await store.load();
     settings = ObaSettings(
       store,
@@ -133,9 +142,12 @@ class ObaCoreApplication extends ObaChangeNotifier {
     userData = UserDataStore(store);
     locationService.readLastKnown();
     final lastKnown = locationService.currentLocation;
+    final cachedRegions = RegionsService.loadCachedRegions(store);
     regions = RegionsService(
       store: store,
-      bundledRegionsJson: await _regionsJson(),
+      bundledRegionsJson: await _regionsJson(
+        hasCached: cachedRegions.isNotEmpty,
+      ),
       client: config.regionsPath == null
           ? null
           : RegionsClient(
@@ -146,6 +158,7 @@ class ObaCoreApplication extends ObaChangeNotifier {
       initialLocation: lastKnown,
       fixedRegion: config.fixedRegion,
       refreshInterval: config.regionsRefreshInterval,
+      cachedRegions: cachedRegions,
     );
     search = SearchService(
       client: () => restClient,
@@ -199,7 +212,7 @@ class ObaCoreApplication extends ObaChangeNotifier {
     _started = true;
     _rebuildClients();
 
-    final permission = await locationService.checkPermission();
+    final permission = await permissionCheck;
     // Automatic region selection with no fix to go on: one fix, no
     // continuous updates.
     if (permission.isGranted &&
@@ -211,12 +224,10 @@ class ObaCoreApplication extends ObaChangeNotifier {
     notifyListeners();
   }
 
-  Future<String> _regionsJson() async {
+  Future<String> _regionsJson({required bool hasCached}) async {
     final given = config.bundledRegionsJson;
     final loader = bundledRegionsLoader;
-    if (given.trim().isNotEmpty ||
-        loader == null ||
-        RegionsService.hasCachedRegions(store)) {
+    if (given.trim().isNotEmpty || loader == null || hasCached) {
       return given;
     }
     try {
@@ -280,6 +291,7 @@ class ObaCoreApplication extends ObaChangeNotifier {
       );
     }
     if (!identical(old, _clients.value)) {
+      stopsForRoute.clear();
       old?.rest.close();
       old?.obaco?.close();
     }
@@ -329,10 +341,19 @@ class ObaCoreApplication extends ObaChangeNotifier {
 
   void _onSettingsChanged() {
     analytics.setReportingEnabled(settings.analyticsReportingEnabled);
+    // Most settings changes have nothing to do with the time zone: only
+    // refetch when its inputs changed.
+    if ((settings.showRegionTimeZone, currentRegion?.id) == _timeZoneInputs) {
+      return;
+    }
     _refreshRegionTimeZone();
   }
 
+  /// The (setting, region id) the last [_refreshRegionTimeZone] ran for.
+  (bool, int?)? _timeZoneInputs;
+
   Future<void> _refreshRegionTimeZone() async {
+    _timeZoneInputs = (settings.showRegionTimeZone, currentRegion?.id);
     final generation = ++_timeZoneGeneration;
     final client = restClient;
     if (!settings.showRegionTimeZone || client == null) {

@@ -57,6 +57,10 @@ void main() {
     expect(userData.alarms.single, alarm);
     expect(service.alarmFor(departure), alarm);
     expect(service.alarmFor(arrival(tripId: 'other')), isNull);
+    final lookup = service.lookup();
+    expect(lookup.alarmFor(departure), alarm);
+    expect(lookup.alarmFor(arrival(tripId: 'other')), isNull);
+    expect(identical(userData.alarms, userData.alarms), isTrue);
     final form = Uri.splitQueryString(http.requests.single.body);
     expect(form['seconds_before'], '300');
     expect(form['user_push_id'], 'tok');

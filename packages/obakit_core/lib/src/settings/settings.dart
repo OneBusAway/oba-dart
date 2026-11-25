@@ -50,15 +50,32 @@ class ObaSettings extends ObaChangeNotifier {
   static const bikeSpeedMax = 20.0;
   static const defaultAlarmLeadTime = 10;
 
+  /// Decoded values keyed by full store key, with the raw string each was
+  /// decoded from. Settings are read many times per frame, so a read only
+  /// re-runs `jsonDecode` when the stored string changed (which also covers
+  /// writes made to the store behind this object's back).
+  final Map<String, ({String? raw, Object? value})> _cache = {};
+
+  Object? _read(String fullKey) {
+    final raw = _store.getString(fullKey);
+    final hit = _cache[fullKey];
+    if (hit != null && (identical(hit.raw, raw) || hit.raw == raw)) {
+      return hit.value;
+    }
+    final value = _store.readJson(fullKey);
+    _cache[fullKey] = (raw: raw, value: value);
+    return value;
+  }
+
   T _get<T>(String key, T fallback) {
-    final v = _store.readJson('$_p$key');
+    final v = _read('$_p$key');
     if (v is T) return v;
     if (fallback is double && v is num) return v.toDouble() as T;
     return fallback;
   }
 
   void _set(String key, Object? value) {
-    if (_store.readJson('$_p$key') == value) return;
+    if (_read('$_p$key') == value) return;
     _store.writeJson('$_p$key', value);
     notifyListeners();
   }
@@ -197,8 +214,8 @@ class ObaSettings extends ObaChangeNotifier {
 
   /// The version of onboarding step [step] the user last saw (0: never).
   int onboardingSeenVersion(String step) {
-    final map = _store.readMap('${_p}onboardingSeenVersions');
-    final v = map[step];
+    final map = _read('${_p}onboardingSeenVersions');
+    final v = map is Map ? map[step] : null;
     return v is num ? v.toInt() : 0;
   }
 
@@ -207,7 +224,10 @@ class ObaSettings extends ObaChangeNotifier {
       onboardingSeenVersion(step) < version;
 
   void markOnboardingStepSeen(String step, int version) {
-    final map = {..._store.readMap('${_p}onboardingSeenVersions')};
+    final stored = _read('${_p}onboardingSeenVersions');
+    final map = <String, Object?>{
+      if (stored is Map<String, Object?>) ...stored,
+    };
     if (map[step] == version) return;
     map[step] = version;
     _store.writeJson('${_p}onboardingSeenVersions', map);

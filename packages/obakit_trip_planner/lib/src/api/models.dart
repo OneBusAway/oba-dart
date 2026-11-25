@@ -251,11 +251,19 @@ class Leg {
   String? get routeName => routeShortName ?? routeLongName;
 
   /// The decoded leg geometry, or the straight segment between [from] and
-  /// [to] when the server sent none.
-  List<GeoPoint> get geometry {
+  /// [to] when the server sent none. Decoded once per leg (unmodifiable).
+  List<GeoPoint> get geometry => _geometry[this] ??= _decodeGeometry();
+
+  List<GeoPoint> _decodeGeometry() {
     final decoded = decodePolyline(encodedGeometry);
-    return decoded.isNotEmpty ? decoded : [from.point, to.point];
+    return List.unmodifiable(
+      decoded.isNotEmpty ? decoded : [from.point, to.point],
+    );
   }
+
+  /// [geometry] memoized per instance (a leg is immutable, and the const
+  /// constructor rules out an instance field).
+  static final Expando<List<GeoPoint>> _geometry = Expando('Leg.geometry');
 
   Leg copyWith({
     DateTime? startTime,

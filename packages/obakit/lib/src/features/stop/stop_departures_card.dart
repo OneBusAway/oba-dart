@@ -49,6 +49,10 @@ class _ObaStopDeparturesCardState extends State<ObaStopDeparturesCard> {
   late StopArrivalsController _controller;
   ObaApplication? _app;
 
+  /// What the card rebuilds for; created once per controller/application.
+  Listenable? _listenable;
+  ObaCoreApplication? _listenableCore;
+
   @override
   void initState() {
     super.initState();
@@ -76,6 +80,7 @@ class _ObaStopDeparturesCardState extends State<ObaStopDeparturesCard> {
       _owned?.dispose();
       _owned = null;
       _controller = _resolve();
+      _listenable = null;
     }
   }
 
@@ -88,10 +93,14 @@ class _ObaStopDeparturesCardState extends State<ObaStopDeparturesCard> {
   @override
   Widget build(BuildContext context) {
     final core = ObaScope.of(context).core;
+    if (!identical(core, _listenableCore)) {
+      _listenableCore = core;
+      _listenable = null;
+    }
     return ObaPollingHolder(
       controller: _controller,
       child: ListenableBuilder(
-        listenable: Listenable.merge([
+        listenable: _listenable ??= Listenable.merge([
           _controller,
           ObaListenableAdapter(core.settings),
           ObaListenableAdapter(core.userData),
@@ -129,17 +138,25 @@ class _ObaStopDeparturesCardState extends State<ObaStopDeparturesCard> {
         child: Text(l10n.stopCardEmpty),
       );
     } else {
+      final alarms = core.alarms.lookup();
       body = Column(
         children: [
           for (final a in d.upcoming.take(widget.maxArrivals))
-            ObaDepartureRow(
-              arrival: a,
-              now: now,
-              references: s.references,
-              hasAlarm: core.alarms.alarmFor(a) != null,
-              onTap: () => nav.push(TripRoute(TripRef.fromArrival(a))),
-              actions: departureActions(context, a, now: now, stop: s.stop),
-            ),
+            if (alarms.alarmFor(a) != null case final hasAlarm)
+              ObaDepartureRow(
+                arrival: a,
+                now: now,
+                references: s.references,
+                hasAlarm: hasAlarm,
+                onTap: () => nav.push(TripRoute(TripRef.fromArrival(a))),
+                actions: departureActions(
+                  context,
+                  a,
+                  now: now,
+                  stop: s.stop,
+                  hasAlarm: hasAlarm,
+                ),
+              ),
         ],
       );
     }

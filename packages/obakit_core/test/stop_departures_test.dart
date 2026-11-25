@@ -60,4 +60,55 @@ void main() {
     expect(d.isEmptyBecauseOfFilter, isTrue);
     expect(d.hiddenByFilter, 4);
   });
+
+  group('StopDeparturesMemo', () {
+    final t0 = DateTime.utc(2024, 1, 1, 12);
+    final raw = [
+      arrival(tripId: 'a', scheduled: t0.add(const Duration(minutes: 3))),
+      arrival(tripId: 'b', scheduled: t0.add(const Duration(minutes: 10))),
+    ];
+
+    test('reuses the result until an input changes', () {
+      final memo = StopDeparturesMemo();
+      StopDepartures run(DateTime now, {int? walk, bool hidden = false}) =>
+          memo.build(
+            raw,
+            references: refs,
+            now: now,
+            walkMinutes: walk,
+            showHiddenRoutes: hidden,
+          );
+      final first = run(t0);
+      expect(
+        identical(run(t0.add(const Duration(seconds: 50))), first),
+        isTrue,
+      );
+      expect(memo.computeCount, 1);
+      run(t0, hidden: true);
+      expect(memo.computeCount, 2);
+      memo.build([...raw], references: refs, now: t0, showHiddenRoutes: true);
+      expect(memo.computeCount, 3, reason: 'a new response recomputes');
+    });
+
+    test('recomputes exactly when now crosses a departure or the walk '
+        'window, matching a fresh build', () {
+      final memo = StopDeparturesMemo();
+      for (var s = 0; s <= 12 * 60; s += 7) {
+        final now = t0.add(Duration(seconds: s));
+        final m = memo.build(raw, references: refs, now: now, walkMinutes: 5);
+        final f = StopDepartures.build(
+          raw,
+          references: refs,
+          now: now,
+          walkMinutes: 5,
+        );
+        expect(m.past, f.past, reason: 'at +${s}s');
+        expect(m.upcoming, f.upcoming, reason: 'at +${s}s');
+        expect(m.walkDividerIndex, f.walkDividerIndex, reason: 'at +${s}s');
+      }
+      // Two departures, each crossing the walk window and leaving: at most
+      // five distinct results over the sweep.
+      expect(memo.computeCount, lessThanOrEqualTo(5));
+    });
+  });
 }

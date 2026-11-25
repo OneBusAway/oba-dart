@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_map/flutter_map.dart' show FlutterMap, MarkerLayer;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:obakit/obakit.dart';
 
@@ -439,6 +440,45 @@ void main() {
         shell.sheet.snapHeights.any(
           (h) => (h - shell.sheet.height).abs() < 0.5,
         ),
+        isTrue,
+      );
+    });
+
+    testWidgets('dragging the sheet moves the map chrome, not the map', (
+      tester,
+    ) async {
+      final shell = await pumpShell(tester);
+      final mapWidget = tester.widget(find.byType(FlutterMap));
+      final markers = tester.widgetList(find.byType(MarkerLayer)).toList();
+      final attribution = find.textContaining('©');
+      double pad() =>
+          shell.sheet.height.clamp(0, shell.sheet.maxHeight * 0.5).toDouble();
+      final padBefore = pad();
+      final bottomBefore = tester.getBottomLeft(attribution).dy;
+
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byType(ObaSheetHandle)),
+      );
+      for (var i = 0; i < 10; i++) {
+        await gesture.moveBy(const Offset(0, -20));
+        await tester.pump();
+      }
+      // Mid-drag, every frame: the map subtree is the same widget, and the
+      // floating chrome follows the sheet.
+      expect(
+        identical(tester.widget(find.byType(FlutterMap)), mapWidget),
+        isTrue,
+      );
+      expect(tester.widgetList(find.byType(MarkerLayer)).toList(), markers);
+      expect(pad(), greaterThan(padBefore));
+      expect(
+        tester.getBottomLeft(attribution).dy,
+        closeTo(bottomBefore - (pad() - padBefore), 0.5),
+      );
+      await gesture.up();
+      await ObaTestEnv.settle(tester);
+      expect(
+        identical(tester.widget(find.byType(FlutterMap)), mapWidget),
         isTrue,
       );
     });
