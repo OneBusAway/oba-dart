@@ -42,6 +42,8 @@ mixin _ReportForm<W extends StatefulWidget> on State<W> {
   bool get canSubmit;
 
   Future<void> send(Future<void> Function() action) async {
+    // Two taps can arrive before the button is rebuilt disabled.
+    if (sendState == _SendState.sending) return;
     final l10n = context.obaL10n;
     if (!canSubmit) {
       setState(() => validation = l10n.stopReportChooseProblem);

@@ -134,6 +134,8 @@ class _ObaSurveyCardState extends State<ObaSurveyCard> {
   }
 
   Future<void> _next(Survey survey) async {
+    // Two taps can arrive before the button is rebuilt disabled.
+    if (_busy) return;
     final core = ObaScope.of(context).core;
     final hero = surveyQuestionsInOrder(survey).first;
     final answer = _answer;
@@ -524,6 +526,7 @@ class _ObaSurveyPageState extends State<ObaSurveyPage> {
       v == null || v == '' || v is Set && v.isEmpty;
 
   Future<void> _submit() async {
+    if (_busy) return;
     final l10n = context.obaL10n;
     final core = ObaScope.of(context).core;
     final answerable = [
