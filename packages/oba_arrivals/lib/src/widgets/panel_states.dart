@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../surface.dart';
+
 /// A rounded block in the theme's placeholder color, used while loading.
 class PlaceholderBox extends StatelessWidget {
   const PlaceholderBox(this.width, this.height, {super.key, this.radius = 4});
@@ -54,6 +56,56 @@ class SkeletonRow extends StatelessWidget {
   }
 }
 
+/// Placeholder rows for the first load, read once as [label] (they are
+/// otherwise invisible to screen readers).
+class LoadingRows extends StatelessWidget {
+  const LoadingRows({super.key, required this.label, this.count = 3});
+
+  final String label;
+  final int count;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    container: true,
+    liveRegion: true,
+    label: label,
+    child: ExcludeSemantics(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [for (var i = 0; i < count; i++) const SkeletonRow()],
+      ),
+    ),
+  );
+}
+
+/// A small progress indicator that stands still when the platform asks for
+/// reduced motion (`MediaQuery.disableAnimationsOf`).
+class ObaProgressIndicator extends StatelessWidget {
+  const ObaProgressIndicator({super.key, this.semanticsLabel});
+
+  final String? semanticsLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    if (MediaQuery.maybeDisableAnimationsOf(context) ?? false) {
+      return Semantics(
+        label: semanticsLabel,
+        child: Icon(
+          Icons.hourglass_empty,
+          size: 20,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      );
+    }
+    return CircularProgressIndicator(
+      strokeWidth: 2,
+      semanticsLabel: semanticsLabel,
+    );
+  }
+}
+
+/// An empty or error message. It is a polite live region, so screen readers
+/// read it when it appears.
 class PanelMessage extends StatelessWidget {
   const PanelMessage({super.key, required this.message, this.action});
 
@@ -67,11 +119,18 @@ class PanelMessage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Column(
         children: [
-          Text(
-            message,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+          Semantics(
+            container: true,
+            liveRegion: true,
+            child: Text(
+              message,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: readableOnSurface(
+                  context,
+                  theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
             ),
           ),
           if (action != null) ...[const SizedBox(height: 8), action!],
@@ -91,19 +150,33 @@ class StaleNotice extends StatelessWidget {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-      child: Row(
-        children: [
-          Icon(Icons.cloud_off, size: 16, color: theme.colorScheme.error),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Text(
-              message,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.error,
+      child: Semantics(
+        liveRegion: true,
+        container: true,
+        child: Row(
+          children: [
+            ExcludeSemantics(
+              child: Icon(
+                Icons.cloud_off,
+                size: scaledIconSize(context, 16),
+                color: readableOnSurface(
+                  context,
+                  theme.colorScheme.error,
+                  minRatio: 3,
+                ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                message,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: readableOnSurface(context, theme.colorScheme.error),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

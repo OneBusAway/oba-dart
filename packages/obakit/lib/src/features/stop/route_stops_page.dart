@@ -1,0 +1,265 @@
+import 'package:flutter/material.dart';
+import 'package:obakit_core/obakit_core.dart' hide Route;
+import 'package:obakit_core/obakit_core.dart' as oba show Route;
+
+import '../../app/application.dart';
+import '../../app/scope.dart';
+import '../../l10n/l10n.dart';
+import '../../navigation/oba_navigator.dart';
+import '../../navigation/oba_route.dart';
+import '../../theme/oba_theme.dart';
+import '../../widgets/rows.dart';
+import '../../widgets/sheet_page.dart';
+import '../../widgets/states.dart';
+import '../map/map_coordinator.dart';
+import '../map/map_logic.dart';
+
+/// Loads one value once, with retry. A tiny controller for the
+/// non-polling pages (route stops, schedules).
+class ObaLoader<T> extends ChangeNotifier {
+  ObaLoader(this._load);
+
+  final Future<T> Function() _load;
+  T? value;
+  Object? error;
+  bool loading = false;
+  int _generation = 0;
+  bool _disposed = false;
+
+  Future<void> load() async {
+    final g = ++_generation;
+    loading = true;
+    error = null;
+    notifyListeners();
+    try {
+      final v = await _load();
+      if (_disposed || g != _generation) return;
+      value = v;
+    } catch (e) {
+      if (_disposed || g != _generation) return;
+      error = e;
+    }
+    loading = false;
+    notifyListeners();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+}
+
+/// A route's stops by direction, with a direction switcher; the route's
+/// shape and stops show on the map (iOS route stops / `StopRouteFocus`).
+/// Tapping a stop opens it. Embeddable: needs only an `ObaScope`.
+class RouteStopsPage extends StatefulWidget {
+  const RouteStopsPage({super.key, required this.routeId});
+
+  final String routeId;
+
+  @override
+  State<RouteStopsPage> createState() => _RouteStopsPageState();
+}
+
+class _RouteStopsPageState extends State<RouteStopsPage> {
+  late ObaLoader<ObaEntryResponse<StopsForRoute>> _loader;
+  ObaApplication? _app;
+  bool _started = false;
+  int _direction = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loader = _make();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _app = ObaScope.of(context);
+    if (!_started) {
+      _started = true;
+      _loader.load();
+    }
+  }
+
+  ObaLoader<ObaEntryResponse<StopsForRoute>> _make() => ObaLoader(() {
+    final client = _app?.core.restClient;
+    if (client == null) throw StateError('no region');
+    return client.stops.forRoute(widget.routeId);
+  });
+
+  @override
+  void didUpdateWidget(RouteStopsPage old) {
+    super.didUpdateWidget(old);
+    if (old.routeId != widget.routeId) {
+      _loader.dispose();
+      _loader = _make()..load();
+      _direction = 0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _loader.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      ListenableBuilder(listenable: _loader, builder: _build);
+
+  Widget _build(BuildContext context, Widget? _) {
+    final l10n = context.obaL10n;
+    final core = ObaScope.of(context).core;
+    final r = _loader.value;
+    final route = r?.references.route(widget.routeId);
+    final name = route?.shortName ?? route?.longName;
+    final groups = [
+      for (final g in r?.entry.stopGroupings ?? const <StopGrouping>[])
+        ...g.stopGroups,
+    ];
+    final dir = groups.isEmpty ? 0 : _direction.clamp(0, groups.length - 1);
+    final group = groups.isEmpty ? null : groups[dir];
+    final stopIds = group?.stopIds ?? r?.entry.stopIds ?? const <String>[];
+    final stops = r == null
+        ? const <Stop>[]
+        : r.references.stopsWithIds(stopIds);
+    final polylines = group != null && group.polylines.isNotEmpty
+        ? group.polylines
+        : (r?.entry.polylines ?? const <String>[]);
+
+    final slivers = <Widget>[];
+    if (r == null) {
+      slivers.add(
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: _loader.error != null
+              ? ObaErrorState(error: _loader.error, onRetry: _loader.load)
+              : const ObaLoadingState(),
+        ),
+      );
+    } else if (stops.isEmpty) {
+      slivers.add(
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: ObaEmptyState(
+            icon: Icons.route_outlined,
+            title: l10n.stopRouteStopsEmpty,
+          ),
+        ),
+      );
+    } else {
+      if (groups.length > 1) {
+        slivers.add(
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Semantics(
+                    container: true,
+                    header: true,
+                    child: Text(
+                      l10n.stopRouteStopsDirection,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (var i = 0; i < groups.length; i++)
+                        ChoiceChip(
+                          label: Text(
+                            l10n.stopRouteStopsToward(
+                              groups[i].name ?? groups[i].id,
+                            ),
+                          ),
+                          selected: i == dir,
+                          onSelected: (_) => setState(() => _direction = i),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+      slivers.addAll([
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 4),
+            child: Text(
+              l10n.stopRouteStopsCount(stops.length),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ),
+        SliverList.list(
+          children: [
+            for (final s in stops)
+              ObaStopRow(
+                stop: s,
+                routes: [for (final id in s.routeIds) ?r.references.route(id)],
+              ),
+          ],
+        ),
+      ]);
+    }
+
+    final color = _routeColor(context, route);
+    final points = [
+      for (final p in polylines) ...Polyline.decode(p),
+      for (final s in stops) s.coordinate,
+    ];
+    final supportsSchedule =
+        core.currentRegion?.supportsScheduleForRoute ?? false;
+    return ObaMapOverlays(
+      overlay: r == null
+          ? ObaMapOverlay.empty
+          : ObaMapOverlay(
+              polylines: [
+                for (final p in polylines)
+                  ObaMapPolyline.encoded(p, color: color),
+              ],
+              stops: stops,
+              hideStopPins: true,
+              fitBounds: ObaMapLogic.boundsOf(points),
+            ),
+      child: ObaSheetPage(
+        title: name == null
+            ? l10n.titleRouteStops
+            : l10n.stopRouteStopsTitle(name),
+        actions: [
+          if (supportsSchedule)
+            IconButton(
+              icon: const Icon(Icons.calendar_month_outlined),
+              tooltip: l10n.stopRowRouteSchedule,
+              onPressed: () =>
+                  ObaNavigator.of(context)
+                      .push(RouteScheduleRoute(widget.routeId)),
+            ),
+        ],
+        slivers: slivers,
+      ),
+    );
+  }
+
+  Color _routeColor(BuildContext context, oba.Route? route) {
+    final hex = route?.color;
+    final v = hex == null ? null : int.tryParse(hex, radix: 16);
+    return v == null ? ObaTheme.of(context).routeLine : Color(0xFF000000 | v);
+  }
+}

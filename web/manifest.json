@@ -1,11 +1,11 @@
 {
-    "name": "oba_dart",
-    "short_name": "oba_dart",
+    "name": "OneBusAway",
+    "short_name": "OneBusAway",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "OneBusAway: real-time transit information.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

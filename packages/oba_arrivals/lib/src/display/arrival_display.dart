@@ -71,3 +71,32 @@ String statusText(
 
 String etaLabel(int eta, ObaArrivalsStrings strings) =>
     eta == 0 ? strings.now : strings.minutesCompact(eta);
+
+/// [statusText] as a screen reader should say it: whole words instead of
+/// `min`, and "scheduled time" for rows without a prediction.
+String statusSemantics(
+  ArrivalAndDeparture a,
+  DateTime now,
+  ObaArrivalsStrings strings, {
+  required String Function(DateTime time) formatTime,
+}) {
+  if (isCanceled(a)) return strings.canceled;
+  final frequency = a.frequency;
+  if (frequency != null) {
+    final headwayMinutes = frequency.headway ~/ 60;
+    return now.isBefore(frequency.startTime)
+        ? strings.everyMinutesFromSemantics(
+            headwayMinutes,
+            formatTime(frequency.startTime),
+          )
+        : strings.everyMinutesUntilSemantics(
+            headwayMinutes,
+            formatTime(frequency.endTime),
+          );
+  }
+  final delay = delayMinutes(a);
+  if (delay == null) return strings.scheduledSemantics;
+  if (delay > 0) return strings.minutesLateSemantics(delay);
+  if (delay < 0) return strings.minutesEarlySemantics(-delay);
+  return strings.onTime;
+}

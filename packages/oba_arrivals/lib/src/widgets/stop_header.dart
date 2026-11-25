@@ -3,6 +3,7 @@ import 'package:onebusaway/onebusaway.dart';
 
 import '../display/stop_display.dart';
 import '../strings.dart';
+import '../surface.dart';
 import 'panel_states.dart';
 
 class StopHeader extends StatelessWidget {
@@ -38,36 +39,48 @@ class StopHeader extends StatelessWidget {
     final titleStyle = theme.textTheme.titleLarge?.copyWith(
       fontWeight: FontWeight.w700,
     );
+    final subtitleStyle = theme.textTheme.bodyMedium?.copyWith(
+      color: readableOnSurface(context, theme.colorScheme.onSurfaceVariant),
+    );
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 4, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 4, 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: stop == null
                 ? isLoading
-                      ? const _HeaderPlaceholder(
-                          key: ValueKey('oba-header-placeholder'),
+                      ? const ExcludeSemantics(
+                          child: _HeaderPlaceholder(
+                            key: ValueKey('oba-header-placeholder'),
+                          ),
                         )
-                      : Text(
-                          strings.stopNumber(stripAgencyPrefix(stopId)),
-                          style: titleStyle,
+                      : Semantics(
+                          container: true,
+                          header: true,
+                          child: Text(
+                            strings.stopNumber(stripAgencyPrefix(stopId)),
+                            style: titleStyle,
+                          ),
                         )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        stop.name,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: titleStyle,
+                      Semantics(
+                        container: true,
+                        header: true,
+                        child: Text(stop.name, style: titleStyle),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         stopSubtitle(stop, references, strings),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
+                        // Read the " · " separators as pauses.
+                        semanticsLabel: stopSubtitle(
+                          stop,
+                          references,
+                          strings,
+                        ).replaceAll(' · ', ', '),
+                        style: subtitleStyle,
                       ),
                     ],
                   ),
@@ -77,9 +90,11 @@ class StopHeader extends StatelessWidget {
             tooltip: strings.refresh,
             onPressed: isRefreshing ? null : onRefresh,
             icon: isRefreshing
-                ? const SizedBox.square(
+                ? SizedBox.square(
                     dimension: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                    child: ObaProgressIndicator(
+                      semanticsLabel: strings.refreshing,
+                    ),
                   )
                 : const Icon(Icons.refresh),
           ),

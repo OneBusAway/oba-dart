@@ -337,12 +337,15 @@ void main() {
     await settle(tester);
     expect(
       find.bySemanticsLabel(
-        'IL, Inside Loop, arriving in 5 minutes, 2 min late, real-time',
+        'Route IL, Inside Loop, arriving in 5 minutes, at 10:47 PM, '
+        '2 minutes late, real-time',
       ),
       findsOneWidget,
     );
     expect(
-      find.bySemanticsLabel('S, SIO, arriving in 8 minutes, scheduled'),
+      find.bySemanticsLabel(
+        'Route S, SIO, arriving in 8 minutes, at 10:50 PM, scheduled time',
+      ),
       findsOneWidget,
     );
     expect(find.byTooltip('Refresh arrivals'), findsOneWidget);
@@ -369,6 +372,68 @@ void main() {
     await tester.pump(const Duration(minutes: 2));
     expect(requests, 1);
     await tester.pumpWidget(build(true));
+    await settle(tester);
+    expect(requests, 2);
+  });
+
+  testWidgets('in a host card, the panel keeps its semantics to itself', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(
+      host(
+        Card(
+          child: Column(
+            children: [
+              // A typical host card title: a heading without its own node.
+              Semantics(header: true, child: const Text('Shuttle arrivals')),
+              ObaArrivalsPanel(
+                client: fakeClient((_) async => http.Response('', 500)),
+                stopId: 'MTS_24151',
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await settle(tester);
+    final title = tester.getSemantics(find.text('Shuttle arrivals'));
+    // The host's heading doesn't absorb the panel's text or its live region.
+    expect(title.label, isNot(contains('Stop #24151')));
+    expect(title.getSemanticsData().flagsCollection.isLiveRegion, isFalse);
+    final message = tester.getSemantics(find.text("Couldn't load arrivals."));
+    expect(message.getSemanticsData().flagsCollection.isLiveRegion, isTrue);
+    expect(message.label, isNot(contains('Shuttle arrivals')));
+    handle.dispose();
+  });
+
+  testWidgets('pauses in a hidden IndexedStack child (a host tab)', (
+    tester,
+  ) async {
+    var requests = 0;
+    final client = fakeClient((_) async {
+      requests++;
+      return okResponse();
+    });
+    // IndexedStack keeps hidden children's tickers running; it reports them
+    // through Visibility.of instead.
+    Widget build(int index) => host(
+      IndexedStack(
+        index: index,
+        children: [
+          ObaArrivalsPanel(client: client, stopId: 'MTS_24151'),
+          const SizedBox(),
+        ],
+      ),
+    );
+
+    await tester.pumpWidget(build(0));
+    await settle(tester);
+    expect(requests, 1);
+    await tester.pumpWidget(build(1));
+    await tester.pump(const Duration(minutes: 2));
+    expect(requests, 1);
+    await tester.pumpWidget(build(0));
     await settle(tester);
     expect(requests, 2);
   });
