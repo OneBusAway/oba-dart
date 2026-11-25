@@ -7,6 +7,7 @@ import 'package:obakit_core/obakit_core.dart' hide Route;
 
 import '../../app/application.dart';
 import '../../app/scope.dart';
+import '../../widgets/frame.dart';
 import '../../widgets/visibility.dart';
 import '../../l10n/l10n.dart';
 import '../../navigation/oba_navigator.dart';
@@ -165,8 +166,16 @@ mixin _WeatherServiceListening<T extends StatefulWidget> on State<T> {
     service = obaWeatherService(app)..addListener(_changed);
     _clients = ObaListenableAdapter(app.core.clientsListenable)
       ..addListener(_regionChanged);
-    service!.load();
+    loadWeatherWhenSafe();
   }
+
+  /// Loads the forecast (the cached one while it is fresh). Starting a
+  /// fetch notifies the service's other listeners at once (the map button
+  /// while the page opens, say), so never mid-build: this runs from
+  /// `didChangeDependencies`.
+  void loadWeatherWhenSafe() => obaRunWhenSafe(() {
+    if (mounted) service?.load();
+  });
 
   void detachWeather() {
     service?.removeListener(_changed);
@@ -216,7 +225,7 @@ class _ObaWeatherButtonState extends State<ObaWeatherButton>
         service?.load();
       });
       // Returns the cached forecast while it is fresh.
-      service?.load();
+      loadWeatherWhenSafe();
     } else {
       _timer?.cancel();
       _timer = null;

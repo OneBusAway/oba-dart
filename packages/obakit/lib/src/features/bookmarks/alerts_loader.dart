@@ -21,7 +21,9 @@ import '../../app/application.dart';
 ///   cares about (bookmarked, then recent, then nearest to them), at most
 ///   three requests at a time.
 class AlertsLoader extends ChangeNotifier with ObaDisposeSafeNotifier {
-  AlertsLoader(this.app, {this.stopId, this.routeId, this.maxRegionStops = 8});
+  AlertsLoader(this.app, {this.stopId, this.routeId, this.maxRegionStops = 8}) {
+    app.core.clientsListenable.addListener(_onClientsChanged);
+  }
 
   final ObaApplication app;
   final String? stopId;
@@ -33,6 +35,7 @@ class AlertsLoader extends ChangeNotifier with ObaDisposeSafeNotifier {
   bool _loading = true;
   int _generation = 0;
   DateTime? _loadedAt;
+  bool _requested = false;
 
   /// Active alerts, most severe then newest first.
   List<Situation> get alerts => _alerts;
@@ -43,6 +46,7 @@ class AlertsLoader extends ChangeNotifier with ObaDisposeSafeNotifier {
 
   /// Fetches the alerts again.
   Future<void> load() async {
+    _requested = true;
     final generation = ++_generation;
     _loading = _alerts.isEmpty;
     _error = null;
@@ -90,6 +94,27 @@ class AlertsLoader extends ChangeNotifier with ObaDisposeSafeNotifier {
     }
     _loading = false;
     notifyListeners();
+  }
+
+  /// The region (and so the server) changed: the alerts are the old
+  /// region's. Drop them, and ask the new one if anyone asked before.
+  void _onClientsChanged() {
+    if (isDisposed) return;
+    _generation++;
+    _alerts = const [];
+    _error = null;
+    _loadedAt = null;
+    if (_requested) {
+      unawaited(load());
+    } else {
+      notifyListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    app.core.clientsListenable.removeListener(_onClientsChanged);
+    super.dispose();
   }
 
   Iterable<Situation> _situationsOf(

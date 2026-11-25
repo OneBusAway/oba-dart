@@ -9,7 +9,6 @@
 # Set the device location to downtown Seattle first, for example:
 #   xcrun simctl location <udid> set 47.6097,-122.3331
 #   adb -s <serial> emu geo fix -122.3331 47.6097
-setopt pipefail
 if (( $# < 3 )); then
   print -u2 "usage: $0 <ios|android> <device-id> <output-dir> [flutter args...]"
   exit 64
@@ -57,6 +56,7 @@ mise exec -- flutter test integration_test/walkthrough_test.dart -d $DEV "$@" 2>
       fi ;;
   esac
 done
-rc=$?
+# The test's own exit status, not the loop's.
+rc=$pipestatus[1]
 print -r -- "exit: $rc" >> $OUT/log.txt
 exit $rc

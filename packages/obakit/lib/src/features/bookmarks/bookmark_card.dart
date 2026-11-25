@@ -204,9 +204,9 @@ class BookmarkCard extends StatelessWidget {
         else
           for (final a in matches)
             DepartureLine(
-              key: ValueKey(
-                '${a.tripId}-${a.serviceDate.millisecondsSinceEpoch}',
-              ),
+              // The visit, not the trip: a loop's trip serves its
+              // terminal twice (leaving, then arriving).
+              key: ValueKey(a.visitId),
               arrival: a,
               now: now,
               route: departures.references?.route(a.routeId),

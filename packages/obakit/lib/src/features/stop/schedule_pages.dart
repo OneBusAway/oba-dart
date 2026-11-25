@@ -14,6 +14,12 @@ import '../../widgets/states.dart';
 
 DateTime _day(DateTime d) => DateTime(d.year, d.month, d.day);
 
+/// [d]'s day moved by [days] on the calendar. Not `d.add(Duration(days:
+/// 1))`: a day is 23 or 25 hours long when the clocks change, which would
+/// repeat or skip a date.
+DateTime _addDays(DateTime d, int days) =>
+    DateTime(d.year, d.month, d.day + days);
+
 /// Previous / next day buttons around a date that opens a date picker.
 class ScheduleDateBar extends StatelessWidget {
   const ScheduleDateBar({
@@ -36,7 +42,7 @@ class ScheduleDateBar extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.chevron_left),
             tooltip: l10n.stopSchedPrevDay,
-            onPressed: () => onChanged(date.subtract(const Duration(days: 1))),
+            onPressed: () => onChanged(_addDays(date, -1)),
           ),
           Expanded(
             child: TextButton.icon(
@@ -48,11 +54,18 @@ class ScheduleDateBar extends StatelessWidget {
               ),
               onPressed: () async {
                 final today = _day(clock.now());
+                // The shown date is always pickable: the day buttons (and
+                // a route's own date) can go past either end.
+                final initial = _day(date);
+                var first = _addDays(today, -30);
+                var last = _addDays(today, 365);
+                if (initial.isBefore(first)) first = initial;
+                if (initial.isAfter(last)) last = initial;
                 final picked = await showDatePicker(
                   context: context,
-                  initialDate: date,
-                  firstDate: today.subtract(const Duration(days: 30)),
-                  lastDate: today.add(const Duration(days: 365)),
+                  initialDate: initial,
+                  firstDate: first,
+                  lastDate: last,
                 );
                 if (picked != null) onChanged(_day(picked));
               },
@@ -61,7 +74,7 @@ class ScheduleDateBar extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.chevron_right),
             tooltip: l10n.stopSchedNextDay,
-            onPressed: () => onChanged(date.add(const Duration(days: 1))),
+            onPressed: () => onChanged(_addDays(date, 1)),
           ),
         ],
       ),
@@ -405,7 +418,7 @@ class _RouteSchedulePageState extends State<RouteSchedulePage> {
         slivers.add(
           ObaLoadingOrErrorSliver(error: _loader.error, onRetry: _loader.load),
         );
-      } else if (dir == null || dir.tripIds.isEmpty) {
+      } else if (dir == null || dir.tripIds.isEmpty || dir.stops.isEmpty) {
         slivers.add(
           SliverFillRemaining(
             hasScrollBody: false,

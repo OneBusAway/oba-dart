@@ -118,6 +118,13 @@ class StopDeparturesLoader extends ChangeNotifier with ObaDisposeSafeNotifier {
     if (_wanted.isNotEmpty &&
         (last == null || clock.now().difference(last) >= refreshInterval)) {
       unawaited(refresh());
+    } else {
+      // Stops added while hidden were not fetched then (`fetchNew: false`):
+      // without this they would show as loading until the next interval.
+      for (final id in _wanted) {
+        if (!_states.containsKey(id)) _enqueue(id);
+      }
+      _pump();
     }
     _timer = Timer.periodic(refreshInterval, (_) => unawaited(refresh()));
   }

@@ -29,6 +29,7 @@ class _BookmarkEditorPageState extends State<BookmarkEditorPage> {
   String? _groupId;
   bool _tripOnly = true;
   String? _error;
+  int _groupFieldReset = 0;
 
   Bookmark? get _existing => widget.route.bookmark;
   ArrivalAndDeparture? get _arrival => widget.route.arrival;
@@ -135,7 +136,13 @@ class _BookmarkEditorPageState extends State<BookmarkEditorPage> {
       context,
       title: context.obaL10n.bookmarksEditorNewGroupTitle,
     );
-    if (name == null || !mounted) return;
+    if (!mounted) return;
+    if (name == null) {
+      // Cancelled: the field still shows "New group…", which is not a
+      // group. Rebuild it on the group the bookmark is really in.
+      setState(() => _groupFieldReset++);
+      return;
+    }
     final group = _store.addGroup(name);
     setState(() => _groupId = group.id);
   }
@@ -194,7 +201,9 @@ class _BookmarkEditorPageState extends State<BookmarkEditorPage> {
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
             initialValue: groupValue,
-            key: ValueKey('group-$groupValue-${groups.length}'),
+            key: ValueKey(
+              'group-$groupValue-${groups.length}-$_groupFieldReset',
+            ),
             isExpanded: true,
             decoration: InputDecoration(
               labelText: l10n.bookmarksEditorGroup,

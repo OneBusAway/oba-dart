@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:clock/clock.dart';
@@ -107,10 +108,18 @@ class SurveyService extends ObaChangeNotifier {
   /// The region [_all] was fetched for.
   int? _fetchedRegionId;
 
-  List<Survey> get allSurveys => List.unmodifiable(_all);
+  /// Whether [_all] belongs to the region selected now. After a region
+  /// change it does not until the next [fetchSurveys] replaces it, and
+  /// until then nothing is offered: a card built before that fetch runs
+  /// must not pick another region's survey.
+  bool get _isForCurrentRegion => _regionId() == _fetchedRegionId;
+
+  List<Survey> get allSurveys =>
+      _isForCurrentRegion ? List.unmodifiable(_all) : const [];
 
   /// Surveys active now.
-  List<Survey> get visibleSurveys => List.unmodifiable(_visible);
+  List<Survey> get visibleSurveys =>
+      _isForCurrentRegion ? List.unmodifiable(_visible) : const [];
   bool get isLoading => _isLoading;
   Object? get lastError => _lastError;
 
@@ -155,23 +164,30 @@ class SurveyService extends ObaChangeNotifier {
     _isLoading = true;
     _lastError = null;
     notifyListeners();
+    var regionChanged = false;
     try {
       final response = await obaco.getSurveys(
         userId: userData.surveyUserIdentifier,
       );
-      // An answer for a region the rider has since left is dropped; the
-      // next fetch asks the new region.
-      if (_regionId() != regionId) return;
+      // An answer for a region the rider has since left is dropped, and
+      // the new region is asked instead (a fetch for it that came in
+      // meanwhile was turned away as "already loading").
+      regionChanged = _regionId() != regionId;
+      if (regionChanged) return;
       _all = List.of(response.surveys);
       final now = clock.now();
       _visible = _all.where((s) => s.isActive(now)).toList();
       _lastFetch = clock.now();
     } catch (e) {
-      _lastError = e;
-      if (_all.isEmpty) _visible = [];
+      regionChanged = _regionId() != regionId;
+      if (!regionChanged) {
+        _lastError = e;
+        if (_all.isEmpty) _visible = [];
+      }
     } finally {
       _isLoading = false;
       notifyListeners();
+      if (regionChanged && !isDisposed) unawaited(fetchSurveys());
     }
   }
 
@@ -265,6 +281,7 @@ class SurveyService extends ObaChangeNotifier {
     required String? stopId,
     required List<String> routeIds,
   }) {
+    if (!_isForCurrentRegion) return null;
     final now = clock.now();
     Survey? alwaysVisible;
     Survey? oneTime;

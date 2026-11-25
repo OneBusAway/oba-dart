@@ -90,6 +90,10 @@ class NearbyDeparturesController extends ChangeNotifier
   Duration _serverOffset = Duration.zero;
   bool _visible = false;
   int _generation = 0;
+
+  /// Bumped by [reset]: departures requested before it are another
+  /// region's.
+  int _epoch = 0;
   Future<void>? _arrivalsTask;
 
   Coordinate? get center => _center;
@@ -182,6 +186,7 @@ class NearbyDeparturesController extends ChangeNotifier
   void reset() {
     if (isDisposed) return;
     _generation++;
+    _epoch++;
     _fetchedCenter = null;
     _stops = const [];
     _routes.clear();
@@ -272,6 +277,7 @@ class NearbyDeparturesController extends ChangeNotifier
       if (due.isEmpty) return;
       final api = client();
       if (api == null) return;
+      final epoch = _epoch;
       var failed = false;
       final responses = await Future.wait([
         for (final id in due)
@@ -290,6 +296,9 @@ class NearbyDeparturesController extends ChangeNotifier
               ),
       ]);
       if (isDisposed) return;
+      // Reset meanwhile: these answers (or failures) are the old region's.
+      // Go round again for the stops listed now.
+      if (epoch != _epoch) continue;
       var changed = false;
       for (var i = 0; i < due.length; i++) {
         final response = responses[i];

@@ -228,7 +228,22 @@ class ObaSheetNavigatorHostState extends State<ObaSheetNavigatorHost> {
     } else if (newRoute != null) {
       _stack.add(newRoute);
     }
+    _headerHeights.remove(oldRoute);
+    _restingDetents.remove(oldRoute);
     _onTopChanged(popped: oldRoute);
+  }
+
+  /// A menu, dropdown or bottom sheet opened over the top page (they push
+  /// a [PopupRoute] onto the nearest navigator, which is this one). It is
+  /// not a page: the page under it stays the top page, with its map
+  /// overlay and selected stop. A sheet collapsed to its header leaves the
+  /// popup almost no room, so it grows one detent.
+  void _didPushPopup() {
+    final sheet = widget.sheet;
+    if (sheet == null) return;
+    obaRunWhenSafe(() {
+      if (mounted && sheet.isCollapsed) sheet.expand();
+    });
   }
 
   @override
@@ -256,16 +271,20 @@ class _Observer extends NavigatorObserver {
   final ObaSheetNavigatorHostState host;
 
   @override
-  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) =>
-      host._didPush(route, previousRoute);
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    if (route is PopupRoute) return host._didPushPopup();
+    host._didPush(route, previousRoute);
+  }
 
   @override
-  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) =>
-      host._didPop(route);
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    if (route is! PopupRoute) host._didPop(route);
+  }
 
   @override
-  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) =>
-      host._didPop(route);
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    if (route is! PopupRoute) host._didPop(route);
+  }
 
   @override
   void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) =>

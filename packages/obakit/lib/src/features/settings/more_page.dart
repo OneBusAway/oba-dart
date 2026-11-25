@@ -145,16 +145,22 @@ class MorePage extends StatelessWidget {
       builder: (context) => SimpleDialog(
         title: Text(l10n.moreContactTitle),
         children: [
-          SimpleDialogOption(
-            onPressed: () =>
-                Navigator.of(context).pop(ContactTarget.appDevelopers),
-            child: Text(l10n.moreContactDevelopers),
-          ),
-          SimpleDialogOption(
-            onPressed: () =>
-                Navigator.of(context).pop(ContactTarget.transitAgency),
-            child: Text(l10n.moreContactAgency),
-          ),
+          for (final (target, label) in [
+            (ContactTarget.appDevelopers, l10n.moreContactDevelopers),
+            (ContactTarget.transitAgency, l10n.moreContactAgency),
+          ])
+            SimpleDialogOption(
+              onPressed: () => Navigator.of(context).pop(target),
+              // A dialog option is only as tall as its text: keep the
+              // 48dp target every other control has.
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 48),
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Text(label),
+                ),
+              ),
+            ),
         ],
       ),
     );

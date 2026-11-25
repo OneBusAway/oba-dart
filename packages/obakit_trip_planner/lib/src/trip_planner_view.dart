@@ -200,11 +200,17 @@ class _TripPlannerViewState extends State<TripPlannerView> {
   Future<void> _pickDateTime() async {
     final initial = _controller.state.dateTime ?? clock.now();
     final now = clock.now();
+    final first = DateTime(now.year, now.month, now.day);
+    final last = DateTime(now.year + 1, now.month, now.day);
     final date = await showDatePicker(
       context: context,
-      initialDate: initial,
-      firstDate: DateTime(now.year, now.month, now.day),
-      lastDate: now.add(const Duration(days: 365)),
+      // A time chosen earlier may be before today by now (the planner was
+      // left open over midnight): the picker requires a date in its range.
+      initialDate: initial.isBefore(first)
+          ? first
+          : (initial.isAfter(last) ? last : initial),
+      firstDate: first,
+      lastDate: last,
     );
     if (date == null || !mounted) return;
     final time = await showTimePicker(
