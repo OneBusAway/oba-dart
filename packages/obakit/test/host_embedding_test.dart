@@ -345,6 +345,13 @@ void main() {
     });
   });
 
+  test('TileProvider is exported for ObaMapConfig.tileProvider', () {
+    // Unprefixed: resolves through package:obakit, not flutter_map.
+    final TileProvider tiles = FakeTileProvider();
+    const config = ObaMapConfig(userAgentPackageName: 'org.example.host');
+    expect(config.copyWith(tileProvider: tiles).tileProvider, same(tiles));
+  });
+
   group('trip planner', () {
     test('OTP requests use the configured HTTP client', () async {
       final env = await ObaTestEnv.create();

@@ -12,7 +12,11 @@
 ///
 /// `Place` (a geocoded place) is exported; `obakit_trip_planner` also has a
 /// `Place` model, so import the trip planner with a prefix if you use both.
+///
+/// flutter_map's `TileProvider` is re-exported for `ObaMapConfig.tileProvider`.
 library;
+
+export 'package:flutter_map/flutter_map.dart' show TileProvider;
 
 export 'package:obakit_core/obakit_core.dart' hide Route, Polyline;
 
