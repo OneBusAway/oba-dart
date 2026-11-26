@@ -6,7 +6,8 @@ import 'map_screen.dart';
 import 'wallet_screen.dart';
 
 /// Bottom navigation with Wallet, Map, Buy and Activity, plus the Ride
-/// button.
+/// button (on every tab but Map, which has a ticket button in its app
+/// bar).
 ///
 /// The tabs live in an `IndexedStack`, so each keeps its state, and the SDK
 /// widgets in hidden tabs stop polling and release location by themselves.
@@ -14,6 +15,9 @@ class HomeShell extends StatefulWidget {
   const HomeShell({super.key, this.initialIndex = 0});
 
   final int initialIndex;
+
+  /// The Map tab's index.
+  static const mapTab = 1;
 
   @override
   State<HomeShell> createState() => _HomeShellState();
@@ -35,13 +39,18 @@ class _HomeShellState extends State<HomeShell> {
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'ride',
-        tooltip: 'Show your ticket',
-        icon: const Icon(Icons.qr_code_2),
-        label: const Text('Ride'),
-        onPressed: () => openRide(context),
-      ),
+      // Not on the Map tab: there it would cover the map's attribution
+      // link and the stop pins along the bottom edge. The Map's app bar has
+      // its own ticket button.
+      floatingActionButton: _index == HomeShell.mapTab
+          ? null
+          : FloatingActionButton.extended(
+              heroTag: 'ride',
+              tooltip: 'Show your ticket',
+              icon: const Icon(Icons.qr_code_2),
+              label: const Text('Ride'),
+              onPressed: () => openRide(context),
+            ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),

@@ -3,7 +3,6 @@ import 'package:obakit/obakit.dart';
 
 import '../app_scope.dart';
 import '../widgets/balance_card.dart';
-import '../widgets/common.dart';
 import '../widgets/embed_frame.dart';
 import 'ride_screen.dart';
 
@@ -12,7 +11,8 @@ void openRide(BuildContext context) =>
     Navigator.of(context)
         .push(MaterialPageRoute<void>(builder: (_) => const RideScreen()));
 
-/// Home: balance, the Ride button, then live transit from the SDK.
+/// Home: balance, then live transit from the SDK. The shell's floating
+/// Ride button opens the ticket.
 class WalletScreen extends StatelessWidget {
   const WalletScreen({super.key});
 
@@ -38,56 +38,28 @@ class WalletScreen extends StatelessWidget {
       ),
       body: ListenableBuilder(
         listenable: wallet,
-        builder: (context, _) {
-          final lastTap = wallet.lastTap;
-          return ListView(
-            // Room for the floating Ride button.
-            padding: const EdgeInsets.only(top: 8, bottom: 96),
-            children: [
-              BalanceCard(wallet: wallet),
-              Padding(
-                padding: const EdgeInsetsDirectional.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(64),
-                    textStyle: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  icon: const Icon(Icons.qr_code_2),
-                  label: const Text('Ride'),
-                  onPressed: () => openRide(context),
-                ),
-              ),
-              // OBA embed: ServiceAlertsSection — urgent unread alerts for
-              // the region. Renders nothing when there are none, so it can
-              // sit permanently at the top of a fare app's home.
-              const EmbedFrame(
-                sdkWidget: 'ServiceAlertsSection',
-                child: ServiceAlertsSection(),
-              ),
-              // OBA embed: ObaNearbyStopsCard — "Departures near you", a
-              // self-contained card that polls only while visible.
-              const EmbedFrame(
-                sdkWidget: 'ObaNearbyStopsCard',
-                child: ObaNearbyStopsCard(),
-              ),
-              if (lastTap != null) ...[
-                const SectionHeading('From your last ride'),
-                // OBA embed: ObaStopDeparturesCard — the next departures
-                // from the stop of the rider's most recent tap.
-                EmbedFrame(
-                  sdkWidget: 'ObaStopDeparturesCard',
-                  child: ObaStopDeparturesCard(
-                    stopId: lastTap.stopId,
-                    maxArrivals: 2,
-                  ),
-                ),
-              ],
-            ],
-          );
-        },
+        builder: (context, _) => ListView(
+          // Room for the floating Ride button, the one way to the ticket.
+          padding: const EdgeInsets.only(top: 8, bottom: 96),
+          children: [
+            BalanceCard(wallet: wallet),
+            // OBA embed: ServiceAlertsSection — urgent unread alerts for
+            // the rider's stops. Renders nothing when there are none, so it
+            // can sit permanently at the top of a fare app's home.
+            const EmbedFrame(
+              sdkWidget: 'ServiceAlertsSection',
+              child: ServiceAlertsSection(),
+            ),
+            // OBA embed: ObaNearbyStopsCard — "Departures near you", a
+            // self-contained card that polls only while visible. Departures
+            // from the last tap's stop are on the Ride screen, so they
+            // aren't repeated here.
+            const EmbedFrame(
+              sdkWidget: 'ObaNearbyStopsCard',
+              child: ObaNearbyStopsCard(),
+            ),
+          ],
+        ),
       ),
     );
   }

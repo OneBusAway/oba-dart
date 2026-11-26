@@ -5,6 +5,8 @@ import '../data/mock_data.dart';
 import '../data/models.dart';
 import '../theme.dart';
 import '../widgets/embed_frame.dart';
+import '../widgets/host_oba_page.dart';
+import 'wallet_screen.dart';
 
 /// The SDK map with Tapline's own "Reload locations" markers on it.
 class MapScreen extends StatefulWidget {
@@ -85,10 +87,15 @@ class _MapScreenState extends State<MapScreen> {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         // A new route sits above the map: hand it the coordinator so the
-        // SDK's list can read the visible stops.
+        // SDK's list can read the visible stops. Under Tapline's app bar,
+        // like every other SDK page.
         builder: (_) => ObaMapCoordinatorScope(
           coordinator: _coordinator,
-          child: const StopsOnMapPage(),
+          child: const HostObaPage(
+            title: 'Stops on the map',
+            sdkWidget: 'StopsOnMapPage',
+            child: StopsOnMapPage(),
+          ),
         ),
       ),
     );
@@ -104,6 +111,13 @@ class _MapScreenState extends State<MapScreen> {
             icon: const Icon(Icons.storefront_outlined),
             tooltip: 'List reload locations',
             onPressed: _showStoreList,
+          ),
+          // The shell's floating Ride button is hidden on this tab (it
+          // would cover the map), so the ticket is here instead.
+          IconButton(
+            icon: const Icon(Icons.qr_code_2),
+            tooltip: 'Show your ticket',
+            onPressed: () => openRide(context),
           ),
         ],
       ),
@@ -127,20 +141,16 @@ class _MapScreenState extends State<MapScreen> {
                   context: context,
                   showDragHandle: true,
                   isScrollControlled: true,
-                  // The sheet's route sits above the map's ObaScope, so
-                  // re-wrap it. (Tapline's scope is above the navigator,
-                  // so this is belt and braces, but it is what a host with
-                  // a deeper scope must do.)
+                  // Tapline's ObaScope sits above the navigator, so it
+                  // covers the sheet's route too; no ObaScope.rewrap. (A
+                  // host whose scope is below its navigator would need it.)
                   builder: (_) => SafeArea(
                     child: SingleChildScrollView(
                       // OBA embed: ObaStopDeparturesCard — the tapped
                       // stop's next departures.
-                      child: ObaScope.rewrap(
-                        context,
-                        EmbedFrame(
-                          sdkWidget: 'ObaStopDeparturesCard',
-                          child: ObaStopDeparturesCard(stopId: stop.id),
-                        ),
+                      child: EmbedFrame(
+                        sdkWidget: 'ObaStopDeparturesCard',
+                        child: ObaStopDeparturesCard(stopId: stop.id),
                       ),
                     ),
                   ),

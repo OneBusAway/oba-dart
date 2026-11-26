@@ -44,8 +44,10 @@ class TapRow extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final when = formatDateTime(context, tap.time);
     final fare = formatMoney(tap.chargedCents);
+    final stopName = tap.stopName;
+    final from = stopName == null ? '' : ', from $stopName';
     final sentence =
-        'Route ${tap.routeShortName}, ${tap.routeName}, from ${tap.stopName}. '
+        'Route ${tap.routeShortName}, ${tap.routeName}$from. '
         '$when. Fare $fare, paid with ${tap.paidWith}.';
     return Semantics(
       button: true,
@@ -67,7 +69,9 @@ class TapRow extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(tap.stopName, style: text.titleMedium),
+                      // The route name when the validator didn't record
+                      // the stop.
+                      Text(stopName ?? tap.routeName, style: text.titleMedium),
                       Text(when, style: text.bodyMedium),
                       Text(
                         '$fare · ${tap.paidWith}',
@@ -100,6 +104,7 @@ class TapDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
+    final stopId = tap.stopId;
     return Scaffold(
       appBar: AppBar(title: const Text('Ride details')),
       body: ListView(
@@ -120,11 +125,11 @@ class TapDetailScreen extends StatelessWidget {
               ],
             ),
           ),
+          // The stop's name is in the departures card's title below, so it
+          // isn't repeated here.
           Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 0),
-            child: Text(
-              '${tap.stopName}\n${formatDateTime(context, tap.time)}',
-            ),
+            child: Text(formatDateTime(context, tap.time)),
           ),
           const SectionHeading('Fare'),
           Card(
@@ -133,27 +138,42 @@ class TapDetailScreen extends StatelessWidget {
               child: Column(
                 children: [
                   _FareLine('Base fare', formatMoney(tap.baseFareCents)),
-                  _FareLine(
-                    'Covered by ${tap.paidWith == 'Stored value' ? 'pass' : tap.paidWith}',
-                    formatMoney(-tap.coveredCents),
-                  ),
-                  const Divider(height: 24),
-                  _FareLine(
-                    'Charged (${tap.paidWith})',
-                    formatMoney(tap.chargedCents),
-                    bold: true,
-                  ),
+                  if (tap.paidWithStoredValue) ...[
+                    const Divider(height: 24),
+                    _FareLine(
+                      'Deducted from stored value',
+                      formatMoney(tap.chargedCents),
+                      bold: true,
+                    ),
+                  ] else ...[
+                    _FareLine(
+                      'Covered by ${tap.paidWith}',
+                      formatMoney(-tap.coveredCents),
+                    ),
+                    const Divider(height: 24),
+                    _FareLine(
+                      'Charged (${tap.paidWith})',
+                      formatMoney(tap.chargedCents),
+                      bold: true,
+                    ),
+                  ],
                 ],
               ),
             ),
           ),
-          SectionHeading('Ride again from ${tap.stopName}'),
-          // OBA embed: ObaStopDeparturesCard — live departures at the stop
-          // of this tap, so a past ride turns into the next one.
-          EmbedFrame(
-            sdkWidget: 'ObaStopDeparturesCard',
-            child: ObaStopDeparturesCard(stopId: tap.stopId),
-          ),
+          if (stopId != null) ...[
+            const SizedBox(height: 16),
+            // OBA embed: ObaStopDeparturesCard — live departures at the
+            // stop of this tap, so a past ride turns into the next one. Its
+            // title is the only place the stop's name appears.
+            EmbedFrame(
+              sdkWidget: 'ObaStopDeparturesCard',
+              child: ObaStopDeparturesCard(
+                stopId: stopId,
+                title: 'Ride again from ${tap.stopName ?? 'this stop'}',
+              ),
+            ),
+          ],
         ],
       ),
     );

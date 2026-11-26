@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:obakit/obakit.dart';
 import 'package:tapline_example/data/mock_data.dart';
+import 'package:tapline_example/data/models.dart';
+import 'package:tapline_example/data/wallet.dart';
 import 'package:tapline_example/screens/activity_screen.dart';
 
 import 'support/test_env.dart';
@@ -37,15 +39,17 @@ void main() {
     await TestEnv.settle(tester);
     expect(find.text('Ride details'), findsOneWidget);
     expect(find.text('Base fare'), findsOneWidget);
-    expect(find.text('Charged (Stored value)'), findsOneWidget);
-    expect(
-      find.text('Ride again from Eighth College / Theatre District'),
-      findsOneWidget,
-    );
+    // Stored value: the fare is deducted, nothing is "covered by pass".
+    expect(find.text('Deducted from stored value'), findsOneWidget);
+    expect(find.textContaining('Covered by'), findsNothing);
+    expect(find.textContaining('Charged ('), findsNothing);
     final card = tester.widget<ObaStopDeparturesCard>(
       find.byType(ObaStopDeparturesCard),
     );
     expect(card.stopId, Stops.eighthCollege);
+    // The stop's name shows once: in the departures card's title.
+    expect(card.title, 'Ride again from Eighth College / Theatre District');
+    expect(find.textContaining('Eighth College'), findsOneWidget);
     expect(
       env.requests.map((r) => r.url.path),
       contains(contains('arrivals-and-departures-for-stop/MTS_24151')),
@@ -65,6 +69,52 @@ void main() {
     await tester.tap(find.byType(TapRow).first);
     await TestEnv.settle(tester);
     expect(tester.takeException(), isNull);
+    await env.tearDown(tester);
+  });
+
+  testWidgets('a pass ride shows what the pass covered', (tester) async {
+    await env.pumpApp(tester, home: const ActivityScreen());
+    await tester.tap(find.byType(TapRow).first); // Blue Line, Day Pass
+    await TestEnv.settle(tester);
+    expect(find.text('Covered by Day Pass'), findsOneWidget);
+    expect(find.text(r'-$2.50'), findsOneWidget);
+    expect(find.text('Charged (Day Pass)'), findsOneWidget);
+    expect(find.text('Deducted from stored value'), findsNothing);
+    await env.tearDown(tester);
+  });
+
+  testWidgets('a tap without a stop reads by its route and has no departures', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    final now = DateTime.now();
+    final wallet = Wallet(
+      balanceCents: 0,
+      passes: [],
+      taps: [
+        Tap(
+          id: 'tap-bus',
+          time: now,
+          routeShortName: '201',
+          routeName: 'SuperLoop',
+          baseFareCents: 250,
+          chargedCents: 250,
+          paidWith: Tap.storedValue,
+        ),
+      ],
+      now: () => now,
+    );
+    await env.pumpApp(tester, wallet: wallet, home: const ActivityScreen());
+    expect(find.text('SuperLoop'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel(RegExp(r'^Route 201, SuperLoop\. ')),
+      findsOneWidget,
+    );
+    await tester.tap(find.byType(TapRow));
+    await TestEnv.settle(tester);
+    expect(find.text('Ride details'), findsOneWidget);
+    expect(find.byType(ObaStopDeparturesCard), findsNothing);
+    semantics.dispose();
     await env.tearDown(tester);
   });
 }

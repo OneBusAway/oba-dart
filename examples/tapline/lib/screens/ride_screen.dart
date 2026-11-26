@@ -8,8 +8,9 @@ import '../widgets/common.dart';
 import '../widgets/embed_frame.dart';
 import '../widgets/ticket_code.dart';
 
-/// The active ticket, shown full screen to a driver or validator, with the
-/// next departures from the rider's boarding stop below it.
+/// The active ticket, shown full screen to a driver or validator, with
+/// departures from the stop of the rider's last tap (or near the rider)
+/// below it.
 class RideScreen extends StatelessWidget {
   const RideScreen({super.key});
 
@@ -30,8 +31,7 @@ class RideScreen extends StatelessWidget {
                     '${formatMoney(oneRide.priceCents)} per ride'
               : passValidity(context, pass, now);
           final lastTap = wallet.lastTap;
-          final boardingStopId = lastTap?.stopId ?? Stops.ucsdCentralCampus;
-          final boardingStopName = lastTap?.stopName ?? 'UCSD Central Campus';
+          final lastStopId = lastTap?.stopId;
           return ListView(
             padding: const EdgeInsets.only(bottom: 32),
             children: [
@@ -90,17 +90,28 @@ class RideScreen extends StatelessWidget {
                     'read the code.',
               ),
               const SizedBox(height: 8),
-              // OBA embed: ObaStopDeparturesCard — live departures at the
-              // stop the rider last boarded from. Tapping a departure opens
-              // the SDK's TripPage through ObaNavigator's default (a
-              // full-screen route on this navigator).
-              EmbedFrame(
-                sdkWidget: 'ObaStopDeparturesCard',
-                child: ObaStopDeparturesCard(
-                  stopId: boardingStopId,
-                  title: 'Your next ride from $boardingStopName',
+              if (lastStopId != null)
+                // OBA embed: ObaStopDeparturesCard — live departures at the
+                // stop of the rider's last tap. Not "your next ride": on a
+                // return trip the rider is somewhere else. Tapping a
+                // departure opens the SDK's TripPage through Tapline's
+                // onNavigate.
+                EmbedFrame(
+                  sdkWidget: 'ObaStopDeparturesCard',
+                  child: ObaStopDeparturesCard(
+                    stopId: lastStopId,
+                    title:
+                        'Ride again from '
+                        '${lastTap?.stopName ?? 'your last stop'}',
+                  ),
+                )
+              else
+                // OBA embed: ObaNearbyStopsCard — no tap with a known stop
+                // yet, so departures near the rider instead.
+                const EmbedFrame(
+                  sdkWidget: 'ObaNearbyStopsCard',
+                  child: ObaNearbyStopsCard(),
                 ),
-              ),
             ],
           );
         },

@@ -58,8 +58,8 @@ class Tap {
     required this.time,
     required this.routeShortName,
     required this.routeName,
-    required this.stopId,
-    required this.stopName,
+    this.stopId,
+    this.stopName,
     required this.baseFareCents,
     required this.chargedCents,
     required this.paidWith,
@@ -72,14 +72,23 @@ class Tap {
 
   /// An OneBusAway stop id (e.g. `MTS_11902`), so the app can show live
   /// departures for the stop.
-  final String stopId;
-  final String stopName;
+  ///
+  /// Null when the tap's stop isn't known. Real validators often sit on
+  /// the vehicle and record the route or vehicle rather than the stop.
+  final String? stopId;
+  final String? stopName;
   final int baseFareCents;
   final int chargedCents;
 
-  /// The pass name, or "Stored value".
+  /// The pass name, or [storedValue].
   final String paidWith;
 
+  static const storedValue = 'Stored value';
+
+  /// Whether the fare came out of stored value rather than a pass.
+  bool get paidWithStoredValue => paidWith == storedValue;
+
+  /// The part of the base fare a pass covered. Zero for stored value.
   int get coveredCents => baseFareCents - chargedCents;
 }
 

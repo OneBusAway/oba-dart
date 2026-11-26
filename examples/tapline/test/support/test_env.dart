@@ -6,6 +6,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -61,9 +62,10 @@ class TestEnv {
           httpClient: client,
         ),
       ),
-      // No tile provider: the map tab stays hidden in these tests, and a
-      // hidden ObaMapView loads no tiles. (A fake TileProvider would need
-      // a direct flutter_map dependency; obakit doesn't re-export it.)
+      // No tile provider: a hidden ObaMapView loads no tiles, and a test
+      // that shows the map calls mockMapTileCache(). (A fake TileProvider
+      // would need a direct flutter_map dependency; obakit doesn't
+      // re-export it.)
       map: const ObaMapConfig(
         userAgentPackageName: 'org.onebusaway.examples.tapline.test',
       ),
@@ -150,4 +152,21 @@ Future<void> expectAccessible(
     await expectLater(tester, meetsGuideline(textContrastGuideline));
   }
   handle.dispose();
+}
+
+/// Lets `ObaMapView` build with the default tile provider in a test.
+///
+/// flutter_map's tile cache asks `path_provider` for a cache directory,
+/// which has no plugin in widget tests; this answers with a temporary
+/// directory. Tile downloads never leave the machine: the test binding
+/// answers every `HttpClient` request with a 400, and the map shows blank
+/// tiles.
+void mockMapTileCache() {
+  final dir = Directory.systemTemp.createTempSync('tapline_tiles');
+  addTearDown(() => dir.deleteSync(recursive: true));
+  const channel = MethodChannel('plugins.flutter.io/path_provider');
+  final messenger =
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+  messenger.setMockMethodCallHandler(channel, (call) async => dir.path);
+  addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
 }
