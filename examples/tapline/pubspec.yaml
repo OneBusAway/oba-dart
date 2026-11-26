@@ -16,6 +16,11 @@ dependencies:
     path: ../../packages/obakit
   obakit_trip_planner:
     path: ../../packages/obakit_trip_planner
+  # Vector map tiles (stage 2 prototype). A beta, pinned exactly; it is the
+  # line that supports flutter_map 8.
+  vector_map_tiles: 9.0.0-beta.13
+  # For ThemeReader: the app recolours the vector style before rendering.
+  vector_tile_renderer: ^6.1.0
 
 dev_dependencies:
   flutter_test:

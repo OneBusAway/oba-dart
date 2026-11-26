@@ -52,6 +52,25 @@ code, each embed is marked with an `// OBA embed:` comment.
   logic.
 - `lib/widgets/embed_frame.dart` is the "Show OBA embeds" overlay.
 
+## Map tiles
+
+Tapline shows the SDK's map with **vector tiles** (a prototype,
+`lib/map_vector.dart`). The SDK has no vector dependency of its own: the
+app passes `ObaTileSource.custom` a `VectorTileLayer` from
+`vector_map_tiles` (pinned to 9.0.0-beta.13, the line that supports
+flutter_map 8). The tiles and styles come from OpenFreeMap (free, no API
+key). At startup the app loads the Positron and Dark styles and repaints
+their background, land and water toward Tapline's palette. Roads, rail and
+labels keep the base style.
+
+- If the styles don't load within 5 seconds, the app falls back to CARTO's
+  raster tiles (`lib/map_tiles.dart`). So does
+  `--dart-define=TAPLINE_MAP=raster`, for comparing the two.
+- The trip planner's itinerary map draws raster tiles only. It uses the
+  same CARTO tiles, through the source's `rasterFallback`.
+- Still to check on real devices: frame rate while panning on low-end
+  Android, label quality, and web support.
+
 ## Embed points
 
 | Screen | SDK widget | Why it's there for a fare-app rider |
