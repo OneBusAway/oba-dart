@@ -419,16 +419,29 @@ class _ObaMapViewState extends State<ObaMapView>
 
   // -- Build --------------------------------------------------------------------
 
-  List<fm.TileLayer> _tileLayers(MapType type, Brightness brightness) {
+  List<Widget> _tileLayers(
+    BuildContext context,
+    MapType type,
+    Brightness brightness,
+  ) {
     final cfg = _app.map;
-    fm.TileLayer layer(ObaTileSource s) => fm.TileLayer(
-      key: ValueKey(s.urlTemplate),
-      urlTemplate: s.urlTemplate,
-      subdomains: s.subdomains,
-      userAgentPackageName: cfg.userAgentPackageName,
-      maxNativeZoom: s.maxNativeZoom,
-      tileProvider: cfg.tileProvider,
-    );
+    final highDensity = fm.RetinaMode.isHighDensity(context);
+    Widget layer(ObaTileSource s) {
+      final custom = s.layerBuilder;
+      if (custom != null) {
+        return KeyedSubtree(key: ObjectKey(s), child: custom(context));
+      }
+      return fm.TileLayer(
+        key: ValueKey(s.urlTemplate),
+        urlTemplate: s.urlTemplate,
+        subdomains: s.subdomains,
+        userAgentPackageName: cfg.userAgentPackageName,
+        maxNativeZoom: s.maxNativeZoom,
+        tileProvider: cfg.tileProvider,
+        retinaMode: s.usesRetina(highDensity: highDensity),
+      );
+    }
+
     return switch (type) {
       MapType.satellite when cfg.satellite != null => [layer(cfg.satellite!)],
       MapType.hybrid when cfg.supportsHybrid => [
@@ -475,7 +488,7 @@ class _ObaMapViewState extends State<ObaMapView>
                       // the first frame, and camera ticks never rebuild this.
                       options: _mapOptions ??= _options(context),
                       children: [
-                        ..._tileLayers(mapType, brightness),
+                        ..._tileLayers(context, mapType, brightness),
                         _OverlayLinesLayer(coordinator: _coordinator),
                         if (widget.showsUserLocation)
                           _UserLocationLayer(

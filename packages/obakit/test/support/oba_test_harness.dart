@@ -69,7 +69,8 @@ class ObaTestEnv {
   /// [region] picks the selected region by name from `regions-v3.json`.
   /// [onboardingDone] marks every onboarding step seen.
   /// [locationProvider] replaces the fake one ([location] is then unused);
-  /// [darkTiles] sets `ObaMapConfig.standardDark`.
+  /// [streetTiles] and [darkTiles] set `ObaMapConfig.standard` and
+  /// `standardDark`.
   static Future<ObaTestEnv> create({
     Map<String, String> responses = const {},
     String region = 'Puget Sound',
@@ -80,6 +81,7 @@ class ObaTestEnv {
     bool onboardingDone = true,
     PlaceSearchProvider? placeSearch,
     LocationProvider? locationProvider,
+    ObaTileSource streetTiles = ObaTileSource.openStreetMap,
     ObaTileSource? darkTiles,
   }) async {
     final requests = <http.Request>[];
@@ -122,6 +124,7 @@ class ObaTestEnv {
       ),
       map: ObaMapConfig(
         userAgentPackageName: 'org.onebusaway.test',
+        standard: streetTiles,
         standardDark: darkTiles,
         tileProvider: tiles,
       ),

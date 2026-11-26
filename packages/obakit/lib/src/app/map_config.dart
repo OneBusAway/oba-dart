@@ -1,18 +1,44 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
 import 'package:flutter_map/flutter_map.dart' show TileProvider;
 import 'package:obakit_core/obakit_core.dart' show MapType;
 
-/// One raster tile source.
+/// Builds a map base layer that isn't a raster URL template, such as a
+/// vector tile layer from another package. It is placed as the bottom
+/// child of the SDK's `FlutterMap`, so it must be a flutter_map layer.
+typedef ObaBaseLayerBuilder = Widget Function(BuildContext context);
+
+/// One map base layer: raster tiles from a URL template, or (with
+/// [ObaTileSource.custom]) a layer the host builds, for example vector
+/// tiles. Either way it carries the attribution the map shows.
 @immutable
 class ObaTileSource {
   const ObaTileSource({
-    required this.urlTemplate,
+    required String this.urlTemplate,
     required this.attribution,
     this.attributionUrl,
     this.maxNativeZoom = 19,
     this.subdomains = const [],
-  });
+    this.retinaMode,
+  }) : layerBuilder = null,
+       rasterFallback = null;
+
+  /// A base layer the host builds itself. The SDK depends on no vector
+  /// tile package; a host that wants vector tiles adds one (for example
+  /// `vector_map_tiles`) and returns its layer from [layerBuilder].
+  /// [ObaMapConfig.tileProvider] doesn't apply to it.
+  ///
+  /// Maps that can only draw raster tiles (the trip planner's itinerary
+  /// map) use [rasterFallback] instead, with its own attribution.
+  const ObaTileSource.custom({
+    required ObaBaseLayerBuilder this.layerBuilder,
+    required this.attribution,
+    this.attributionUrl,
+    this.maxNativeZoom = 19,
+    ObaTileSource this.rasterFallback = openStreetMap,
+  }) : urlTemplate = null,
+       subdomains = const [],
+       retinaMode = false;
 
   /// OpenStreetMap's public tiles. Their usage policy
   /// (https://operations.osmfoundation.org/policies/tiles/) allows light use
@@ -25,7 +51,19 @@ class ObaTileSource {
   );
 
   /// `{z}/{x}/{y}` template (`{s}` for [subdomains], `{r}` for retina).
-  final String urlTemplate;
+  /// Null for a [ObaTileSource.custom] layer.
+  final String? urlTemplate;
+
+  /// Builds the base layer of a [ObaTileSource.custom] source; null for
+  /// raster tiles.
+  final ObaBaseLayerBuilder? layerBuilder;
+
+  /// The raster tiles a [ObaTileSource.custom] source stands in for on maps
+  /// that can only draw raster tiles; null for raster sources.
+  final ObaTileSource? rasterFallback;
+
+  /// This source if it is raster tiles, else its [rasterFallback].
+  ObaTileSource get raster => rasterFallback ?? this;
 
   /// Shown on the map as "© [attribution]". Required by most providers.
   final String attribution;
@@ -34,6 +72,19 @@ class ObaTileSource {
   final String? attributionUrl;
   final int maxNativeZoom;
   final List<String> subdomains;
+
+  /// Whether to request high-density tiles. Null (the default) turns it on
+  /// when [urlTemplate] has a `{r}` placeholder and the screen is
+  /// high-density: the provider then serves `@2x` tiles, so streets and
+  /// labels stay sharp. Pass false to always use standard tiles, or true to
+  /// let flutter_map simulate retina for a provider without `{r}` (it then
+  /// requests tiles one zoom level deeper, which makes labels smaller).
+  final bool? retinaMode;
+
+  /// Whether high-density tiles are requested on a screen of the given
+  /// density (see [retinaMode]).
+  bool usesRetina({required bool highDensity}) =>
+      retinaMode ?? (highDensity && (urlTemplate?.contains('{r}') ?? false));
 }
 
 /// Map configuration for the SDK's map ([ObaMapView] and the shell).

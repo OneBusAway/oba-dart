@@ -5,6 +5,7 @@
 // Home tab content comes from `searchHomeSections`.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart' as fm show RetinaMode;
 import 'package:obakit_core/obakit_core.dart' hide Route;
 import 'package:obakit_trip_planner/obakit_trip_planner.dart' as tp;
 
@@ -112,11 +113,18 @@ class TripPlannerPage extends StatelessWidget {
     }
     final strings = context.obaTripPlannerStrings;
     final map = app.map;
+    // The itinerary map draws raster tiles only: a custom (vector) base
+    // layer stands in with its raster fallback.
+    final tiles = map.standardFor(Theme.of(context).brightness).raster;
     final mapConfig = tp.TripMapConfig(
       userAgentPackageName: map.userAgentPackageName,
-      tileUrlTemplate: map.standard.urlTemplate,
-      attribution: map.standard.attribution,
+      tileUrlTemplate: tiles.urlTemplate!,
+      attribution: tiles.attribution,
       tileProvider: map.tileProvider,
+      subdomains: tiles.subdomains,
+      retinaMode: tiles.usesRetina(
+        highDensity: fm.RetinaMode.isHighDensity(context),
+      ),
     );
     return ObaSheetPage(
       title: l10n.titleTripPlanner,
