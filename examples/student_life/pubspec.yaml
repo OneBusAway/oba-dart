@@ -11,6 +11,7 @@ resolution: workspace
 dependencies:
   flutter:
     sdk: flutter
+  clock: ^1.1.3
   http: ^1.6.0
   obakit:
     path: ../../packages/obakit

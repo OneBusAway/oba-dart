@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:obakit/obakit.dart';
 
@@ -243,8 +244,15 @@ class ChosenTripCard extends StatelessWidget {
         ),
       );
     }
-    final leaveAt = MaterialLocalizations.of(context)
-        .formatTimeOfDay(TimeOfDay.fromDateTime(itinerary.startTime.toLocal()));
+    final loc = MaterialLocalizations.of(context);
+    final start = itinerary.startTime.toLocal();
+    final now = clock.now();
+    final isToday =
+        start.year == now.year &&
+        start.month == now.month &&
+        start.day == now.day;
+    final time = loc.formatTimeOfDay(TimeOfDay.fromDateTime(start));
+    final leaveAt = isToday ? time : '${loc.formatMediumDate(start)} $time';
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
