@@ -412,6 +412,44 @@ ObaScope(
 In a tab under your own app bar, wrap it in `ObaPresentationScope.embedded`
 (see [Pages inside your own screens](#pages-inside-your-own-screens)).
 
+To learn which trip the rider chose, pass `onItinerarySelected`. It runs
+when the rider opens an itinerary, just before the SDK pushes that
+itinerary's details (the push still happens). The itinerary is an
+`obakit_trip_planner` `Itinerary`. Import that package with a prefix,
+because its `Place` clashes with the `Place` that `obakit` exports:
+
+```dart
+import 'package:obakit/obakit.dart';
+import 'package:obakit_trip_planner/obakit_trip_planner.dart' as tp;
+
+TripPlannerPage(
+  destination: geisel,
+  onItinerarySelected: (context, tp.Itinerary itinerary) {
+    final routes = itinerary.legs
+        .where((leg) => leg.transitLeg)
+        .map((leg) => leg.routeShortName ?? leg.mode);
+    myTripStore.remember(
+      leaveAt: itinerary.startTime,   // "Leave by 9:12"
+      routes: routes.toList(),        // "route 201"
+      fare: itinerary.fare,           // Money?, when the server reports one
+    );
+  },
+);
+
+// The same through the navigator:
+ObaNavigator.of(context).push(TripPlannerRoute(
+  destination: geisel,
+  onItinerarySelected: (context, itinerary) => myTripStore.remember(...),
+));
+```
+
+An `Itinerary` has `startTime`, `endTime`, `duration` (seconds),
+`transfers`, `fare` and `legs`. Each `Leg` has `mode` (`BUS`, `WALK`, ...),
+`transitLeg`, `routeShortName`, `routeLongName`, `headsign`, `agencyName`,
+`startTime`, `endTime`, and `from`/`to` places. The callback is not part
+of `TripPlannerRoute`'s identity, so routes that differ only in it are
+equal.
+
 `TripPlannerPage` builds the region's `OtpClient` (`app.otpClient()`). It
 wires up the app's place search, location and tiles, and shows an empty
 state when the region has no trip planner. To use the lower-level widget,

@@ -26,6 +26,31 @@ const pin = Place(
   id: 'dropped-47.61,-122.33',
 );
 
+/// The first itinerary of a captured OTP 2 plan (Westlake to U District).
+tp.Itinerary westlakeItinerary() => tp
+    .parseGraphQLPlanResponse(
+      jsonDecode(
+        File(
+          '../obakit_trip_planner/test/fixtures/graphql/'
+          'soundtransit_westlake_to_udistrict.json',
+        ).readAsStringSync(),
+      ) as Map<String, dynamic>,
+    )
+    .itineraries
+    .first;
+
+/// Opens [itinerary] the way a tap on its row does. The region's OTP client
+/// isn't mocked, so the test calls the planner's tap callback directly
+/// instead of planning a trip.
+Future<void> openItinerary(WidgetTester tester, tp.Itinerary itinerary) async {
+  final finder = find.byType(tp.TripPlannerView);
+  tester.widget<tp.TripPlannerView>(finder).onItineraryTap!(
+    tester.element(finder),
+    itinerary,
+  );
+  await tester.pump();
+}
+
 /// 15:30 Pacific on the weather fixture's day (22:30 UTC).
 final weatherTime = DateTime.utc(2018, 10, 17, 22, 30);
 
@@ -288,20 +313,86 @@ void main() {
       expect(find.text('Space Needle'), findsWidgets);
       expect(env.requests, isEmpty);
     });
+
+    testWidgets('onItinerarySelected gets the itinerary, then it opens', (
+      tester,
+    ) async {
+      env = await ObaTestEnv.create();
+      final events = <Object>[];
+      await env.pumpPage(
+        tester,
+        TripPlannerPage(
+          destination: needle,
+          onItinerarySelected: (context, itinerary) {
+            expect(ObaScope.of(context), same(env.app));
+            events.add(itinerary);
+          },
+        ),
+        onNavigate: (_, r) {
+          events.add(r);
+          return true;
+        },
+      );
+      final itinerary = westlakeItinerary();
+      await openItinerary(tester, itinerary);
+      expect(events, hasLength(2));
+      expect(events[0], same(itinerary));
+      final pushed = events[1] as ItineraryRoute;
+      expect(pushed.itinerary, same(itinerary));
+      // What a host would show: a start time and the transit route names.
+      expect(
+        itinerary.legs.where((l) => l.transitLeg).map((l) => l.routeShortName),
+        isNotEmpty,
+      );
+    });
+
+    testWidgets('without onItinerarySelected the itinerary still opens', (
+      tester,
+    ) async {
+      env = await ObaTestEnv.create();
+      final pushed = <ObaRoute>[];
+      await env.pumpPage(
+        tester,
+        const TripPlannerPage(),
+        onNavigate: (_, r) {
+          pushed.add(r);
+          return true;
+        },
+      );
+      final itinerary = westlakeItinerary();
+      await openItinerary(tester, itinerary);
+      expect(pushed, hasLength(1));
+      expect((pushed.single as ItineraryRoute).itinerary, same(itinerary));
+    });
+
+    testWidgets('TripPlannerRoute passes onItinerarySelected to the page', (
+      tester,
+    ) async {
+      env = await ObaTestEnv.create();
+      final selected = <tp.Itinerary>[];
+      final route = TripPlannerRoute(
+        destination: needle,
+        onItinerarySelected: (_, itinerary) => selected.add(itinerary),
+      );
+      // The callback is not part of the route's identity.
+      expect(route, const TripPlannerRoute(destination: needle));
+      expect(route.id, const TripPlannerRoute(destination: needle).id);
+      await env.pumpPage(
+        tester,
+        Builder(builder: (context) => ObaRouteBuilder.build(context, route)),
+        onNavigate: (_, r) => true,
+      );
+      final page = tester.widget<TripPlannerPage>(find.byType(TripPlannerPage));
+      expect(page.destination, needle);
+      expect(page.onItinerarySelected, same(route.onItinerarySelected));
+      final itinerary = westlakeItinerary();
+      await openItinerary(tester, itinerary);
+      expect(selected, [same(itinerary)]);
+    });
   });
 
   group('ItineraryRoute', () {
-    tp.Itinerary itinerary() => tp
-        .parseGraphQLPlanResponse(
-          jsonDecode(
-            File(
-              '../obakit_trip_planner/test/fixtures/graphql/'
-              'soundtransit_westlake_to_udistrict.json',
-            ).readAsStringSync(),
-          ) as Map<String, dynamic>,
-        )
-        .itineraries
-        .first;
+    tp.Itinerary itinerary() => westlakeItinerary();
     // The harness's fake tiles, so no network is touched.
     tp.TripMapConfig config() => tp.TripMapConfig(
       userAgentPackageName: 'test',
