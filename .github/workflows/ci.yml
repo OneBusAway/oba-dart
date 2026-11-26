@@ -69,6 +69,18 @@ jobs:
           TZ: America/Los_Angeles
         run: flutter test
 
+      - name: Test Tapline example
+        working-directory: examples/tapline
+        env:
+          TZ: America/Los_Angeles
+        run: flutter test
+
+      - name: Test Student Life example
+        working-directory: examples/student_life
+        env:
+          TZ: America/Los_Angeles
+        run: flutter test
+
   goldens:
     name: Golden tests (macOS)
     runs-on: macos-latest
