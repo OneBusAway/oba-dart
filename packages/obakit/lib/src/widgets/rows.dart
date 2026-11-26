@@ -319,7 +319,11 @@ class ObaStopRow extends StatelessWidget {
         stop.name,
         '${routeTypeLabel(l10n, type)}, $details',
       ),
-      onTap: onTap ?? () => ObaNavigator.of(context).push(StopRoute(stop.id)),
+      onTap:
+          onTap ??
+          () =>
+              ObaNavigator.of(context)
+                  .push(StopRoute(stop.id, name: stop.name)),
     );
   }
 }

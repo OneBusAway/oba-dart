@@ -20,6 +20,15 @@ void main() {
       expect(const StopRoute('a') == const StopRoute('b'), isFalse);
     });
 
+    test('the name hint is not part of the route identity', () {
+      const named = StopRoute('1_75403', name: 'Pine St & 3rd Ave');
+      expect(named.name, 'Pine St & 3rd Ave');
+      expect(named.id, 'stopDetails-1_75403');
+      expect(named, const StopRoute('1_75403'));
+      expect(named, const StopRoute('1_75403', name: 'Other name'));
+      expect(const StopRoute('1_75403').name, isNull);
+    });
+
     test('trip planner ids never contain coordinates', () {
       const p = Place(name: 'Home', coordinate: Coordinate(47.1, -122.2));
       expect(const TripPlannerRoute().id, 'tripPlanner_blank');

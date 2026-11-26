@@ -107,11 +107,10 @@ void main() {
     await tester.tap(find.text('Eighth College / Theatre District'));
     await TestEnv.settle(tester);
 
-    // The host's route: its own app bar with a generic title, and the SDK
-    // stop page embedded below it (no second app bar). The stop's name
-    // shows once, in the SDK page's compact header.
+    // The host's app bar carries the stop's name (the route's hint) while
+    // the SDK stop page keeps its compact header (full name, actions).
     final host = tester.widget<HostObaPage>(find.byType(HostObaPage));
-    expect(host.title, 'Transit');
+    expect(host.title, 'Eighth College / Theatre District');
     expect(host.showsHeader, isTrue);
     expect(find.byType(AppBar), findsOneWidget);
     expect(
@@ -119,7 +118,7 @@ void main() {
         of: find.byType(AppBar),
         matching: find.textContaining('Eighth College'),
       ),
-      findsNothing,
+      findsOneWidget,
     );
     expect(
       find.text('Eighth College / Theatre District (North)'),

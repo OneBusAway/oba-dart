@@ -52,7 +52,11 @@ class HostObaPage extends StatelessWidget {
 typedef HostChrome = ({String title, bool showsHeader, String sdkWidget});
 
 HostChrome hostChromeFor(ObaRoute route) => switch (route) {
-  StopRoute() => (title: 'Transit', showsHeader: true, sdkWidget: 'StopPage'),
+  StopRoute(:final name) => (
+    title: name ?? 'Transit',
+    showsHeader: true,
+    sdkWidget: 'StopPage',
+  ),
   TripRoute() => (title: 'Transit', showsHeader: true, sdkWidget: 'TripPage'),
   RouteStopsRoute() => (
     title: 'Transit',

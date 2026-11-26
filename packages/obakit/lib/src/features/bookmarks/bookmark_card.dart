@@ -88,7 +88,8 @@ class BookmarkCard extends StatelessWidget {
           subtitle: details == null ? null : Text(details),
           minTileHeight: 48,
           contentPadding: const EdgeInsetsDirectional.only(start: 16, end: 0),
-          onTap: () => navigator.push<void>(StopRoute(stop.id)),
+          onTap: () =>
+              navigator.push<void>(StopRoute(stop.id, name: stop.name)),
         ),
       ),
     );

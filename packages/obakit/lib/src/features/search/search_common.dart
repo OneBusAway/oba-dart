@@ -14,6 +14,7 @@ import '../../widgets/states.dart';
 ObaRoute? searchResultDestination(SearchResult result) => switch (result) {
   StopSearchResult(:final stops) when stops.length == 1 => StopRoute(
     stops.single.id,
+    name: stops.single.name,
   ),
   RouteSearchResult(:final routes) when routes.length == 1 => RouteStopsRoute(
     routes.single.id,

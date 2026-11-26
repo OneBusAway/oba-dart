@@ -623,7 +623,9 @@ class TripStopTile extends StatelessWidget {
     final markerColor = row.isVehicleHere || row.isUserStop
         ? oba.brand
         : (muted ? scheme.onSurfaceVariant : scheme.onSurface);
-    void open() => ObaNavigator.of(context).push(StopRoute(row.entry.stopId));
+    void open() =>
+        ObaNavigator.of(context)
+            .push(StopRoute(row.entry.stopId, name: row.entry.name));
     // excludeSemantics drops the InkWell's tap, so the node carries it.
     return Semantics(
       label: sentence,
