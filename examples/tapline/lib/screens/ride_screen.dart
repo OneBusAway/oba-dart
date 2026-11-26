@@ -100,9 +100,8 @@ class RideScreen extends StatelessWidget {
                   sdkWidget: 'ObaStopDeparturesCard',
                   child: ObaStopDeparturesCard(
                     stopId: lastStopId,
-                    title:
-                        'Ride again from '
-                        '${lastTap?.stopName ?? 'your last stop'}',
+                    // The card shows the stop's name under this title.
+                    title: 'Ride again',
                   ),
                 )
               else
