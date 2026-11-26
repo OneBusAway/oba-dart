@@ -5,6 +5,7 @@ import 'app_scope.dart';
 import 'data/wallet.dart';
 import 'screens/home_shell.dart';
 import 'theme.dart';
+import 'widgets/host_oba_page.dart';
 
 /// The Tapline app. Takes the OneBusAway application and the wallet from
 /// outside, so tests can pass fakes.
@@ -28,6 +29,18 @@ class TaplineApp extends StatefulWidget {
 
 class _TaplineAppState extends State<TaplineApp> {
   final _showEmbeds = ValueNotifier<bool>(false);
+  final _navigatorKey = GlobalKey<NavigatorState>();
+
+  // Every SDK destination (stops, trips, schedules, alerts, the trip
+  // planner...) opens as a Tapline route, so Tapline's app bar is the only
+  // one on every page. Returning true for every route means the SDK never
+  // pushes a page of its own.
+  bool _onNavigate(BuildContext context, ObaRoute route) {
+    final navigator = _navigatorKey.currentState;
+    if (navigator == null) return false;
+    navigator.push(hostObaRoute<void>(route));
+    return true;
+  }
 
   @override
   void dispose() {
@@ -39,6 +52,7 @@ class _TaplineAppState extends State<TaplineApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Tapline',
+      navigatorKey: _navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: TaplineTheme.light(),
       darkTheme: TaplineTheme.dark(),
@@ -47,11 +61,15 @@ class _TaplineAppState extends State<TaplineApp> {
       localizationsDelegates: obaLocalizationsDelegates,
       supportedLocales: const [Locale('en')],
       // One ObaScope above the navigator covers every route: Tapline's own,
-      // its bottom sheets, and the pages the SDK pushes.
+      // its bottom sheets, and the SDK pages its onNavigate pushes.
       builder: (context, child) => TaplineScope(
         wallet: widget.wallet,
         showEmbeds: _showEmbeds,
-        child: ObaScope(application: widget.application, child: child!),
+        child: ObaScope(
+          application: widget.application,
+          onNavigate: _onNavigate,
+          child: child!,
+        ),
       ),
       home: widget.home ?? const HomeShell(),
     );

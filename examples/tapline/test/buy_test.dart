@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:obakit/obakit.dart';
 import 'package:tapline_example/data/mock_data.dart';
 import 'package:tapline_example/data/models.dart';
 import 'package:tapline_example/data/wallet.dart';
 import 'package:tapline_example/screens/buy_screen.dart';
+import 'package:tapline_example/widgets/host_oba_page.dart';
 
 import 'support/test_env.dart';
 
@@ -123,6 +125,21 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Checkout'), findsOneWidget);
       expect(tester.takeException(), isNull);
+      await env.tearDown(tester);
+    });
+
+    testWidgets('Plan your trip pushes the trip planner under Tapline\'s '
+        'app bar', (tester) async {
+      await env.pumpApp(tester, home: const BuyScreen());
+      await tester.tap(find.text('Not sure which fare? Plan your trip'));
+      await TestEnv.settle(tester);
+      expect(find.byType(TripPlannerPage), findsOneWidget);
+      final host = tester.widget<HostObaPage>(find.byType(HostObaPage));
+      expect(host.title, 'Plan a trip');
+      expect(find.byType(AppBar), findsOneWidget);
+      final route = ModalRoute.of(tester.element(find.byType(TripPlannerPage)));
+      expect(route?.settings.arguments, isA<TripPlannerRoute>());
+      env.expectReadOnly();
       await env.tearDown(tester);
     });
   });

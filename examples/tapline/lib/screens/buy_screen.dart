@@ -6,7 +6,6 @@ import '../data/mock_data.dart';
 import '../data/models.dart';
 import '../data/wallet.dart';
 import '../widgets/common.dart';
-import '../widgets/embed_frame.dart';
 
 /// Fare products, host fare advice, and a way into the SDK trip planner.
 class BuyScreen extends StatelessWidget {
@@ -82,23 +81,12 @@ class _FareAdviceCard extends StatelessWidget {
   }
 }
 
-/// Opens the SDK trip planner under Tapline's own app bar.
-void openTripPlanner(BuildContext context) {
-  Navigator.of(context).push(
-    MaterialPageRoute<void>(
-      builder: (_) => Scaffold(
-        appBar: AppBar(title: const Text('Plan a trip')),
-        // OBA embed: TripPlannerPage — the region's OpenTripPlanner, marked
-        // embedded so it drops its own app bar under the host's. The
-        // ObaScope above the navigator covers this route.
-        body: const EmbedFrame(
-          sdkWidget: 'TripPlannerPage',
-          child: ObaPresentationScope.embedded(child: TripPlannerPage()),
-        ),
-      ),
-    ),
-  );
-}
+/// Opens the SDK trip planner as its own route. It goes through
+/// `ObaNavigator`, so Tapline's `onNavigate` shows it under Tapline's app
+/// bar.
+// OBA embed: TripPlannerPage, via TripPlannerRoute.
+void openTripPlanner(BuildContext context) =>
+    ObaNavigator.of(context).push<void>(const TripPlannerRoute());
 
 class _PlanTripCard extends StatelessWidget {
   const _PlanTripCard();
