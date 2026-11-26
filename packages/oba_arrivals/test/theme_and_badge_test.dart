@@ -40,8 +40,8 @@ void main() {
 
   group('ObaArrivalsTheme', () {
     test('light and dark status colors', () {
-      expect(ObaArrivalsTheme.light().onTime, const Color(0xFF16A34A));
-      expect(ObaArrivalsTheme.dark().late, const Color(0xFFA78BFA));
+      expect(ObaArrivalsTheme.light().onTime, const Color(0xFF166534));
+      expect(ObaArrivalsTheme.dark().late, const Color(0xFFC4B5FD));
     });
 
     testWidgets('of() uses brightness default unless host registers one', (
@@ -81,7 +81,7 @@ void main() {
       expect(theme.colorFor(ArrivalStatusKind.canceled, scheme), scheme.error);
       expect(
         theme.colorFor(ArrivalStatusKind.late, scheme),
-        const Color(0xFF7C3AED),
+        const Color(0xFF6D28D9),
       );
     });
 
@@ -139,11 +139,52 @@ void main() {
       expect((box.decoration as BoxDecoration).color, const Color(0xFF374151));
     });
 
-    testWidgets('is 64x56 and ignores text scaling', (tester) async {
-      await pumpBadge(tester, const RouteBadge(label: 'IL', color: 'ffcd00'));
+    testWidgets('is 64x56 at 100% and grows with the text scale', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Center(
+            child: RouteBadge(label: 'IL', color: 'ffcd00'),
+          ),
+        ),
+      );
       expect(tester.getSize(find.byType(RouteBadge)), const Size(64, 56));
+
+      await pumpBadge(tester, const RouteBadge(label: 'IL', color: 'ffcd00'));
+      final size = tester.getSize(find.byType(RouteBadge));
+      expect(size.height, 112);
+      expect(size.width, greaterThan(64));
       final scaler = MediaQuery.textScalerOf(tester.element(badgePart(Text)));
-      expect(scaler, TextScaler.noScaling);
+      expect(scaler, const TextScaler.linear(2));
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('long labels wrap instead of truncating', (tester) async {
+      final text = await pumpBadge(
+        tester,
+        const RouteBadge(label: 'Blue Line', color: '0079C2'),
+      );
+      expect(text.maxLines, isNull);
+      expect(text.overflow, isNull);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('is excluded from semantics unless labelled', (tester) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Column(
+            children: [
+              RouteBadge(label: '30'),
+              RouteBadge(label: '31', semanticLabel: 'Route 31'),
+            ],
+          ),
+        ),
+      );
+      expect(find.bySemanticsLabel('30'), findsNothing);
+      expect(find.bySemanticsLabel('Route 31'), findsOneWidget);
+      handle.dispose();
     });
   });
 }

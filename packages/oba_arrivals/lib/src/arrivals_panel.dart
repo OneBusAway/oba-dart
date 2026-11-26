@@ -1,11 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:onebusaway/onebusaway.dart';
 
 import 'arrivals_controller.dart';
+import 'color_utils.dart';
 import 'display/arrival_filtering.dart';
 import 'strings.dart';
+import 'strings_scope.dart';
 import 'widgets/arrival_row.dart';
 import 'widgets/panel_states.dart';
 import 'widgets/stop_header.dart';
@@ -14,6 +17,13 @@ import 'widgets/stop_header.dart';
 ///
 /// Lays out as a non-scrolling [Column]; wrap it in a scroll view for
 /// full-screen use. Polls while visible and the app is in the foreground.
+///
+/// Accessibility (WCAG 2.1 AA): rows read as one sentence, the stop name is
+/// a heading, loading/empty/error/stale messages are live regions, and the
+/// result of a refresh the rider asked for (refresh button or Retry) is
+/// announced. Background polls are not announced. Text follows the host's
+/// `TextTheme` and the user's text size; status colours are checked for
+/// contrast against the surface the panel sits on. See the package README.
 class ObaArrivalsPanel extends StatefulWidget {
   const ObaArrivalsPanel({
     super.key,
@@ -57,6 +67,10 @@ class ObaArrivalsPanel extends StatefulWidget {
   /// Maximum rows to show; null shows all.
   final int? maxArrivals;
   final Duration refreshInterval;
+
+  /// The panel's text. Left at the default, the panel uses the strings of
+  /// the nearest [ObaArrivalsStringsScope] when there is one (hosts such as
+  /// obakit use it to localize every panel), and English otherwise.
   final ObaArrivalsStrings strings;
 
   @override
@@ -80,6 +94,10 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
   /// [_syncRunning], so multiple requests within one frame are coalesced.
   bool _syncScheduled = false;
 
+  /// Set when the rider asks for a refresh; the outcome is announced once
+  /// the request settles.
+  bool _announceNextResult = false;
+
   @override
   void initState() {
     super.initState();
@@ -88,9 +106,6 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
     final lifecycle = WidgetsBinding.instance.lifecycleState;
     _appActive = lifecycle == null || _isActive(lifecycle);
     WidgetsBinding.instance.addObserver(this);
-    _tick = Timer.periodic(_tickInterval, (_) {
-      if (mounted) setState(() {});
-    });
   }
 
   @override
@@ -117,8 +132,10 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // False when a pushed route covers this one, among other cases.
-    _visible = TickerMode.valuesOf(context).enabled;
+    // False when a pushed route covers this one, among other cases, and
+    // in a hidden IndexedStack child (e.g. a host's off-screen tab), which
+    // keeps its tickers but reports itself through Visibility.of.
+    _visible = TickerMode.valuesOf(context).enabled && Visibility.of(context);
     _scheduleSyncRunning();
   }
 
@@ -164,14 +181,37 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
   }
 
   /// Holds the controller while visible and the app is active, and
-  /// releases it otherwise.
+  /// releases it otherwise. The countdown tick follows the same rule.
   void _syncRunning() {
     final want = _appActive && _visible;
+    _syncTick(want);
     if (want && !_holding) {
       _holding = true;
       _controller.acquire();
     } else if (!want) {
       _releaseController();
+    }
+  }
+
+  /// Whether the tick was stopped (hidden or backgrounded) since it last ran.
+  bool _tickPaused = false;
+
+  /// Runs the 30 s countdown tick only while the panel is shown. Coming
+  /// back, the countdown is rebuilt at once instead of at the next tick.
+  void _syncTick(bool want) {
+    if (want) {
+      if (_tick != null) return;
+      _tick = Timer.periodic(_tickInterval, (_) {
+        if (mounted) setState(() {});
+      });
+      if (_tickPaused) {
+        _tickPaused = false;
+        setState(() {});
+      }
+    } else if (_tick != null) {
+      _tick!.cancel();
+      _tick = null;
+      _tickPaused = true;
     }
   }
 
@@ -183,8 +223,49 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
     _controller.release();
   }
 
+  /// [ObaArrivalsPanel.strings] when the host passed its own, otherwise
+  /// the nearest [ObaArrivalsStringsScope]'s, otherwise English.
+  ObaArrivalsStrings get _strings {
+    final own = widget.strings;
+    if (!identical(own, const ObaArrivalsStrings())) return own;
+    return ObaArrivalsStringsScope.maybeOf(context) ?? own;
+  }
+
   void _onControllerChanged() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    setState(() {});
+    final state = _controller.state;
+    if (_announceNextResult &&
+        !state.isRefreshing &&
+        state.status != ArrivalsStatus.loading) {
+      _announceNextResult = false;
+      final strings = _strings;
+      _announce(
+        state.error == null
+            ? strings.arrivalsUpdated
+            : state.status == ArrivalsStatus.error
+            ? _errorMessage(state.error, strings)
+            : strings.staleNotice(
+                formatArrivalTime(context, state.updatedAt ?? DateTime.now()),
+              ),
+      );
+    }
+  }
+
+  /// A rider-initiated refresh (refresh button or Retry).
+  void _refresh() {
+    _announceNextResult = true;
+    _controller.refresh();
+  }
+
+  void _announce(String message) {
+    final view = View.maybeOf(context);
+    if (view == null) return;
+    SemanticsService.sendAnnouncement(
+      view,
+      message,
+      Directionality.maybeOf(context) ?? TextDirection.ltr,
+    );
   }
 
   @override
@@ -199,24 +280,39 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = accessibleColorScheme(theme.colorScheme);
+    if (identical(scheme, theme.colorScheme)) return _buildColumn(context);
+    return Theme(
+      data: theme.copyWith(colorScheme: scheme),
+      child: Builder(builder: _buildColumn),
+    );
+  }
+
+  Widget _buildColumn(BuildContext context) {
     final state = _controller.state;
-    final strings = widget.strings;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        StopHeader(
-          stop: state.stop,
-          stopId: _controller.stopId,
-          isLoading: state.status == ArrivalsStatus.loading,
-          references: state.references,
-          isRefreshing: state.isRefreshing,
-          onRefresh: _controller.refresh,
-          strings: strings,
-        ),
-        const Divider(height: 1),
-        ..._body(context, state, strings),
-      ],
+    final strings = _strings;
+    // Its own semantics node, so the panel's text and its live regions never
+    // merge into a host's node (for example a card whose title is a heading).
+    return Semantics(
+      container: true,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          StopHeader(
+            stop: state.stop,
+            stopId: _controller.stopId,
+            isLoading: state.status == ArrivalsStatus.loading,
+            references: state.references,
+            isRefreshing: state.isRefreshing,
+            onRefresh: _refresh,
+            strings: strings,
+          ),
+          const Divider(height: 1),
+          ..._body(context, state, strings),
+        ],
+      ),
     );
   }
 
@@ -227,15 +323,12 @@ class _ObaArrivalsPanelState extends State<ObaArrivalsPanel>
   ) {
     switch (state.status) {
       case ArrivalsStatus.loading:
-        return [for (var i = 0; i < 3; i++) const SkeletonRow()];
+        return [LoadingRows(label: strings.loadingArrivals)];
       case ArrivalsStatus.error:
         return [
           PanelMessage(
             message: _errorMessage(state.error, strings),
-            action: TextButton(
-              onPressed: _controller.refresh,
-              child: Text(strings.retry),
-            ),
+            action: TextButton(onPressed: _refresh, child: Text(strings.retry)),
           ),
         ];
       case ArrivalsStatus.loaded:

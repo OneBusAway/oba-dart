@@ -33,7 +33,7 @@ jobs:
       - name: Analyze
         run: flutter analyze
 
-      - name: Test demo app
+      - name: Test root app
         run: flutter test
 
       - name: Test onebusaway
@@ -43,6 +43,28 @@ jobs:
       # Goldens skip themselves off macOS; the goldens job covers them.
       - name: Test oba_arrivals
         working-directory: packages/oba_arrivals
+        env:
+          TZ: America/Los_Angeles
+        run: flutter test
+
+      - name: Test oba_arrivals example
+        working-directory: packages/oba_arrivals/example
+        env:
+          TZ: America/Los_Angeles
+        run: flutter test
+
+      - name: Test obakit_core
+        working-directory: packages/obakit_core
+        run: dart test
+
+      - name: Test obakit_trip_planner
+        working-directory: packages/obakit_trip_planner
+        env:
+          TZ: America/Los_Angeles
+        run: flutter test
+
+      - name: Test obakit
+        working-directory: packages/obakit
         env:
           TZ: America/Los_Angeles
         run: flutter test

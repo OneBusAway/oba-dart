@@ -76,3 +76,25 @@ DateTime? readEpochMs(JsonMap json, String key) {
   if (value == 0) return null;
   return DateTime.fromMillisecondsSinceEpoch(value.toInt(), isUtc: true);
 }
+
+/// Reads a required number as a double.
+double readDouble(JsonMap json, String key) {
+  final value = json[key];
+  if (value is num) return value.toDouble();
+  _wrongType(key, 'number', value);
+}
+
+/// Reads required epoch milliseconds. Unlike [readEpochMs], `0` is a real
+/// value here (e.g. a schedule time), so only a missing value throws.
+DateTime readRequiredEpochMs(JsonMap json, String key) {
+  final value = json[key];
+  if (value is! num) _wrongType(key, 'epoch milliseconds', value);
+  return DateTime.fromMillisecondsSinceEpoch(value.toInt(), isUtc: true);
+}
+
+/// Reads a list of objects, parsing each with [parse].
+List<T> readObjectList<T>(
+  JsonMap json,
+  String key,
+  T Function(JsonMap json) parse,
+) => readList(json, key, (item) => parse(asJsonMap(item, '$key[]')));

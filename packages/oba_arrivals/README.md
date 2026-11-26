@@ -19,6 +19,17 @@ dependencies:
 Requires Flutter 3.47 or later (Dart 3.13.4 or later). Pub resolves the
 `onebusaway` package from the same repository automatically.
 
+## Example app
+
+`example/` is a runnable demo that mimics the UCSD Student Life home feed and
+embeds the panel on a card, with a full-page view that shares the card's
+controller. Run it from the repository root:
+
+```bash
+cd packages/oba_arrivals/example
+mise exec -- flutter run   # optional: --dart-define=OBA_BASE_URL=... --dart-define=OBA_API_KEY=...
+```
+
 ## Embed
 
 ```dart
@@ -90,6 +101,58 @@ ThemeData(extensions: [
   ObaArrivalsTheme.light().copyWith(late: Colors.deepOrange),
 ]);
 ```
+
+## Accessibility
+
+The panel targets WCAG 2.1 AA, in light and dark themes, inside whatever
+theme the host app uses.
+
+What the package guarantees:
+
+- **Contrast.** The default status colours are at least 4.5:1 on every
+  Material 3 surface role (`ObaArrivalsTheme.light()` uses green-800,
+  violet-700 and red-700; the older green-600/red-600 measured 3.1:1 and
+  4.6:1 on white). Every status colour, including one you register, is
+  checked at runtime against the surface the panel sits on (the nearest
+  `Material`: your `Card`, sheet or `Scaffold`) and darkened or lightened
+  only if it falls short. Foreground roles of your `ColorScheme`
+  (`onSurfaceVariant`, `primary`, `error`, …) get the same treatment inside
+  the panel. Route badges always get a label of at least 4.5:1: a GTFS
+  `route_text_color` that fails on its `route_color` is replaced with black
+  or white.
+- **High contrast.** With the platform's high-contrast setting on, the
+  defaults switch to `ObaArrivalsTheme.highContrastLight()` /
+  `highContrastDark()` (7:1 / 6.4:1).
+- **Text size.** Text comes from your `TextTheme` and follows the user's
+  text size with no clamping. Badges grow with it, nothing essential (route,
+  headsign, ETA, status) is truncated, and at 130% and above each row stacks
+  the badge and ETA above the headsign. Bold-text settings apply.
+- **Screen readers.** Each row reads as one sentence: "Route IL, Inside
+  Loop, arriving in 5 minutes, at 10:47 PM, 2 minutes late, real-time".
+  Status is always written out, never shown by colour alone. The stop name
+  is a heading. Loading, empty, error and "couldn't update" messages are
+  live regions, and the result of a refresh the rider asked for (refresh
+  button or Retry) is announced. Background polls are silent.
+- **Input.** Tappable rows, the refresh button and Retry are at least
+  48x48dp, work with Tab and Enter/Space, and rows show a 2dp focus ring in
+  `colorScheme.primary`. With reduced motion on, the refresh spinner is
+  replaced by a static icon.
+
+What you must do as an embedder:
+
+- If you override `ObaArrivalsTheme` colours, choose ones with at least
+  4.5:1 against your surfaces. The runtime adjustment is a safety net that
+  can shift your hue, not a substitute.
+- Place the panel on an opaque `Material` (a `Card`, `Scaffold` or sheet),
+  so that it can find the background it is drawn on.
+- Translate the spoken strings too if you subclass `ObaArrivalsStrings`
+  (`routeSemantics`, `atTime`, `minutesLateSemantics`, …).
+- Don't wrap the panel in a fixed-height box. It must be free to grow at
+  large text sizes.
+
+`test/accessibility_test.dart` runs Flutter's tap-target, label and text
+contrast guidelines on every state (loading, loaded, empty, error, stale)
+in light and dark, at 100% and 200% text.
 
 ## Strings
 

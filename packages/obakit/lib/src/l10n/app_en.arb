@@ -1,0 +1,4805 @@
+{
+  "@@locale": "en",
+  "commonBack": "Back",
+  "@commonBack": {
+    "description": "Button that returns to the previous screen."
+  },
+  "commonClose": "Close",
+  "@commonClose": {
+    "description": "Button that closes the current panel or screen."
+  },
+  "commonDone": "Done",
+  "@commonDone": {
+    "description": "Button that confirms and closes a screen."
+  },
+  "commonCancel": "Cancel",
+  "@commonCancel": {
+    "description": "Button that dismisses without saving."
+  },
+  "commonRetry": "Try again",
+  "@commonRetry": {
+    "description": "Button that repeats a failed request."
+  },
+  "commonContinue": "Continue",
+  "@commonContinue": {
+    "description": "Button that moves to the next onboarding step."
+  },
+  "commonNotNow": "Not now",
+  "@commonNotNow": {
+    "description": "Button that skips an optional onboarding step."
+  },
+  "commonSeeAll": "See all",
+  "@commonSeeAll": {
+    "description": "Link at the end of a home section that opens the full list."
+  },
+  "commonLoading": "Loading",
+  "@commonLoading": {
+    "description": "Spoken by screen readers while content loads."
+  },
+  "commonErrorTitle": "Something went wrong",
+  "@commonErrorTitle": {
+    "description": "Title of the error state shown when content fails to load."
+  },
+  "commonOffline": "You appear to be offline. Check your connection and try again.",
+  "@commonOffline": {
+    "description": "Error body when the device has no network."
+  },
+  "commonServerError": "The server didn't respond as expected. Try again in a moment.",
+  "@commonServerError": {
+    "description": "Error body when the OBA server fails."
+  },
+  "sheetLabel": "Panel",
+  "@sheetLabel": {
+    "description": "Screen reader label of the draggable panel over the map."
+  },
+  "sheetExpand": "Expand panel",
+  "@sheetExpand": {
+    "description": "Accessibility action and button that makes the panel over the map taller."
+  },
+  "sheetCollapse": "Collapse panel",
+  "@sheetCollapse": {
+    "description": "Accessibility action and button that makes the panel over the map shorter, showing more map."
+  },
+  "sheetHandleHint": "Drag or double-tap to resize the panel",
+  "@sheetHandleHint": {
+    "description": "Screen reader hint on the panel's drag handle."
+  },
+  "homeTabHome": "Home",
+  "@homeTabHome": {
+    "description": "Title of the first tab on the home panel: bookmarks, nearby departures and recent stops. Short."
+  },
+  "homeTabRecent": "Recent",
+  "@homeTabRecent": {
+    "description": "Title of the tab listing recently viewed stops. Short."
+  },
+  "homeTabBookmarks": "Bookmarks",
+  "@homeTabBookmarks": {
+    "description": "Title of the tab listing bookmarked stops and trips. Short."
+  },
+  "homeSearchPlaceholder": "Search stops, routes, places",
+  "@homeSearchPlaceholder": {
+    "description": "Placeholder of the search field at the top of the home panel."
+  },
+  "homeSearchLabel": "Search",
+  "@homeSearchLabel": {
+    "description": "Screen reader label of the search field at the top of the home panel."
+  },
+  "homeSectionNearby": "Nearby",
+  "@homeSectionNearby": {
+    "description": "Header of the home section listing departures from nearby stops."
+  },
+  "homeSectionRecent": "Recent stops",
+  "@homeSectionRecent": {
+    "description": "Header of the home section listing recently viewed stops."
+  },
+  "homeSectionBookmarks": "Bookmarks",
+  "@homeSectionBookmarks": {
+    "description": "Header of the home section listing bookmarks."
+  },
+  "homeSectionAlerts": "Alerts",
+  "@homeSectionAlerts": {
+    "description": "Header of the home section listing service alerts."
+  },
+  "homeSectionExplore": "Explore",
+  "@homeSectionExplore": {
+    "description": "Header of the home section with shortcuts (trip planner, agencies...)."
+  },
+  "homeSectionMore": "Settings and more",
+  "@homeSectionMore": {
+    "description": "Header of the home section with settings and the More screen."
+  },
+  "mapLabel": "Map",
+  "@mapLabel": {
+    "description": "Screen reader label of the map."
+  },
+  "mapZoomInForStops": "Zoom in to see stops",
+  "@mapZoomInForStops": {
+    "description": "Status pill on the map when it is too zoomed out to show stops."
+  },
+  "mapLocationDenied": "Location access is off. Tap to allow.",
+  "@mapLocationDenied": {
+    "description": "Status pill on the map when the user denied location access."
+  },
+  "mapLocationServicesOff": "Location services are off",
+  "@mapLocationServicesOff": {
+    "description": "Status pill on the map when device location services are disabled."
+  },
+  "mapRecenter": "Show my location",
+  "@mapRecenter": {
+    "description": "Button that centres the map on the user's location."
+  },
+  "mapSettingsButton": "Map settings",
+  "@mapSettingsButton": {
+    "description": "Button that opens map settings (map type, labels)."
+  },
+  "mapStopsListButton": "Stops on the map",
+  "@mapStopsListButton": {
+    "description": "Button that opens a list of the stops currently visible on the map, an accessible alternative to the map."
+  },
+  "mapVisibleStopsCount": "{count, plural, =0{No stops on the map} =1{1 stop on the map} other{{count} stops on the map}}",
+  "@mapVisibleStopsCount": {
+    "description": "Announced to screen readers when the stops shown on the map change.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapCurrentLocation": "Your location",
+  "@mapCurrentLocation": {
+    "description": "Screen reader label of the user location dot."
+  },
+  "mapDroppedPin": "Dropped pin",
+  "@mapDroppedPin": {
+    "description": "Name of a place the user marked with a long press on the map."
+  },
+  "mapVehicle": "Vehicle",
+  "@mapVehicle": {
+    "description": "Screen reader label of a vehicle marker on the map."
+  },
+  "mapBookmarkedStop": "Bookmarked",
+  "@mapBookmarkedStop": {
+    "description": "Appended to a stop marker's screen reader label when the stop is bookmarked."
+  },
+  "mapStopMarkerLabel": "{name}, {routeType} stop",
+  "@mapStopMarkerLabel": {
+    "description": "Screen reader label of a stop marker. routeType is e.g. Bus.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "routeType": {
+        "type": "String"
+      }
+    }
+  },
+  "mapStopMarkerHint": "Opens the stop's departures",
+  "@mapStopMarkerHint": {
+    "description": "Screen reader hint on a stop marker."
+  },
+  "mapAttribution": "Map data: {attribution}",
+  "@mapAttribution": {
+    "description": "Map attribution text, e.g. Map data: OpenStreetMap contributors.",
+    "placeholders": {
+      "attribution": {
+        "type": "String"
+      }
+    }
+  },
+  "mapTypeTitle": "Map type",
+  "@mapTypeTitle": {
+    "description": "Header of the map type choice in map settings."
+  },
+  "mapTypeStandard": "Standard",
+  "@mapTypeStandard": {
+    "description": "Standard (street) map type."
+  },
+  "mapTypeSatellite": "Satellite",
+  "@mapTypeSatellite": {
+    "description": "Satellite imagery map type."
+  },
+  "mapTypeHybrid": "Hybrid",
+  "@mapTypeHybrid": {
+    "description": "Satellite imagery with street labels map type."
+  },
+  "mapShowHeading": "Show heading",
+  "@mapShowHeading": {
+    "description": "Map setting: show which way the device faces."
+  },
+  "directionN": "Northbound",
+  "@directionN": {
+    "description": "Stop direction."
+  },
+  "directionNE": "Northeast bound",
+  "@directionNE": {
+    "description": "Stop direction."
+  },
+  "directionE": "Eastbound",
+  "@directionE": {
+    "description": "Stop direction."
+  },
+  "directionSE": "Southeast bound",
+  "@directionSE": {
+    "description": "Stop direction."
+  },
+  "directionS": "Southbound",
+  "@directionS": {
+    "description": "Stop direction."
+  },
+  "directionSW": "Southwest bound",
+  "@directionSW": {
+    "description": "Stop direction."
+  },
+  "directionW": "Westbound",
+  "@directionW": {
+    "description": "Stop direction."
+  },
+  "directionNW": "Northwest bound",
+  "@directionNW": {
+    "description": "Stop direction."
+  },
+  "routeTypeBus": "Bus",
+  "@routeTypeBus": {
+    "description": "GTFS route type."
+  },
+  "routeTypeLightRail": "Light rail",
+  "@routeTypeLightRail": {
+    "description": "GTFS route type (tram, streetcar, light rail)."
+  },
+  "routeTypeSubway": "Subway",
+  "@routeTypeSubway": {
+    "description": "GTFS route type."
+  },
+  "routeTypeRail": "Train",
+  "@routeTypeRail": {
+    "description": "GTFS route type (intercity or commuter rail)."
+  },
+  "routeTypeFerry": "Ferry",
+  "@routeTypeFerry": {
+    "description": "GTFS route type."
+  },
+  "routeTypeCableCar": "Cable car",
+  "@routeTypeCableCar": {
+    "description": "GTFS route type."
+  },
+  "routeTypeGondola": "Gondola",
+  "@routeTypeGondola": {
+    "description": "GTFS route type (aerial lift)."
+  },
+  "routeTypeFunicular": "Funicular",
+  "@routeTypeFunicular": {
+    "description": "GTFS route type."
+  },
+  "routeTypeUnknown": "Transit",
+  "@routeTypeUnknown": {
+    "description": "Fallback for an unknown GTFS route type."
+  },
+  "stopCode": "Stop {code}",
+  "@stopCode": {
+    "description": "Rider-facing stop number, e.g. Stop 24151.",
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "stopRowLabel": "{name}, {details}",
+  "@stopRowLabel": {
+    "description": "Screen reader sentence for a stop row: name, then code, direction and routes.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "stopRoutes": "Routes {routes}",
+  "@stopRoutes": {
+    "description": "List of routes serving a stop, e.g. Routes 10, 44.",
+    "placeholders": {
+      "routes": {
+        "type": "String"
+      }
+    }
+  },
+  "stopPageRefresh": "Refresh",
+  "@stopPageRefresh": {
+    "description": "Button that reloads the departures."
+  },
+  "stopPageRefreshed": "Departures updated",
+  "@stopPageRefreshed": {
+    "description": "Screen-reader announcement after a manual refresh."
+  },
+  "stopPageBookmark": "Bookmark stop",
+  "@stopPageBookmark": {
+    "description": "Button that bookmarks the stop."
+  },
+  "stopPageBookmarked": "Bookmarked. Edit bookmark",
+  "@stopPageBookmarked": {
+    "description": "Bookmark button when the stop is already bookmarked."
+  },
+  "stopPageMoreActions": "More stop actions",
+  "@stopPageMoreActions": {
+    "description": "Overflow menu button on the stop page."
+  },
+  "stopPageSchedules": "Schedules",
+  "@stopPageSchedules": {
+    "description": "Opens the stop schedule."
+  },
+  "stopPageServiceAlerts": "Service alerts",
+  "@stopPageServiceAlerts": {
+    "description": "Opens the stop service alerts list."
+  },
+  "stopPageNearbyStops": "Nearby stops",
+  "@stopPageNearbyStops": {
+    "description": "Opens stops near this stop."
+  },
+  "stopPageWalkingDirections": "Walking directions",
+  "@stopPageWalkingDirections": {
+    "description": "Opens walking directions to the stop."
+  },
+  "stopPageBikeDirections": "Cycling directions",
+  "@stopPageBikeDirections": {
+    "description": "Opens cycling directions to the stop (bike mode)."
+  },
+  "stopPagePlanTripFrom": "Plan a trip from here",
+  "@stopPagePlanTripFrom": {
+    "description": "Opens the trip planner starting at the stop."
+  },
+  "stopPagePlanTripTo": "Plan a trip to here",
+  "@stopPagePlanTripTo": {
+    "description": "Opens the trip planner ending at the stop."
+  },
+  "stopPageShareStop": "Share stop",
+  "@stopPageShareStop": {
+    "description": "Shares a link to the stop."
+  },
+  "stopPageReportProblem": "Report a problem",
+  "@stopPageReportProblem": {
+    "description": "Opens the stop problem report form."
+  },
+  "stopPageFilterRoutes": "Filter routes",
+  "@stopPageFilterRoutes": {
+    "description": "Opens the per-stop route filter and sort sheet."
+  },
+  "stopPageRoutesHidden": "{count, plural, =1{1 route hidden} other{{count} routes hidden}}",
+  "@stopPageRoutesHidden": {
+    "description": "Shown on the filter button when routes are hidden.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stopPageModeTime": "By time",
+  "@stopPageModeTime": {
+    "description": "Segment: list departures chronologically."
+  },
+  "stopPageModeRoute": "By route",
+  "@stopPageModeRoute": {
+    "description": "Segment: group departures by route."
+  },
+  "stopPageDepartureTypes": "Departure types",
+  "@stopPageDepartureTypes": {
+    "description": "Menu button for the real-time/scheduled filter."
+  },
+  "stopPageFilterAll": "All departures",
+  "@stopPageFilterAll": {
+    "description": "Departure-type filter: everything."
+  },
+  "stopPageFilterRealtime": "Real-time only",
+  "@stopPageFilterRealtime": {
+    "description": "Departure-type filter: predicted only."
+  },
+  "stopPageFilterScheduled": "Scheduled only",
+  "@stopPageFilterScheduled": {
+    "description": "Departure-type filter: schedule-only."
+  },
+  "stopPageEarlier": "{count, plural, =1{Show 1 earlier departure} other{Show {count} earlier departures}}",
+  "@stopPageEarlier": {
+    "description": "Toggle that reveals departures that already left.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stopPageHideEarlier": "Hide earlier departures",
+  "@stopPageHideEarlier": {
+    "description": "Toggle that hides departures that already left."
+  },
+  "stopPageLoadMore": "Load more departures",
+  "@stopPageLoadMore": {
+    "description": "Button that widens the time window by 30 minutes."
+  },
+  "stopPageWindow": "Showing the next {minutes} minutes",
+  "@stopPageWindow": {
+    "description": "Footer describing the time window.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopPageUpdated": "Updated {ago}",
+  "@stopPageUpdated": {
+    "description": "Freshness line, e.g. \"Updated 4 min. ago\".",
+    "placeholders": {
+      "ago": {
+        "type": "String"
+      }
+    }
+  },
+  "stopPageStaleTitle": "Couldn't refresh departures",
+  "@stopPageStaleTitle": {
+    "description": "Banner title when a refresh failed and the list is stale."
+  },
+  "stopPageStaleBody": "These times may be out of date.",
+  "@stopPageStaleBody": {
+    "description": "Banner body when the list is stale."
+  },
+  "stopPageEmptyTitle": "No upcoming departures",
+  "@stopPageEmptyTitle": {
+    "description": "Empty state title."
+  },
+  "stopPageEmptyBody": "Nothing departs in the next {minutes} minutes.",
+  "@stopPageEmptyBody": {
+    "description": "Empty state body.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopPageEmptyHiddenRoutes": "Every route with departures here is hidden.",
+  "@stopPageEmptyHiddenRoutes": {
+    "description": "Empty state when hidden routes remove everything."
+  },
+  "stopPageShowAllRoutes": "Show all routes",
+  "@stopPageShowAllRoutes": {
+    "description": "Button that clears the hidden routes for this stop."
+  },
+  "stopPageEmptyFilter": "No departures match the departure-type filter.",
+  "@stopPageEmptyFilter": {
+    "description": "Empty state when the departure-type filter removes everything."
+  },
+  "stopPageShowAllTypes": "Show all departures",
+  "@stopPageShowAllTypes": {
+    "description": "Button that resets the departure-type filter."
+  },
+  "stopPageMissingTitle": "Stop not found",
+  "@stopPageMissingTitle": {
+    "description": "Title when the server has no such stop."
+  },
+  "stopPageMissingBody": "This stop may have been removed or renumbered.",
+  "@stopPageMissingBody": {
+    "description": "Body when the server has no such stop."
+  },
+  "stopPageWalkTime": "{minutes} min walk",
+  "@stopPageWalkTime": {
+    "description": "Walk-time pill.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopPageBikeTime": "{minutes} min ride",
+  "@stopPageBikeTime": {
+    "description": "Bike-time pill (bike mode).",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopPageWalkTimeLabel": "{minutes, plural, =1{1 minute walk} other{{minutes} minute walk}}, {distance}. Opens directions.",
+  "@stopPageWalkTimeLabel": {
+    "description": "Screen-reader label of the walk pill.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "stopPageBikeTimeLabel": "{minutes, plural, =1{1 minute ride} other{{minutes} minute ride}}, {distance}. Opens directions.",
+  "@stopPageBikeTimeLabel": {
+    "description": "Screen-reader label of the bike pill.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "stopPageWalkDivider": "{minutes} min walk to this stop. Departures above leave sooner.",
+  "@stopPageWalkDivider": {
+    "description": "Divider between departures you would miss and those you can reach on foot.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopPageBikeDivider": "{minutes} min ride to this stop. Departures above leave sooner.",
+  "@stopPageBikeDivider": {
+    "description": "Divider in bike mode.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopPageAgencies": "Service by {names}",
+  "@stopPageAgencies": {
+    "description": "Agency attribution line.",
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "stopPageAlertsCount": "{count, plural, =1{1 service alert} other{{count} service alerts}}",
+  "@stopPageAlertsCount": {
+    "description": "Header of the collapsible alerts section.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stopPageAlertsUnread": "{count, plural, =1{1 unread} other{{count} unread}}",
+  "@stopPageAlertsUnread": {
+    "description": "Unread count in the alerts section header.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stopPageAlertUnread": "Unread",
+  "@stopPageAlertUnread": {
+    "description": "Marker on an unread alert."
+  },
+  "stopPageAlertImportant": "Important",
+  "@stopPageAlertImportant": {
+    "description": "Marker on a high-severity alert."
+  },
+  "stopPageDirectionsChooser": "Open directions in",
+  "@stopPageDirectionsChooser": {
+    "description": "Title of the maps app chooser."
+  },
+  "stopPageAppleMaps": "Apple Maps",
+  "@stopPageAppleMaps": {
+    "description": "Maps app option."
+  },
+  "stopPageGoogleMaps": "Google Maps",
+  "@stopPageGoogleMaps": {
+    "description": "Maps app option."
+  },
+  "stopPageTransfer": "Transfer from {route} {headsign}, arriving {time}",
+  "@stopPageTransfer": {
+    "description": "Banner when the stop was opened as a transfer.",
+    "placeholders": {
+      "route": {
+        "type": "String"
+      },
+      "headsign": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "stopPageDeparturesHeader": "Departures",
+  "@stopPageDeparturesHeader": {
+    "description": "Heading above the departures list."
+  },
+  "stopRowNow": "NOW",
+  "@stopRowNow": {
+    "description": "Countdown for a departure in the current minute."
+  },
+  "stopRowMinutes": "{minutes} min",
+  "@stopRowMinutes": {
+    "description": "Countdown, e.g. \"5 min\".",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopRowMinutesAgo": "{minutes} min ago",
+  "@stopRowMinutesAgo": {
+    "description": "Countdown for a past departure.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopRowOnTime": "on time",
+  "@stopRowOnTime": {
+    "description": "Schedule adherence."
+  },
+  "stopRowLate": "{minutes} min late",
+  "@stopRowLate": {
+    "description": "Schedule adherence.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopRowEarly": "{minutes} min early",
+  "@stopRowEarly": {
+    "description": "Schedule adherence.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopRowScheduled": "scheduled",
+  "@stopRowScheduled": {
+    "description": "Adherence for a departure with no real-time data."
+  },
+  "stopRowCanceled": "canceled",
+  "@stopRowCanceled": {
+    "description": "Status of a canceled trip."
+  },
+  "stopRowOccupancyEmpty": "Empty",
+  "@stopRowOccupancyEmpty": {
+    "description": "Occupancy."
+  },
+  "stopRowOccupancyManySeats": "Many seats available",
+  "@stopRowOccupancyManySeats": {
+    "description": "Occupancy."
+  },
+  "stopRowOccupancyFewSeats": "Few seats available",
+  "@stopRowOccupancyFewSeats": {
+    "description": "Occupancy."
+  },
+  "stopRowOccupancyStanding": "Standing room only",
+  "@stopRowOccupancyStanding": {
+    "description": "Occupancy."
+  },
+  "stopRowOccupancyCrushed": "Very crowded",
+  "@stopRowOccupancyCrushed": {
+    "description": "Occupancy."
+  },
+  "stopRowOccupancyFull": "Full",
+  "@stopRowOccupancyFull": {
+    "description": "Occupancy."
+  },
+  "stopRowOccupancyNotAccepting": "Not accepting passengers",
+  "@stopRowOccupancyNotAccepting": {
+    "description": "Occupancy."
+  },
+  "stopRowA11yArrives": "{minutes, plural, =0{arriving now} =1{arrives in 1 minute} other{arrives in {minutes} minutes}}",
+  "@stopRowA11yArrives": {
+    "description": "Screen-reader ETA.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopRowA11yDeparts": "{minutes, plural, =0{departing now} =1{departs in 1 minute} other{departs in {minutes} minutes}}",
+  "@stopRowA11yDeparts": {
+    "description": "Screen-reader ETA at a first stop.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopRowA11yArrived": "{minutes, plural, =1{arrived 1 minute ago} other{arrived {minutes} minutes ago}}",
+  "@stopRowA11yArrived": {
+    "description": "Screen-reader text for a past arrival.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopRowA11yDeparted": "{minutes, plural, =1{departed 1 minute ago} other{departed {minutes} minutes ago}}",
+  "@stopRowA11yDeparted": {
+    "description": "Screen-reader text for a past departure.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopRowA11yLabel": "Route {route} to {headsign}, {eta}, at {time}, {status}",
+  "@stopRowA11yLabel": {
+    "description": "Screen-reader sentence for a departure row.",
+    "placeholders": {
+      "route": {
+        "type": "String"
+      },
+      "headsign": {
+        "type": "String"
+      },
+      "eta": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "stopRowA11yLive": "live tracking, {status}",
+  "@stopRowA11yLive": {
+    "description": "Screen-reader status for a real-time departure.",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "stopRowA11yScheduledOnly": "scheduled time only, no live data",
+  "@stopRowA11yScheduledOnly": {
+    "description": "Screen-reader status for a schedule-only departure."
+  },
+  "stopRowA11yTransfer": "your transfer trip",
+  "@stopRowA11yTransfer": {
+    "description": "Appended when the row is the rider's transfer."
+  },
+  "stopRowA11yMissed": "likely missed, it leaves before you can walk there",
+  "@stopRowA11yMissed": {
+    "description": "Appended to rows above the walk divider."
+  },
+  "stopRowA11yAlarm": "alarm set",
+  "@stopRowA11yAlarm": {
+    "description": "Appended when an alarm is set."
+  },
+  "stopRowActions": "More actions for route {route}",
+  "@stopRowActions": {
+    "description": "Overflow button on a departure row.",
+    "placeholders": {
+      "route": {
+        "type": "String"
+      }
+    }
+  },
+  "stopRowShowTrip": "Show trip details",
+  "@stopRowShowTrip": {
+    "description": "Row action."
+  },
+  "stopRowAddAlarm": "Add alarm",
+  "@stopRowAddAlarm": {
+    "description": "Row action."
+  },
+  "stopRowRemoveAlarm": "Remove alarm",
+  "@stopRowRemoveAlarm": {
+    "description": "Row action."
+  },
+  "stopRowBookmarkTrip": "Bookmark this trip",
+  "@stopRowBookmarkTrip": {
+    "description": "Row action."
+  },
+  "stopRowShareTrip": "Share trip",
+  "@stopRowShareTrip": {
+    "description": "Row action."
+  },
+  "stopRowRouteSchedule": "Schedule for route",
+  "@stopRowRouteSchedule": {
+    "description": "Row action."
+  },
+  "stopRowRouteStops": "Stops on this route",
+  "@stopRowRouteStops": {
+    "description": "Row action."
+  },
+  "stopRouteGroupNext": "Next: {times}",
+  "@stopRouteGroupNext": {
+    "description": "Summary of a collapsed route group.",
+    "placeholders": {
+      "times": {
+        "type": "String"
+      }
+    }
+  },
+  "stopRouteGroupLabel": "Route {route} to {headsigns}, {count, plural, =1{1 departure} other{{count} departures}}, next {eta}",
+  "@stopRouteGroupLabel": {
+    "description": "Screen-reader label of a route group header.",
+    "placeholders": {
+      "route": {
+        "type": "String"
+      },
+      "headsigns": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "eta": {
+        "type": "String"
+      }
+    }
+  },
+  "stopAlarmPickerTitle": "Remind me before it leaves",
+  "@stopAlarmPickerTitle": {
+    "description": "Title of the alarm lead time picker."
+  },
+  "stopAlarmLeadTime": "{minutes, plural, =1{1 minute before} other{{minutes} minutes before}}",
+  "@stopAlarmLeadTime": {
+    "description": "Alarm lead time choice.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopAlarmSet": "{minutes, plural, =1{Alarm set for 1 minute before} other{Alarm set for {minutes} minutes before}}",
+  "@stopAlarmSet": {
+    "description": "Confirmation after setting an alarm.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopAlarmRemoved": "Alarm removed",
+  "@stopAlarmRemoved": {
+    "description": "Confirmation after removing an alarm."
+  },
+  "stopAlarmFailed": "Couldn't update the alarm.",
+  "@stopAlarmFailed": {
+    "description": "Error when creating or removing an alarm fails."
+  },
+  "stopAlarmPermissionDenied": "Notifications are turned off for this app.",
+  "@stopAlarmPermissionDenied": {
+    "description": "Error when push permission is denied."
+  },
+  "stopFilterTitle": "Filter routes",
+  "@stopFilterTitle": {
+    "description": "Title of the per-stop filter sheet."
+  },
+  "stopFilterSort": "Sort departures",
+  "@stopFilterSort": {
+    "description": "Heading of the sort options."
+  },
+  "stopFilterRoutesHeader": "Routes shown at this stop",
+  "@stopFilterRoutesHeader": {
+    "description": "Heading of the route checkboxes."
+  },
+  "stopFilterShowAll": "Show all routes",
+  "@stopFilterShowAll": {
+    "description": "Button that shows every route."
+  },
+  "stopTripArrivingAtYourStop": "Arriving at your stop",
+  "@stopTripArrivingAtYourStop": {
+    "description": "Summary when the vehicle is at the rider's stop."
+  },
+  "stopTripStopsAway": "{count, plural, =0{At your stop} =1{1 stop away} other{{count} stops away}}",
+  "@stopTripStopsAway": {
+    "description": "Stops between the vehicle and the rider.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stopTripDistanceAway": "{distance} away",
+  "@stopTripDistanceAway": {
+    "description": "Distance between the vehicle and the rider's stop.",
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "stopTripAtStop": "At {stop}",
+  "@stopTripAtStop": {
+    "description": "Where the ETA applies.",
+    "placeholders": {
+      "stop": {
+        "type": "String"
+      }
+    }
+  },
+  "stopTripPositionUpdated": "Position updated {ago}",
+  "@stopTripPositionUpdated": {
+    "description": "Freshness of the vehicle position.",
+    "placeholders": {
+      "ago": {
+        "type": "String"
+      }
+    }
+  },
+  "stopTripNoPosition": "No real-time position for this vehicle",
+  "@stopTripNoPosition": {
+    "description": "Shown when there is no live position."
+  },
+  "stopTripStartsAs": "Starts as {trip}",
+  "@stopTripStartsAs": {
+    "description": "Link to the previous trip of the block.",
+    "placeholders": {
+      "trip": {
+        "type": "String"
+      }
+    }
+  },
+  "stopTripContinuesAs": "Continues as {trip}",
+  "@stopTripContinuesAs": {
+    "description": "Link to the next trip of the block.",
+    "placeholders": {
+      "trip": {
+        "type": "String"
+      }
+    }
+  },
+  "stopTripStopsHeader": "Stops",
+  "@stopTripStopsHeader": {
+    "description": "Heading of the trip stop list."
+  },
+  "stopTripRunPassed": "{count, plural, =1{1 passed stop} other{{count} passed stops}}",
+  "@stopTripRunPassed": {
+    "description": "Collapsed run of passed stops.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stopTripRunApproaching": "{count, plural, =1{1 stop before your stop} other{{count} stops before your stop}}",
+  "@stopTripRunApproaching": {
+    "description": "Collapsed run of stops ahead.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stopTripRunRange": "{start} – {end}",
+  "@stopTripRunRange": {
+    "description": "Time range of a collapsed run.",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "stopTripYourStop": "Your stop",
+  "@stopTripYourStop": {
+    "description": "Badge on the rider's stop."
+  },
+  "stopTripBoarding": "Boarding",
+  "@stopTripBoarding": {
+    "description": "Badge on the boarding stop of a shared trip."
+  },
+  "stopTripVehicleHere": "Vehicle is here",
+  "@stopTripVehicleHere": {
+    "description": "Badge on the vehicle's stop."
+  },
+  "stopTripTerminal": "Last stop",
+  "@stopTripTerminal": {
+    "description": "Badge on the terminal."
+  },
+  "stopTripPassed": "Passed",
+  "@stopTripPassed": {
+    "description": "Short marker for a passed stop (screen readers)."
+  },
+  "stopTripRouteStops": "All stops on this route",
+  "@stopTripRouteStops": {
+    "description": "Trip action."
+  },
+  "stopTripReport": "Report a problem with this trip",
+  "@stopTripReport": {
+    "description": "Trip action."
+  },
+  "stopTripGhostBus": "Report ghost bus",
+  "@stopTripGhostBus": {
+    "description": "Trip action: the vehicle never came."
+  },
+  "stopTripCanceled": "This trip is canceled",
+  "@stopTripCanceled": {
+    "description": "Banner on a canceled trip."
+  },
+  "stopTripVehicleLabel": "Vehicle on route {route}",
+  "@stopTripVehicleLabel": {
+    "description": "Map marker label for the vehicle.",
+    "placeholders": {
+      "route": {
+        "type": "String"
+      }
+    }
+  },
+  "stopTripFrequency": "Every {minutes} min",
+  "@stopTripFrequency": {
+    "description": "Frequency-based trip.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopRouteStopsTitle": "Route {route}",
+  "@stopRouteStopsTitle": {
+    "description": "Title of the route stops page.",
+    "placeholders": {
+      "route": {
+        "type": "String"
+      }
+    }
+  },
+  "stopRouteStopsDirection": "Direction",
+  "@stopRouteStopsDirection": {
+    "description": "Label of the direction switcher."
+  },
+  "stopRouteStopsToward": "To {name}",
+  "@stopRouteStopsToward": {
+    "description": "Direction option.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "stopRouteStopsCount": "{count, plural, =1{1 stop} other{{count} stops}}",
+  "@stopRouteStopsCount": {
+    "description": "Number of stops in a direction.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stopRouteStopsEmpty": "No stops found for this route.",
+  "@stopRouteStopsEmpty": {
+    "description": "Empty state."
+  },
+  "stopSchedPrevDay": "Previous day",
+  "@stopSchedPrevDay": {
+    "description": "Date stepper button."
+  },
+  "stopSchedNextDay": "Next day",
+  "@stopSchedNextDay": {
+    "description": "Date stepper button."
+  },
+  "stopSchedPickDate": "Choose date, {date}",
+  "@stopSchedPickDate": {
+    "description": "Date picker button label.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "stopSchedRoute": "Route",
+  "@stopSchedRoute": {
+    "description": "Label of the route picker."
+  },
+  "stopSchedDirection": "Direction",
+  "@stopSchedDirection": {
+    "description": "Label of the direction picker."
+  },
+  "stopSchedStop": "Stop",
+  "@stopSchedStop": {
+    "description": "Label of the stop picker."
+  },
+  "stopSchedEmpty": "No scheduled service on this day.",
+  "@stopSchedEmpty": {
+    "description": "Empty state."
+  },
+  "stopSchedEvery": "Every {minutes} min from {start} to {end}",
+  "@stopSchedEvery": {
+    "description": "Frequency-based service.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "stopSchedTo": "To {headsign}",
+  "@stopSchedTo": {
+    "description": "Direction heading.",
+    "placeholders": {
+      "headsign": {
+        "type": "String"
+      }
+    }
+  },
+  "stopSchedDepartures": "{count, plural, =1{1 departure} other{{count} departures}}",
+  "@stopSchedDepartures": {
+    "description": "Departure count.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stopSchedHour": "{hour}: {times}",
+  "@stopSchedHour": {
+    "description": "Screen-reader sentence for one hour of departures.",
+    "placeholders": {
+      "hour": {
+        "type": "String"
+      },
+      "times": {
+        "type": "String"
+      }
+    }
+  },
+  "stopSchedNotSupported": "Timetables aren't available in this region.",
+  "@stopSchedNotSupported": {
+    "description": "Shown when the region has no schedule-for-route."
+  },
+  "stopSchedViewList": "List",
+  "@stopSchedViewList": {
+    "description": "Timetable view: per-stop list."
+  },
+  "stopSchedViewGrid": "Grid",
+  "@stopSchedViewGrid": {
+    "description": "Timetable view: grid."
+  },
+  "stopSchedNoDeparture": "No departure",
+  "@stopSchedNoDeparture": {
+    "description": "Grid cell with no time (screen readers)."
+  },
+  "stopSchedYourStop": "{stop} (your stop)",
+  "@stopSchedYourStop": {
+    "description": "Stop picker entry for the rider's stop.",
+    "placeholders": {
+      "stop": {
+        "type": "String"
+      }
+    }
+  },
+  "stopSchedCell": "{stop}, trip {trip}: {time}",
+  "@stopSchedCell": {
+    "description": "Screen-reader label of a grid cell.",
+    "placeholders": {
+      "stop": {
+        "type": "String"
+      },
+      "trip": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "stopReportProblemHeader": "What seems to be the problem?",
+  "@stopReportProblemHeader": {
+    "description": "Heading of the problem choices."
+  },
+  "stopReportStopNameWrong": "The stop name is wrong",
+  "@stopReportStopNameWrong": {
+    "description": "Stop problem."
+  },
+  "stopReportStopNumberWrong": "The stop number is wrong",
+  "@stopReportStopNumberWrong": {
+    "description": "Stop problem."
+  },
+  "stopReportStopLocationWrong": "The stop is in the wrong place",
+  "@stopReportStopLocationWrong": {
+    "description": "Stop problem."
+  },
+  "stopReportRouteMissing": "A route or trip is missing",
+  "@stopReportRouteMissing": {
+    "description": "Stop problem."
+  },
+  "stopReportOther": "Something else",
+  "@stopReportOther": {
+    "description": "Problem: other."
+  },
+  "stopReportNeverCame": "The vehicle never came",
+  "@stopReportNeverCame": {
+    "description": "Trip problem."
+  },
+  "stopReportCameEarly": "It came early",
+  "@stopReportCameEarly": {
+    "description": "Trip problem."
+  },
+  "stopReportCameLate": "It came late",
+  "@stopReportCameLate": {
+    "description": "Trip problem."
+  },
+  "stopReportWrongHeadsign": "The headsign was wrong",
+  "@stopReportWrongHeadsign": {
+    "description": "Trip problem."
+  },
+  "stopReportNotStopHere": "It didn't stop here",
+  "@stopReportNotStopHere": {
+    "description": "Trip problem."
+  },
+  "stopReportComment": "Additional comments (optional)",
+  "@stopReportComment": {
+    "description": "Comment field label."
+  },
+  "stopReportShareLocation": "Share my location",
+  "@stopReportShareLocation": {
+    "description": "Switch that attaches the location."
+  },
+  "stopReportShareLocationHelp": "Sharing your location can help your transit agency fix this problem.",
+  "@stopReportShareLocationHelp": {
+    "description": "Help under the location switch."
+  },
+  "stopReportOnVehicle": "I'm on this vehicle",
+  "@stopReportOnVehicle": {
+    "description": "Switch: rider is aboard."
+  },
+  "stopReportVehicleId": "Vehicle number (optional)",
+  "@stopReportVehicleId": {
+    "description": "Vehicle id field."
+  },
+  "stopReportSend": "Send report",
+  "@stopReportSend": {
+    "description": "Submit button."
+  },
+  "stopReportSending": "Sending report",
+  "@stopReportSending": {
+    "description": "Shown and announced while sending."
+  },
+  "stopReportSent": "Thanks! Your report was sent.",
+  "@stopReportSent": {
+    "description": "Success message."
+  },
+  "stopReportFailed": "Couldn't send the report. Please try again.",
+  "@stopReportFailed": {
+    "description": "Failure message."
+  },
+  "stopReportChooseProblem": "Choose a problem first.",
+  "@stopReportChooseProblem": {
+    "description": "Validation error."
+  },
+  "stopReportAbout": "Reporting: {name}",
+  "@stopReportAbout": {
+    "description": "Context line on the form.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "stopGhostTitle": "Report ghost bus",
+  "@stopGhostTitle": {
+    "description": "Title of the ghost bus form."
+  },
+  "stopGhostExplain": "A ghost bus is one that the app showed but that never came.",
+  "@stopGhostExplain": {
+    "description": "Explanation on the ghost bus form."
+  },
+  "stopGhostWait": "How long did you wait past the scheduled time?",
+  "@stopGhostWait": {
+    "description": "Wait duration heading."
+  },
+  "stopGhostWaitMinutes": "{minutes} min",
+  "@stopGhostWaitMinutes": {
+    "description": "Wait choice.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stopGhostWaitThirtyPlus": "30+ min",
+  "@stopGhostWaitThirtyPlus": {
+    "description": "Wait choice."
+  },
+  "stopCardEmpty": "No departures soon",
+  "@stopCardEmpty": {
+    "description": "Empty departures card."
+  },
+  "titleSearch": "Search",
+  "@titleSearch": {
+    "description": "Title of the search screen."
+  },
+  "titleSearchResults": "Results",
+  "@titleSearchResults": {
+    "description": "Title of the search results screen."
+  },
+  "titleNearbyStops": "Nearby stops",
+  "@titleNearbyStops": {
+    "description": "Title of the nearby stops list."
+  },
+  "titleRecentStops": "Recent stops",
+  "@titleRecentStops": {
+    "description": "Title of the recent stops list."
+  },
+  "titleBookmarks": "Bookmarks",
+  "@titleBookmarks": {
+    "description": "Title of the bookmarks list."
+  },
+  "titleStop": "Stop",
+  "@titleStop": {
+    "description": "Title of the stop departures screen."
+  },
+  "titleTrip": "Trip",
+  "@titleTrip": {
+    "description": "Title of the trip details screen."
+  },
+  "titleRouteStops": "Route",
+  "@titleRouteStops": {
+    "description": "Title of the stops along a route."
+  },
+  "titleStopSchedule": "Schedule",
+  "@titleStopSchedule": {
+    "description": "Title of the a stop's timetable."
+  },
+  "titleRouteSchedule": "Route schedule",
+  "@titleRouteSchedule": {
+    "description": "Title of the a route's timetable."
+  },
+  "titleAlerts": "Alerts",
+  "@titleAlerts": {
+    "description": "Title of the service alerts list."
+  },
+  "titleAlertDetail": "Alert",
+  "@titleAlertDetail": {
+    "description": "Title of the one service alert."
+  },
+  "titleAgencies": "Agencies",
+  "@titleAgencies": {
+    "description": "Title of the transit agencies list."
+  },
+  "titleRegionPicker": "Regions",
+  "@titleRegionPicker": {
+    "description": "Title of the region picker."
+  },
+  "titleCustomRegion": "Custom region",
+  "@titleCustomRegion": {
+    "description": "Title of the custom region form."
+  },
+  "titleSettings": "Settings",
+  "@titleSettings": {
+    "description": "Title of the settings."
+  },
+  "titleMapSettings": "Map settings",
+  "@titleMapSettings": {
+    "description": "Title of the map settings."
+  },
+  "titleMore": "More",
+  "@titleMore": {
+    "description": "Title of the More screen."
+  },
+  "titleTripPlanner": "Plan a trip",
+  "@titleTripPlanner": {
+    "description": "Title of the trip planner."
+  },
+  "titlePlace": "Place",
+  "@titlePlace": {
+    "description": "Title of the a searched or dropped place."
+  },
+  "titleReportStopProblem": "Report a problem",
+  "@titleReportStopProblem": {
+    "description": "Title of the report a problem with a stop."
+  },
+  "titleReportTripProblem": "Report a problem",
+  "@titleReportTripProblem": {
+    "description": "Title of the report a problem with a trip or vehicle."
+  },
+  "titleBookmarkEditor": "Bookmark",
+  "@titleBookmarkEditor": {
+    "description": "Title of the add or edit a bookmark."
+  },
+  "titleManageBookmarks": "Edit bookmarks",
+  "@titleManageBookmarks": {
+    "description": "Title of the reorder and group bookmarks."
+  },
+  "titleCredits": "Credits",
+  "@titleCredits": {
+    "description": "Title of the open-source credits."
+  },
+  "titleWeather": "Weather",
+  "@titleWeather": {
+    "description": "Title of the weather forecast."
+  },
+  "titleStopsOnMap": "Stops on the map",
+  "@titleStopsOnMap": {
+    "description": "Title of the list of stops visible on the map."
+  },
+  "onboardingWelcomeTitle": "Welcome to {appName}",
+  "@onboardingWelcomeTitle": {
+    "description": "Title of the first onboarding page.",
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingWelcomeBody": "Real-time arrivals for buses, trains and ferries near you.",
+  "@onboardingWelcomeBody": {
+    "description": "Body of the first onboarding page."
+  },
+  "onboardingLocationTitle": "Find stops near you",
+  "@onboardingLocationTitle": {
+    "description": "Title of the onboarding page asking for location access."
+  },
+  "onboardingLocationBody": "Allow location access to see nearby stops and pick your region automatically.",
+  "@onboardingLocationBody": {
+    "description": "Body of the onboarding page asking for location access."
+  },
+  "onboardingAllowLocation": "Allow location access",
+  "@onboardingAllowLocation": {
+    "description": "Button that asks the system for location permission."
+  },
+  "onboardingRegionTitle": "Choose your region",
+  "@onboardingRegionTitle": {
+    "description": "Title of the onboarding page where the user picks a region."
+  },
+  "onboardingRegionBody": "Pick the area whose transit you want to see.",
+  "@onboardingRegionBody": {
+    "description": "Body of the region onboarding page."
+  },
+  "settingsSectionMap": "Map",
+  "@settingsSectionMap": {
+    "description": "Settings section title for map options."
+  },
+  "settingsMapTypeRow": "Map type and layers",
+  "@settingsMapTypeRow": {
+    "description": "Settings row that opens the map type screen."
+  },
+  "settingsMapTypeHelp": "Choose how the map looks.",
+  "@settingsMapTypeHelp": {
+    "description": "Helper text under the map type row in Settings."
+  },
+  "settingsHeadingHelp": "Shows the direction you are facing on the map.",
+  "@settingsHeadingHelp": {
+    "description": "Helper text under the Show heading switch."
+  },
+  "settingsWalkingDirections": "Walking directions",
+  "@settingsWalkingDirections": {
+    "description": "Label of the setting that picks which app gives walking directions."
+  },
+  "settingsWalkingDirectionsHelp": "The app that opens when you ask for walking directions to a stop.",
+  "@settingsWalkingDirectionsHelp": {
+    "description": "Helper text under the walking directions setting."
+  },
+  "settingsDirectionsAsk": "Ask every time",
+  "@settingsDirectionsAsk": {
+    "description": "Walking directions option: ask which app to use each time."
+  },
+  "settingsDirectionsAppleMaps": "Apple Maps",
+  "@settingsDirectionsAppleMaps": {
+    "description": "Walking directions option: Apple Maps (a product name)."
+  },
+  "settingsDirectionsGoogleMaps": "Google Maps",
+  "@settingsDirectionsGoogleMaps": {
+    "description": "Walking directions option: Google Maps (a product name)."
+  },
+  "settingsSectionDepartures": "Departures",
+  "@settingsSectionDepartures": {
+    "description": "Settings section title for how departures are shown."
+  },
+  "settingsDepartureFilter": "Show departures",
+  "@settingsDepartureFilter": {
+    "description": "Label of the setting that filters departures by data source."
+  },
+  "settingsDepartureFilterHelp": "Choose whether stop pages list every departure or only those with real-time or scheduled data.",
+  "@settingsDepartureFilterHelp": {
+    "description": "Helper text under the departure filter."
+  },
+  "settingsFilterAll": "All departures",
+  "@settingsFilterAll": {
+    "description": "Departure filter option: show every departure."
+  },
+  "settingsFilterRealtime": "Real-time only",
+  "@settingsFilterRealtime": {
+    "description": "Departure filter option: only departures with real-time predictions."
+  },
+  "settingsFilterScheduled": "Scheduled only",
+  "@settingsFilterScheduled": {
+    "description": "Departure filter option: only scheduled departures."
+  },
+  "settingsSectionAccessibility": "Accessibility",
+  "@settingsSectionAccessibility": {
+    "description": "Settings section title for accessibility options."
+  },
+  "settingsReducedColors": "Reduce colors on stop pages",
+  "@settingsReducedColors": {
+    "description": "Label of the switch that reduces colour on stop pages."
+  },
+  "settingsReducedColorsHelp": "Shows route badges in one neutral style.",
+  "@settingsReducedColorsHelp": {
+    "description": "Helper text under the reduce colors switch."
+  },
+  "settingsSectionWalking": "Walking speed",
+  "@settingsSectionWalking": {
+    "description": "Settings section title for walking speed."
+  },
+  "settingsWalkingSpeed": "Walking speed",
+  "@settingsWalkingSpeed": {
+    "description": "Label of the walking speed choice."
+  },
+  "settingsWalkingSpeedHelp": "Used for walk-time estimates and arrival times.",
+  "@settingsWalkingSpeedHelp": {
+    "description": "Helper text under the walking speed choice."
+  },
+  "settingsSpeedSlow": "Slow",
+  "@settingsSpeedSlow": {
+    "description": "Walking speed preset: slow."
+  },
+  "settingsSpeedAverage": "Average",
+  "@settingsSpeedAverage": {
+    "description": "Walking speed preset: average."
+  },
+  "settingsSpeedFast": "Fast",
+  "@settingsSpeedFast": {
+    "description": "Walking speed preset: fast."
+  },
+  "settingsSpeedCustom": "Custom ({speed} m/s)",
+  "@settingsSpeedCustom": {
+    "description": "Walking speed shown when it was set by another app and is not a preset.",
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSectionBike": "Bike mode",
+  "@settingsSectionBike": {
+    "description": "Settings section title for bike mode."
+  },
+  "settingsBikeMode": "Bike mode",
+  "@settingsBikeMode": {
+    "description": "Label of the bike mode switch."
+  },
+  "settingsBikeModeHelp": "Uses a faster travel speed for walk-time estimates, arrival times and the stop page.",
+  "@settingsBikeModeHelp": {
+    "description": "Helper text under the bike mode switch."
+  },
+  "settingsSectionSurveys": "Surveys",
+  "@settingsSectionSurveys": {
+    "description": "Settings section title for surveys."
+  },
+  "settingsSurveysEnabled": "Show surveys",
+  "@settingsSurveysEnabled": {
+    "description": "Label of the switch that turns surveys on or off."
+  },
+  "settingsSurveysAlways": "Always show surveys on stops",
+  "@settingsSurveysAlways": {
+    "description": "Label of the switch that always shows surveys on stop pages."
+  },
+  "settingsSectionPrivacy": "Privacy",
+  "@settingsSectionPrivacy": {
+    "description": "Settings section title for privacy."
+  },
+  "settingsAnalytics": "Send usage data to the developers",
+  "@settingsAnalytics": {
+    "description": "Label of the switch that lets the app send usage data."
+  },
+  "settingsAnalyticsHelp": "Helps the developers see which features are used.",
+  "@settingsAnalyticsHelp": {
+    "description": "Helper text under the usage data switch."
+  },
+  "settingsSectionDebug": "Debug",
+  "@settingsSectionDebug": {
+    "description": "Settings section title for developer options."
+  },
+  "settingsDebugMode": "Debug mode",
+  "@settingsDebugMode": {
+    "description": "Label of the debug mode switch."
+  },
+  "settingsDebugAlwaysFeedback": "Always show the feedback prompt",
+  "@settingsDebugAlwaysFeedback": {
+    "description": "Label of a debug switch that bypasses the feedback prompt rules."
+  },
+  "settingsDebugResetFeedback": "Reset feedback prompt state",
+  "@settingsDebugResetFeedback": {
+    "description": "Label of a debug button that clears the feedback prompt history."
+  },
+  "settingsDebugResetDonation": "Reset donation card state",
+  "@settingsDebugResetDonation": {
+    "description": "Label of a debug button that clears the donation card history."
+  },
+  "settingsDebugResetDone": "Reset",
+  "@settingsDebugResetDone": {
+    "description": "Announced after a debug reset button is used."
+  },
+  "settingsSectionTripPlanner": "Trip planner",
+  "@settingsSectionTripPlanner": {
+    "description": "Settings section title for the trip planner switch."
+  },
+  "settingsHomeCustomizeMap": "Customize map",
+  "@settingsHomeCustomizeMap": {
+    "description": "Home screen row that opens map settings."
+  },
+  "moreHeaderSupport": "This app is made and supported by volunteers.",
+  "@moreHeaderSupport": {
+    "description": "Default header text on the More screen."
+  },
+  "moreSectionDonate": "Be a supporter",
+  "@moreSectionDonate": {
+    "description": "More screen section title for donations."
+  },
+  "moreDonate": "Donate to {appName}",
+  "@moreDonate": {
+    "description": "More screen row that opens the donation page.",
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "moreManageDonations": "Manage donations",
+  "@moreManageDonations": {
+    "description": "More screen row that opens the donation management website."
+  },
+  "moreSectionUpdates": "Updates and alerts",
+  "@moreSectionUpdates": {
+    "description": "More screen section title for alerts."
+  },
+  "moreAlerts": "Alerts",
+  "@moreAlerts": {
+    "description": "More screen row that opens service alerts."
+  },
+  "moreSectionLocation": "My location",
+  "@moreSectionLocation": {
+    "description": "More screen section title for region options."
+  },
+  "moreRegion": "Region",
+  "@moreRegion": {
+    "description": "More screen row that opens the region picker."
+  },
+  "moreRegionNone": "Not selected",
+  "@moreRegionNone": {
+    "description": "More screen: shown as the region when none is selected."
+  },
+  "morePayFare": "Pay my fare",
+  "@morePayFare": {
+    "description": "More screen row that opens the fare payment app."
+  },
+  "moreAgencies": "Agencies",
+  "@moreAgencies": {
+    "description": "More screen row that opens the list of transit agencies."
+  },
+  "moreSectionAbout": "About this app",
+  "@moreSectionAbout": {
+    "description": "More screen section title for app information."
+  },
+  "moreRateApp": "Rate {appName}",
+  "@moreRateApp": {
+    "description": "More screen row that opens the store review page.",
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "moreContactUs": "Contact us",
+  "@moreContactUs": {
+    "description": "More screen row that lets the rider email the developers or the agency."
+  },
+  "morePrivacy": "Privacy policy",
+  "@morePrivacy": {
+    "description": "More screen row that opens the privacy policy."
+  },
+  "moreCredits": "Credits",
+  "@moreCredits": {
+    "description": "More screen row that opens the credits."
+  },
+  "moreVersion": "{appName} version {version}",
+  "@moreVersion": {
+    "description": "More screen line that shows the app version.",
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      },
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "moreSectionHelpOut": "Help make the app better",
+  "@moreSectionHelpOut": {
+    "description": "More screen section title for volunteer links."
+  },
+  "moreTranslate": "Help translate the app",
+  "@moreTranslate": {
+    "description": "More screen row that opens the translation project."
+  },
+  "moreDevelop": "Help fix bugs and build new features",
+  "@moreDevelop": {
+    "description": "More screen row that opens the source code project."
+  },
+  "moreSectionContact": "Contact and help",
+  "@moreSectionContact": {
+    "description": "More screen section title for the transit agency contact links."
+  },
+  "moreTutorials": "Tutorials",
+  "@moreTutorials": {
+    "description": "More screen row that opens the agency tutorial page."
+  },
+  "moreCallAgency": "Call agency",
+  "@moreCallAgency": {
+    "description": "More screen row that calls the transit agency."
+  },
+  "moreTextAgency": "Message agency",
+  "@moreTextAgency": {
+    "description": "More screen row that opens the agency text message service."
+  },
+  "moreSectionResources": "Resources",
+  "@moreSectionResources": {
+    "description": "More screen section title for links the transit agency added."
+  },
+  "moreContactTitle": "Contact us",
+  "@moreContactTitle": {
+    "description": "Title of the dialog that asks who to contact."
+  },
+  "moreContactDevelopers": "Feature request or bug report",
+  "@moreContactDevelopers": {
+    "description": "Contact dialog option: email the app developers."
+  },
+  "moreContactAgency": "Vehicle or schedule problem",
+  "@moreContactAgency": {
+    "description": "Contact dialog option: email the transit agency."
+  },
+  "moreEmailSubject": "{appName} feedback",
+  "@moreEmailSubject": {
+    "description": "Subject of the email to the app developers.",
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "moreEmailAgencySubject": "Transit rider feedback",
+  "@moreEmailAgencySubject": {
+    "description": "Subject of the email to the transit agency."
+  },
+  "moreEmailIntro": "How can we help? Please enter your response below:",
+  "@moreEmailIntro": {
+    "description": "First line of the support email."
+  },
+  "moreEmailDebugIntro": "The following information is provided for troubleshooting purposes. If you are uncomfortable sharing any of it you may remove it, however it may affect our ability to assist you.",
+  "@moreEmailDebugIntro": {
+    "description": "Explains the debug information at the end of the support email."
+  },
+  "moreDebugAppVersion": "App version",
+  "@moreDebugAppVersion": {
+    "description": "Label in the support email debug information."
+  },
+  "moreDebugOs": "Operating system",
+  "@moreDebugOs": {
+    "description": "Label in the support email debug information."
+  },
+  "moreDebugLocale": "Language",
+  "@moreDebugLocale": {
+    "description": "Label in the support email debug information."
+  },
+  "moreDebugBookmarks": "Bookmark count",
+  "@moreDebugBookmarks": {
+    "description": "Label in the support email debug information."
+  },
+  "moreDebugLocationPermission": "Location permission",
+  "@moreDebugLocationPermission": {
+    "description": "Label in the support email debug information."
+  },
+  "moreDebugRegion": "Region",
+  "@moreDebugRegion": {
+    "description": "Label in the support email debug information."
+  },
+  "moreDebugRegionId": "Region ID",
+  "@moreDebugRegionId": {
+    "description": "Label in the support email debug information."
+  },
+  "moreDebugApiUrl": "Base API URL",
+  "@moreDebugApiUrl": {
+    "description": "Label in the support email debug information."
+  },
+  "moreDebugUserId": "User ID",
+  "@moreDebugUserId": {
+    "description": "Label in the support email debug information."
+  },
+  "moreCantEmailTitle": "Can't open your email app",
+  "@moreCantEmailTitle": {
+    "description": "Title of the dialog shown when no email app can be opened."
+  },
+  "moreCantEmailBody": "To contact us, send an email to {email}. Copy the debug information and paste it into your message to help us fix the problem.",
+  "@moreCantEmailBody": {
+    "description": "Body of the dialog shown when no email app can be opened.",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "moreCopyEmail": "Copy email address",
+  "@moreCopyEmail": {
+    "description": "Button that copies the support email address."
+  },
+  "moreCopyDebug": "Copy debug info",
+  "@moreCopyDebug": {
+    "description": "Button that copies the support message with debug information."
+  },
+  "moreCopied": "Copied to the clipboard",
+  "@moreCopied": {
+    "description": "Announced after something was copied."
+  },
+  "moreFareContinue": "Continue",
+  "@moreFareContinue": {
+    "description": "Button in the fare payment warning dialog that continues to the payment app."
+  },
+  "moreFareDontShowAgain": "Continue and don't show again",
+  "@moreFareDontShowAgain": {
+    "description": "Button in the fare payment warning dialog that continues and hides the warning in future."
+  },
+  "commonCantOpenLink": "Couldn't open that link.",
+  "@commonCantOpenLink": {
+    "description": "Shown (and announced) when a web, mail, phone, maps or store link can't be opened."
+  },
+  "regionPickerAutomatic": "Choose region automatically",
+  "@regionPickerAutomatic": {
+    "description": "Switch in the region picker that selects the region from the rider location."
+  },
+  "regionPickerAutomaticHelp": "Switches to the region that contains your location. Choosing a region yourself turns this off.",
+  "@regionPickerAutomaticHelp": {
+    "description": "Helper text under the automatic region switch."
+  },
+  "regionPickerShowExperimental": "Show experimental regions",
+  "@regionPickerShowExperimental": {
+    "description": "Switch in the region picker that lists experimental regions."
+  },
+  "regionPickerShowInactive": "Show inactive regions",
+  "@regionPickerShowInactive": {
+    "description": "Switch in the region picker that lists inactive regions."
+  },
+  "regionPickerRegionsSection": "Regions",
+  "@regionPickerRegionsSection": {
+    "description": "Section title above the list of regions."
+  },
+  "regionPickerCustomSection": "Custom regions",
+  "@regionPickerCustomSection": {
+    "description": "Section title above the list of custom regions."
+  },
+  "regionPickerCurrent": "Current region",
+  "@regionPickerCurrent": {
+    "description": "Spoken and shown marker on the selected region."
+  },
+  "regionPickerExperimentalTag": "Experimental",
+  "@regionPickerExperimentalTag": {
+    "description": "Tag on an experimental region."
+  },
+  "regionPickerInactiveTag": "Inactive",
+  "@regionPickerInactiveTag": {
+    "description": "Tag on an inactive region."
+  },
+  "regionPickerCustomTag": "Custom",
+  "@regionPickerCustomTag": {
+    "description": "Tag on a custom region."
+  },
+  "regionPickerRowLabel": "{name}, {details}",
+  "@regionPickerRowLabel": {
+    "description": "Spoken description of a region row: name then tags.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "regionPickerAdd": "Add custom region",
+  "@regionPickerAdd": {
+    "description": "Button that opens the custom region form."
+  },
+  "regionPickerRefresh": "Refresh regions",
+  "@regionPickerRefresh": {
+    "description": "Button that reloads the list of regions."
+  },
+  "regionPickerRefreshed": "Regions updated",
+  "@regionPickerRefreshed": {
+    "description": "Announced after the regions list was refreshed."
+  },
+  "regionPickerRefreshFailed": "Couldn't update the regions list. Showing the saved list.",
+  "@regionPickerRefreshFailed": {
+    "description": "Shown when refreshing the regions list failed."
+  },
+  "regionPickerSelected": "{name} selected",
+  "@regionPickerSelected": {
+    "description": "Announced after the rider picked a region.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "regionPickerEdit": "Edit {name}",
+  "@regionPickerEdit": {
+    "description": "Tooltip of the edit button on a custom region.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "regionPickerDelete": "Delete {name}",
+  "@regionPickerDelete": {
+    "description": "Tooltip of the delete button on a custom region.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "regionPickerDeleteTitle": "Delete {name}?",
+  "@regionPickerDeleteTitle": {
+    "description": "Title of the dialog that confirms deleting a custom region.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "regionPickerDeleteBody": "This custom region will be removed from this device.",
+  "@regionPickerDeleteBody": {
+    "description": "Body of the dialog that confirms deleting a custom region."
+  },
+  "regionPickerDeleteConfirm": "Delete",
+  "@regionPickerDeleteConfirm": {
+    "description": "Button that confirms deleting a custom region."
+  },
+  "regionPickerCantDeleteCurrent": "Choose another region before deleting this one.",
+  "@regionPickerCantDeleteCurrent": {
+    "description": "Shown when the rider tries to delete the selected custom region."
+  },
+  "regionPickerEmpty": "No regions available",
+  "@regionPickerEmpty": {
+    "description": "Title shown when there are no regions to list."
+  },
+  "regionPickerEmptyBody": "Turn on experimental or inactive regions, or add a custom region.",
+  "@regionPickerEmptyBody": {
+    "description": "Message shown when there are no regions to list."
+  },
+  "regionPickerTripPlanner": "Trip planner in this region",
+  "@regionPickerTripPlanner": {
+    "description": "Switch that turns the trip planner on or off for the current region."
+  },
+  "customRegionEditTitle": "Edit custom region",
+  "@customRegionEditTitle": {
+    "description": "Title of the custom region form when editing."
+  },
+  "customRegionName": "Name",
+  "@customRegionName": {
+    "description": "Custom region form field: the region name."
+  },
+  "customRegionObaUrl": "OneBusAway server URL",
+  "@customRegionObaUrl": {
+    "description": "Custom region form field: the OneBusAway server address."
+  },
+  "customRegionObaUrlHelp": "The address of the server, for example https://oba.example.com/",
+  "@customRegionObaUrlHelp": {
+    "description": "Helper text under the server URL field."
+  },
+  "customRegionSidecar": "Sidecar server URL (optional)",
+  "@customRegionSidecar": {
+    "description": "Custom region form field: the sidecar server address."
+  },
+  "customRegionOtp": "Trip planner URL (optional)",
+  "@customRegionOtp": {
+    "description": "Custom region form field: the OpenTripPlanner address."
+  },
+  "customRegionOtpGraphql": "Trip planner GraphQL URL (optional)",
+  "@customRegionOtpGraphql": {
+    "description": "Custom region form field: the OpenTripPlanner GraphQL address."
+  },
+  "customRegionServiceArea": "Service area",
+  "@customRegionServiceArea": {
+    "description": "Custom region form section title for the area the region covers."
+  },
+  "customRegionServiceAreaHelp": "The area this region covers: a center point and how far it extends.",
+  "@customRegionServiceAreaHelp": {
+    "description": "Helper text under the service area title."
+  },
+  "customRegionLatitude": "Center latitude",
+  "@customRegionLatitude": {
+    "description": "Custom region form field."
+  },
+  "customRegionLongitude": "Center longitude",
+  "@customRegionLongitude": {
+    "description": "Custom region form field."
+  },
+  "customRegionLatSpan": "Latitude span (degrees)",
+  "@customRegionLatSpan": {
+    "description": "Custom region form field: north-south extent."
+  },
+  "customRegionLonSpan": "Longitude span (degrees)",
+  "@customRegionLonSpan": {
+    "description": "Custom region form field: east-west extent."
+  },
+  "customRegionUseMap": "Use the current map area",
+  "@customRegionUseMap": {
+    "description": "Button that fills the service area from the visible map."
+  },
+  "customRegionSave": "Save",
+  "@customRegionSave": {
+    "description": "Button that saves the custom region."
+  },
+  "customRegionErrorRequired": "This field is required",
+  "@customRegionErrorRequired": {
+    "description": "Custom region form error."
+  },
+  "customRegionErrorUrl": "Enter a web address that starts with http:// or https://",
+  "@customRegionErrorUrl": {
+    "description": "Custom region form error."
+  },
+  "customRegionErrorNumber": "Enter a number",
+  "@customRegionErrorNumber": {
+    "description": "Custom region form error."
+  },
+  "customRegionErrorRange": "This number is out of range",
+  "@customRegionErrorRange": {
+    "description": "Custom region form error."
+  },
+  "customRegionChecking": "Checking the server",
+  "@customRegionChecking": {
+    "description": "Shown while the server address is being checked."
+  },
+  "customRegionServerOk": "The server responded",
+  "@customRegionServerOk": {
+    "description": "Shown when the server address is valid."
+  },
+  "customRegionServerUnreachable": "Couldn't reach this server",
+  "@customRegionServerUnreachable": {
+    "description": "Shown when the server address cannot be reached."
+  },
+  "customRegionServerNotOba": "This server didn't answer like OneBusAway",
+  "@customRegionServerNotOba": {
+    "description": "Shown when the address is not a OneBusAway server."
+  },
+  "customRegionSaved": "{name} saved",
+  "@customRegionSaved": {
+    "description": "Announced after a custom region was saved.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "creditsAbout": "OneBusAway",
+  "@creditsAbout": {
+    "description": "Credits section title."
+  },
+  "creditsAboutBody": "OneBusAway is free, open source transit software, built by volunteers and supported by the Open Transit Software Foundation.",
+  "@creditsAboutBody": {
+    "description": "Credits introduction."
+  },
+  "creditsLicenseTitle": "License",
+  "@creditsLicenseTitle": {
+    "description": "Credits subsection title for the app license."
+  },
+  "creditsMapData": "Map data",
+  "@creditsMapData": {
+    "description": "Credits section title for map attribution."
+  },
+  "creditsLicenses": "Open source licenses",
+  "@creditsLicenses": {
+    "description": "Credits row that opens the list of library licenses."
+  },
+  "creditsLicensesHelp": "The libraries this app is built with.",
+  "@creditsLicensesHelp": {
+    "description": "Helper text under the licenses row."
+  },
+  "creditsLicensesLoading": "Loading licenses",
+  "@creditsLicensesLoading": {
+    "description": "Shown while the license list is built."
+  },
+  "creditsLicenseCount": "{count, plural, =1{1 license} other{{count} licenses}}",
+  "@creditsLicenseCount": {
+    "description": "Number of licenses a library has.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingWelcomeFootnote": "Available in dozens of transit regions worldwide.",
+  "@onboardingWelcomeFootnote": {
+    "description": "Footnote on the welcome screen."
+  },
+  "onboardingBenefitNearbyTitle": "See nearby stops",
+  "@onboardingBenefitNearbyTitle": {
+    "description": "Location screen benefit title."
+  },
+  "onboardingBenefitNearbyBody": "Buses and trains around you, ranked by distance.",
+  "@onboardingBenefitNearbyBody": {
+    "description": "Location screen benefit text."
+  },
+  "onboardingBenefitMapTitle": "Center the map on you",
+  "@onboardingBenefitMapTitle": {
+    "description": "Location screen benefit title."
+  },
+  "onboardingBenefitMapBody": "Open straight to your surroundings without searching.",
+  "@onboardingBenefitMapBody": {
+    "description": "Location screen benefit text."
+  },
+  "onboardingLocationFootnote": "{appName} only uses your location while the app is open. You can change this any time in your device settings.",
+  "@onboardingLocationFootnote": {
+    "description": "Footnote on the location screen.",
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingLocationDenied": "Location access is off. You can still choose your region yourself.",
+  "@onboardingLocationDenied": {
+    "description": "Shown after the rider declined location access."
+  },
+  "onboardingRegionDetected": "Detected near you",
+  "@onboardingRegionDetected": {
+    "description": "Label on the region suggested from the rider location."
+  },
+  "onboardingRegionUse": "Use {name}",
+  "@onboardingRegionUse": {
+    "description": "Button that accepts the suggested region.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingRegionOthers": "Or choose another region",
+  "@onboardingRegionOthers": {
+    "description": "Header above the list of regions when one was suggested."
+  },
+  "onboardingRegionEmpty": "No regions are available right now. Check your connection and try again.",
+  "@onboardingRegionEmpty": {
+    "description": "Shown when there are no regions to pick in onboarding."
+  },
+  "surveyCardTitle": "Help improve transit",
+  "@surveyCardTitle": {
+    "description": "Title of the survey card."
+  },
+  "surveyDefaultPrompt": "Take a short survey to help improve transit.",
+  "@surveyDefaultPrompt": {
+    "description": "Prompt on the survey card when it has no question."
+  },
+  "surveyTake": "Take survey",
+  "@surveyTake": {
+    "description": "Button on the survey card that opens the survey."
+  },
+  "surveyNotNow": "Not now",
+  "@surveyNotNow": {
+    "description": "Button on the survey card that postpones the survey."
+  },
+  "surveyDismiss": "Dismiss survey",
+  "@surveyDismiss": {
+    "description": "Tooltip of the button that dismisses the survey card for good."
+  },
+  "surveyNext": "Next",
+  "@surveyNext": {
+    "description": "Button that sends the first answer and shows the remaining questions."
+  },
+  "surveySubmit": "Submit survey",
+  "@surveySubmit": {
+    "description": "Button that sends the survey answers."
+  },
+  "surveySubmitting": "Submitting",
+  "@surveySubmitting": {
+    "description": "Button label while the survey answers are sent."
+  },
+  "surveyQuestionsTitle": "Survey",
+  "@surveyQuestionsTitle": {
+    "description": "Title of the survey questions page."
+  },
+  "surveyTextHint": "Enter your answer",
+  "@surveyTextHint": {
+    "description": "Hint in a free-text survey answer."
+  },
+  "surveyRequired": "Required",
+  "@surveyRequired": {
+    "description": "Marker on a required survey question."
+  },
+  "surveyIncomplete": "Please answer all required questions before submitting.",
+  "@surveyIncomplete": {
+    "description": "Shown when required survey questions are unanswered."
+  },
+  "surveyFailed": "Your answers couldn't be sent. Please try again.",
+  "@surveyFailed": {
+    "description": "Shown when sending the survey failed."
+  },
+  "surveyThanks": "Thanks for your feedback.",
+  "@surveyThanks": {
+    "description": "Announced after a survey was sent."
+  },
+  "surveyOpenSurvey": "Open survey",
+  "@surveyOpenSurvey": {
+    "description": "Button that opens an external survey."
+  },
+  "surveyLearnMore": "Learn more",
+  "@surveyLearnMore": {
+    "description": "Button that opens an external page."
+  },
+  "surveyShareFeedback": "Share feedback",
+  "@surveyShareFeedback": {
+    "description": "Button that opens an external feedback form."
+  },
+  "surveySignUp": "Sign up",
+  "@surveySignUp": {
+    "description": "Button that opens an external sign-up form."
+  },
+  "surveyExternalError": "This survey link couldn't be opened. Please try again later.",
+  "@surveyExternalError": {
+    "description": "Shown when an external survey link cannot be opened."
+  },
+  "donationTitle": "{appName} needs your help",
+  "@donationTitle": {
+    "description": "Title of the donation card.",
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "donationBody": "This app is built with volunteer labor, and we need you to help us fund future development.",
+  "@donationBody": {
+    "description": "Body of the donation card."
+  },
+  "donationLearnMore": "Learn more",
+  "@donationLearnMore": {
+    "description": "Donation card button that shows why donations are needed."
+  },
+  "donationDonate": "Donate now",
+  "@donationDonate": {
+    "description": "Donation card button that opens the donation page."
+  },
+  "donationRemindLater": "Remind me later",
+  "@donationRemindLater": {
+    "description": "Donation card button that hides the card for two weeks."
+  },
+  "donationDismiss": "No thanks",
+  "@donationDismiss": {
+    "description": "Donation card button that hides the card for good."
+  },
+  "donationHeader": "Here's why we need your help",
+  "@donationHeader": {
+    "description": "Heading of the donation explanation."
+  },
+  "donationExplanation": "We have big plans to improve {appName}, but we cannot do it without your help. This app is built with volunteer labor, and we need you to help us fund future development.\n\nAs a key project of the Open Transit Software Foundation, a nonprofit, your donation is tax deductible in the United States.",
+  "@donationExplanation": {
+    "description": "Explanation shown when the rider asks why donations are needed.",
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "donationDonateWebsite": "Donate on our website",
+  "@donationDonateWebsite": {
+    "description": "Button that opens the donation page."
+  },
+  "titleDonation": "Support {appName}",
+  "@titleDonation": {
+    "description": "Title of the donation explanation page.",
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "feedbackTitle": "Enjoying {appName}?",
+  "@feedbackTitle": {
+    "description": "Title of the feedback prompt.",
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "feedbackYes": "Yes!",
+  "@feedbackYes": {
+    "description": "Positive answer to the feedback prompt."
+  },
+  "feedbackNo": "Not really",
+  "@feedbackNo": {
+    "description": "Negative answer to the feedback prompt."
+  },
+  "feedbackLater": "Ask me later",
+  "@feedbackLater": {
+    "description": "Button that postpones the feedback prompt."
+  },
+  "feedbackNegativeTitle": "Sorry about that.",
+  "@feedbackNegativeTitle": {
+    "description": "Title after a negative answer to the feedback prompt."
+  },
+  "feedbackNegativeBody": "Would you tell us what's wrong? We read every message.",
+  "@feedbackNegativeBody": {
+    "description": "Body after a negative answer to the feedback prompt."
+  },
+  "feedbackSend": "Send feedback",
+  "@feedbackSend": {
+    "description": "Button that opens the feedback email."
+  },
+  "feedbackDecline": "No thanks",
+  "@feedbackDecline": {
+    "description": "Button that declines sending feedback."
+  },
+  "tripPlanningUnavailable": "Trip planning isn't available in this region.",
+  "@tripPlanningUnavailable": {
+    "description": "Shown when the region has no trip planner."
+  },
+  "deepLinkOtherRegion": "This link is for another region. Switch regions to open it.",
+  "@deepLinkOtherRegion": {
+    "description": "Shown when a shared link is for a region other than the current one."
+  },
+  "dataUpdated": "Updated",
+  "@dataUpdated": {
+    "description": "Announced to screen readers when content refreshes."
+  },
+  "bookmarksDepartureRoute": "Route {route} to {headsign}",
+  "@bookmarksDepartureRoute": {
+    "description": "A route and its destination, for example 'Route 10 to Downtown'.",
+    "placeholders": {
+      "route": {
+        "type": "String"
+      },
+      "headsign": {
+        "type": "String"
+      }
+    }
+  },
+  "bookmarksDepartureRouteOnly": "Route {route}",
+  "@bookmarksDepartureRouteOnly": {
+    "description": "A route name when its destination is unknown, for example 'Route 10'.",
+    "placeholders": {
+      "route": {
+        "type": "String"
+      }
+    }
+  },
+  "bookmarksDepartureSemantics": "{route}, {eta}, {status}",
+  "@bookmarksDepartureSemantics": {
+    "description": "One spoken sentence for a departure row: the route and destination, the time until it leaves, and its status.",
+    "placeholders": {
+      "route": {
+        "type": "String"
+      },
+      "eta": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "bookmarksLoadingDepartures": "Loading departures",
+  "@bookmarksLoadingDepartures": {
+    "description": "Shown on a bookmark card while its next departures load."
+  },
+  "bookmarksNoDepartures": "No upcoming departures",
+  "@bookmarksNoDepartures": {
+    "description": "Shown on a bookmark card when the stop has no departures soon."
+  },
+  "bookmarksDeparturesError": "Couldn't load departures",
+  "@bookmarksDeparturesError": {
+    "description": "Shown on a bookmark card when its departures could not be loaded."
+  },
+  "bookmarksDeparturesStale": "Couldn't refresh. Showing earlier times.",
+  "@bookmarksDeparturesStale": {
+    "description": "Shown on a bookmark card when a refresh failed but older departures are still shown."
+  },
+  "bookmarksUpdated": "Departures updated",
+  "@bookmarksUpdated": {
+    "description": "Announced to screen readers after the bookmarks' departures refresh."
+  },
+  "bookmarksSortTooltip": "Sort bookmarks",
+  "@bookmarksSortTooltip": {
+    "description": "Tooltip of the button that opens the sort menu on the bookmarks list."
+  },
+  "bookmarksSortByGroup": "Sort by group",
+  "@bookmarksSortByGroup": {
+    "description": "Menu item: list bookmarks under their group headings."
+  },
+  "bookmarksSortByDistance": "Sort by distance",
+  "@bookmarksSortByDistance": {
+    "description": "Menu item: list bookmarks nearest to the user first."
+  },
+  "bookmarksManageTooltip": "Edit bookmarks and groups",
+  "@bookmarksManageTooltip": {
+    "description": "Tooltip of the button that opens the bookmark management screen."
+  },
+  "bookmarksRefreshTooltip": "Refresh departures",
+  "@bookmarksRefreshTooltip": {
+    "description": "Tooltip of the button that reloads the departures on the bookmarks list."
+  },
+  "bookmarksEmptyTitle": "No bookmarks yet",
+  "@bookmarksEmptyTitle": {
+    "description": "Title shown when the user has no bookmarks in this region."
+  },
+  "bookmarksEmptyBody": "Open a stop and tap its bookmark button to save it here. From a departure you can also bookmark just that route at the stop.",
+  "@bookmarksEmptyBody": {
+    "description": "Explains how to add a bookmark, shown when there are none."
+  },
+  "bookmarksFindStops": "Find stops on the map",
+  "@bookmarksFindStops": {
+    "description": "Button that returns to the map so the user can find a stop to bookmark."
+  },
+  "bookmarksUngrouped": "Ungrouped",
+  "@bookmarksUngrouped": {
+    "description": "Heading of the bookmarks that are not in any group, shown when other groups exist."
+  },
+  "bookmarksGroupExpanded": "expanded",
+  "@bookmarksGroupExpanded": {
+    "description": "Spoken state of a bookmark group heading whose bookmarks are showing."
+  },
+  "bookmarksGroupCollapsed": "collapsed",
+  "@bookmarksGroupCollapsed": {
+    "description": "Spoken state of a bookmark group heading whose bookmarks are hidden."
+  },
+  "bookmarksGroupToggleHint": "Shows or hides the bookmarks in this group",
+  "@bookmarksGroupToggleHint": {
+    "description": "Hint of a bookmark group heading button."
+  },
+  "bookmarksActionsFor": "Actions for {name}",
+  "@bookmarksActionsFor": {
+    "description": "Tooltip of the menu button on a bookmark card.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "bookmarksActionEdit": "Edit",
+  "@bookmarksActionEdit": {
+    "description": "Bookmark action: open the bookmark editor."
+  },
+  "bookmarksActionPin": "Pin to top",
+  "@bookmarksActionPin": {
+    "description": "Bookmark action: keep this bookmark at the top of lists."
+  },
+  "bookmarksActionUnpin": "Unpin",
+  "@bookmarksActionUnpin": {
+    "description": "Bookmark action: stop keeping this bookmark at the top."
+  },
+  "bookmarksActionMove": "Move to group",
+  "@bookmarksActionMove": {
+    "description": "Bookmark action: choose another group for this bookmark."
+  },
+  "bookmarksActionDelete": "Delete",
+  "@bookmarksActionDelete": {
+    "description": "Bookmark action: remove this bookmark."
+  },
+  "bookmarksPinned": "Pinned",
+  "@bookmarksPinned": {
+    "description": "Spoken label of the pin icon on a pinned bookmark."
+  },
+  "bookmarksDeleted": "Deleted {name}",
+  "@bookmarksDeleted": {
+    "description": "Snackbar shown after a bookmark was deleted.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "bookmarksUndo": "Undo",
+  "@bookmarksUndo": {
+    "description": "Snackbar action that restores what was just deleted."
+  },
+  "bookmarksMoveTitle": "Move to group",
+  "@bookmarksMoveTitle": {
+    "description": "Title of the dialog for choosing a bookmark's group."
+  },
+  "bookmarksNoGroup": "No group",
+  "@bookmarksNoGroup": {
+    "description": "Choice meaning the bookmark is in no group."
+  },
+  "bookmarksMoved": "Moved to {group}",
+  "@bookmarksMoved": {
+    "description": "Announced after a bookmark was moved to a group.",
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "bookmarksEditorNameLabel": "Bookmark name",
+  "@bookmarksEditorNameLabel": {
+    "description": "Label of the text field for the bookmark's name."
+  },
+  "bookmarksEditorNameRequired": "Enter a name for this bookmark.",
+  "@bookmarksEditorNameRequired": {
+    "description": "Error under the name field when it is empty."
+  },
+  "bookmarksEditorDuplicate": "You already have a bookmark with this name for this stop and route. Change the name to save another one.",
+  "@bookmarksEditorDuplicate": {
+    "description": "Error shown when the bookmark would duplicate an existing one."
+  },
+  "bookmarksEditorStopKind": "Stop bookmark: shows the next departures of every route at {stop}.",
+  "@bookmarksEditorStopKind": {
+    "description": "Explains what a stop bookmark is, in the editor.",
+    "placeholders": {
+      "stop": {
+        "type": "String"
+      }
+    }
+  },
+  "bookmarksEditorTripKind": "Trip bookmark: shows the next departures of {route} at {stop}.",
+  "@bookmarksEditorTripKind": {
+    "description": "Explains what a trip bookmark is, in the editor.",
+    "placeholders": {
+      "route": {
+        "type": "String"
+      },
+      "stop": {
+        "type": "String"
+      }
+    }
+  },
+  "bookmarksEditorTripOnly": "Only {route}",
+  "@bookmarksEditorTripOnly": {
+    "description": "Switch label: bookmark just one route at the stop instead of the whole stop.",
+    "placeholders": {
+      "route": {
+        "type": "String"
+      }
+    }
+  },
+  "bookmarksEditorGroup": "Group",
+  "@bookmarksEditorGroup": {
+    "description": "Label of the group picker in the bookmark editor."
+  },
+  "bookmarksEditorNewGroup": "New group…",
+  "@bookmarksEditorNewGroup": {
+    "description": "Menu entry that creates a new bookmark group."
+  },
+  "bookmarksEditorNewGroupTitle": "New group",
+  "@bookmarksEditorNewGroupTitle": {
+    "description": "Title of the dialog for naming a new group."
+  },
+  "bookmarksEditorGroupName": "Group name",
+  "@bookmarksEditorGroupName": {
+    "description": "Label of the group name field."
+  },
+  "bookmarksEditorSave": "Save",
+  "@bookmarksEditorSave": {
+    "description": "Button that saves the bookmark or group."
+  },
+  "bookmarksEditorSaved": "Bookmark saved",
+  "@bookmarksEditorSaved": {
+    "description": "Announced after a bookmark was saved."
+  },
+  "bookmarksEditorDelete": "Delete bookmark",
+  "@bookmarksEditorDelete": {
+    "description": "Button that deletes the bookmark being edited."
+  },
+  "bookmarksEditorDeleteTitle": "Delete this bookmark?",
+  "@bookmarksEditorDeleteTitle": {
+    "description": "Title of the delete confirmation."
+  },
+  "bookmarksEditorDeleteBody": "“{name}” will be removed from your bookmarks.",
+  "@bookmarksEditorDeleteBody": {
+    "description": "Body of the delete confirmation.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "bookmarksEditorNoRegion": "Choose a region before adding bookmarks.",
+  "@bookmarksEditorNoRegion": {
+    "description": "Shown when a bookmark can't be created because no region is selected."
+  },
+  "bookmarksManageGroupsHeader": "Groups",
+  "@bookmarksManageGroupsHeader": {
+    "description": "Heading of the list of bookmark groups on the manage screen."
+  },
+  "bookmarksManageAddGroup": "Add group",
+  "@bookmarksManageAddGroup": {
+    "description": "Button that creates a bookmark group."
+  },
+  "bookmarksManageRenameGroup": "Rename group",
+  "@bookmarksManageRenameGroup": {
+    "description": "Action and dialog title for renaming a group."
+  },
+  "bookmarksManageDeleteGroup": "Delete group",
+  "@bookmarksManageDeleteGroup": {
+    "description": "Action that deletes a group."
+  },
+  "bookmarksManageDeleteGroupBody": "The bookmarks in “{name}” will become ungrouped.",
+  "@bookmarksManageDeleteGroupBody": {
+    "description": "Confirmation text when deleting a group.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "bookmarksManageMoveUp": "Move {name} up",
+  "@bookmarksManageMoveUp": {
+    "description": "Tooltip of the button that moves an item earlier in its list.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "bookmarksManageMoveDown": "Move {name} down",
+  "@bookmarksManageMoveDown": {
+    "description": "Tooltip of the button that moves an item later in its list.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "bookmarksManageReorder": "Reorder {name}",
+  "@bookmarksManageReorder": {
+    "description": "Spoken label of the drag handle for reordering an item.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "bookmarksManageMoved": "{name}, position {position} of {count}",
+  "@bookmarksManageMoved": {
+    "description": "Announced after an item was moved.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "position": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bookmarksManageEmpty": "There are no bookmarks or groups to manage yet.",
+  "@bookmarksManageEmpty": {
+    "description": "Shown on the manage screen when there is nothing to manage."
+  },
+  "bookmarksManageUngrouped": "Ungrouped bookmarks",
+  "@bookmarksManageUngrouped": {
+    "description": "Heading of the bookmarks in no group, on the manage screen."
+  },
+  "recentsEmptyTitle": "No recent stops",
+  "@recentsEmptyTitle": {
+    "description": "Title shown when no stop was viewed recently."
+  },
+  "recentsEmptyBody": "Stops you look at appear here, newest first.",
+  "@recentsEmptyBody": {
+    "description": "Explains the recent stops list when it is empty."
+  },
+  "recentsFindStops": "Find stops on the map",
+  "@recentsFindStops": {
+    "description": "Button that returns to the map so the user can find a stop."
+  },
+  "recentsClearAll": "Clear all",
+  "@recentsClearAll": {
+    "description": "Button that removes every recent stop."
+  },
+  "recentsClearTitle": "Clear recent stops?",
+  "@recentsClearTitle": {
+    "description": "Title of the confirmation for clearing recent stops."
+  },
+  "recentsClearBody": "{count, plural, =1{This removes 1 recent stop. Your bookmarks aren't affected.} other{This removes all {count} recent stops. Your bookmarks aren't affected.}}",
+  "@recentsClearBody": {
+    "description": "Body of the confirmation for clearing recent stops.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recentsRemove": "Remove {name} from recent stops",
+  "@recentsRemove": {
+    "description": "Tooltip and spoken action that removes one recent stop.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recentsRemoved": "Removed {name}",
+  "@recentsRemoved": {
+    "description": "Snackbar shown after a recent stop was removed.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recentsSectionEmpty": "Stops you look at appear here.",
+  "@recentsSectionEmpty": {
+    "description": "Shown in the Recent home section when it is empty."
+  },
+  "alarmsSectionTitle": "Alarms",
+  "@alarmsSectionTitle": {
+    "description": "Header of the home section listing the user's departure alarms."
+  },
+  "alarmsRowDetails": "{minutes, plural, =1{1 minute before departure} other{{minutes} minutes before departure}}, at {time}",
+  "@alarmsRowDetails": {
+    "description": "Detail line of an alarm: how long before the departure it rings, and the departure time.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "alarmsRowLabel": "Alarm for {title}, {details}",
+  "@alarmsRowLabel": {
+    "description": "Spoken label of one alarm row.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "alarmsDelete": "Delete alarm for {title}",
+  "@alarmsDelete": {
+    "description": "Tooltip and spoken action that deletes one alarm.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "alarmsDeleted": "Alarm deleted",
+  "@alarmsDeleted": {
+    "description": "Snackbar shown after an alarm was deleted."
+  },
+  "alarmsDeleteFailed": "Couldn't delete the alarm. Check your connection and try again.",
+  "@alarmsDeleteFailed": {
+    "description": "Snackbar shown when deleting an alarm failed."
+  },
+  "alertsEmptyTitle": "No service alerts",
+  "@alertsEmptyTitle": {
+    "description": "Title shown when there are no active alerts."
+  },
+  "alertsEmptyBody": "There are no active service alerts right now.",
+  "@alertsEmptyBody": {
+    "description": "Body shown when there are no active alerts."
+  },
+  "alertsRegionNote": "Includes alerts for your bookmarked, recent and nearby stops.",
+  "@alertsRegionNote": {
+    "description": "Explains which alerts the region-wide list covers."
+  },
+  "alertsMarkAllRead": "Mark all as read",
+  "@alertsMarkAllRead": {
+    "description": "Button that marks every alert read."
+  },
+  "alertsAllRead": "All alerts marked as read",
+  "@alertsAllRead": {
+    "description": "Announced after marking every alert read."
+  },
+  "alertsUnread": "Unread",
+  "@alertsUnread": {
+    "description": "Label of the marker on an alert that has not been read."
+  },
+  "alertsSeverityInfo": "Information",
+  "@alertsSeverityInfo": {
+    "description": "Severity label of a low-impact alert."
+  },
+  "alertsSeverityWarning": "Warning",
+  "@alertsSeverityWarning": {
+    "description": "Severity label of a medium-impact alert."
+  },
+  "alertsSeveritySevere": "Severe",
+  "@alertsSeveritySevere": {
+    "description": "Severity label of a high-impact alert."
+  },
+  "alertsSeverityUnknown": "Service alert",
+  "@alertsSeverityUnknown": {
+    "description": "Label of an alert whose severity is not given."
+  },
+  "alertsNoTitle": "Service alert",
+  "@alertsNoTitle": {
+    "description": "Title of an alert that has no summary."
+  },
+  "alertsRowLabel": "{unread}{severity}. {title}",
+  "@alertsRowLabel": {
+    "description": "Spoken label of an alert row. unread is empty or 'Unread. '.",
+    "placeholders": {
+      "unread": {
+        "type": "String"
+      },
+      "severity": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "alertsUnreadPrefix": "Unread. ",
+  "@alertsUnreadPrefix": {
+    "description": "Prefix of an alert row's spoken label when the alert has not been read."
+  },
+  "alertsUnreadCount": "{count, plural, =1{1 unread alert} other{{count} unread alerts}}",
+  "@alertsUnreadCount": {
+    "description": "Summary of how many alerts have not been read.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "alertsSectionMore": "{count, plural, =1{1 more alert} other{{count} more alerts}}",
+  "@alertsSectionMore": {
+    "description": "Link text in the Alerts home section for the alerts not shown.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "alertsDetailActive": "Active period",
+  "@alertsDetailActive": {
+    "description": "Heading of the dates an alert is in effect."
+  },
+  "alertsDetailRange": "{start} to {end}",
+  "@alertsDetailRange": {
+    "description": "An alert's active period with an end.",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "alertsDetailFrom": "From {start}",
+  "@alertsDetailFrom": {
+    "description": "An alert's active period that has no end.",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      }
+    }
+  },
+  "alertsDetailAffects": "Affects",
+  "@alertsDetailAffects": {
+    "description": "Heading of the routes and stops an alert applies to."
+  },
+  "alertsDetailRoutes": "Routes",
+  "@alertsDetailRoutes": {
+    "description": "Heading of the routes an alert affects."
+  },
+  "alertsDetailStops": "Stops",
+  "@alertsDetailStops": {
+    "description": "Heading of the stops an alert affects."
+  },
+  "alertsDetailLearnMore": "Learn more",
+  "@alertsDetailLearnMore": {
+    "description": "Button that opens the alert's web page."
+  },
+  "alertsDetailNoDetails": "No additional details available.",
+  "@alertsDetailNoDetails": {
+    "description": "Shown when an alert has no description."
+  },
+  "alertsDetailUpdated": "Issued {date}",
+  "@alertsDetailUpdated": {
+    "description": "When an alert was published.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "agenciesEmptyTitle": "No agencies",
+  "@agenciesEmptyTitle": {
+    "description": "Title shown when the agency list is empty."
+  },
+  "agenciesEmptyBody": "This region didn't list any transit agencies.",
+  "@agenciesEmptyBody": {
+    "description": "Body shown when the agency list is empty."
+  },
+  "agenciesWebsite": "Website",
+  "@agenciesWebsite": {
+    "description": "Link to an agency's website."
+  },
+  "agenciesPhone": "Call {phone}",
+  "@agenciesPhone": {
+    "description": "Link that calls an agency.",
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "agenciesEmail": "Email {email}",
+  "@agenciesEmail": {
+    "description": "Link that emails an agency.",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "agenciesFares": "Fare information",
+  "@agenciesFares": {
+    "description": "Link to an agency's fare page."
+  },
+  "agenciesDisclaimer": "Disclaimer",
+  "@agenciesDisclaimer": {
+    "description": "Heading of an agency's legal disclaimer."
+  },
+  "agenciesShowOnMap": "Show coverage on the map",
+  "@agenciesShowOnMap": {
+    "description": "Button that centres the map on an agency's service area."
+  },
+  "searchFieldLabel": "Search",
+  "@searchFieldLabel": {
+    "description": "Label of the search text field, read by screen readers."
+  },
+  "searchFieldHint": "Route, stop number, address or vehicle",
+  "@searchFieldHint": {
+    "description": "Placeholder in the empty search field."
+  },
+  "searchClear": "Clear search",
+  "@searchClear": {
+    "description": "Tooltip of the button that empties the search field."
+  },
+  "searchScopeLabel": "Search for",
+  "@searchScopeLabel": {
+    "description": "Screen-reader label of the group of search scope chips."
+  },
+  "searchScopeAll": "All",
+  "@searchScopeAll": {
+    "description": "Search scope chip: every kind of result."
+  },
+  "searchScopeStops": "Stops",
+  "@searchScopeStops": {
+    "description": "Search scope chip: stops only."
+  },
+  "searchScopeRoutes": "Routes",
+  "@searchScopeRoutes": {
+    "description": "Search scope chip: routes only."
+  },
+  "searchScopePlaces": "Places",
+  "@searchScopePlaces": {
+    "description": "Search scope chip: places and addresses only."
+  },
+  "searchQuickHeader": "Search for",
+  "@searchQuickHeader": {
+    "description": "Header above the quick-search rows (\"Route: 10\", \"Stop: 1234\")."
+  },
+  "searchQuickRoute": "Route: {query}",
+  "@searchQuickRoute": {
+    "description": "Quick-search row that looks the query up as a route name.",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchQuickStop": "Stop number: {query}",
+  "@searchQuickStop": {
+    "description": "Quick-search row that looks the query up as a stop number.",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchQuickAddress": "Address: {query}",
+  "@searchQuickAddress": {
+    "description": "Quick-search row that looks the query up as an address or place.",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchQuickVehicle": "Vehicle: {query}",
+  "@searchQuickVehicle": {
+    "description": "Quick-search row that looks the query up as a vehicle ID.",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchRecentStopsHeader": "Recent stops",
+  "@searchRecentStopsHeader": {
+    "description": "Header of recently viewed stops matching the search."
+  },
+  "searchBookmarksHeader": "Bookmarks",
+  "@searchBookmarksHeader": {
+    "description": "Header of bookmarks matching the search."
+  },
+  "searchRecentSearchesHeader": "Recent searches",
+  "@searchRecentSearchesHeader": {
+    "description": "Header of the recent search queries."
+  },
+  "searchRecentPlacesHeader": "Recent places",
+  "@searchRecentPlacesHeader": {
+    "description": "Header of places chosen from earlier searches."
+  },
+  "searchPlacesHeader": "Places",
+  "@searchPlacesHeader": {
+    "description": "Header of live place results for the query."
+  },
+  "searchClearRecent": "Clear recent searches",
+  "@searchClearRecent": {
+    "description": "Button that deletes recent searches and places."
+  },
+  "searchClearRecentConfirm": "Clear your recent searches and places?",
+  "@searchClearRecentConfirm": {
+    "description": "Title of the confirmation before deleting recent searches."
+  },
+  "searchClearAction": "Clear",
+  "@searchClearAction": {
+    "description": "Destructive button in the clear-recent-searches confirmation."
+  },
+  "searchRecentCleared": "Recent searches cleared",
+  "@searchRecentCleared": {
+    "description": "Announcement after recent searches were deleted."
+  },
+  "searchPlacesLoading": "Searching places",
+  "@searchPlacesLoading": {
+    "description": "Shown while place results load."
+  },
+  "searchPlacesNone": "No places found",
+  "@searchPlacesNone": {
+    "description": "Shown when the place search matched nothing."
+  },
+  "searchPlacesError": "Couldn't search places. Check your connection.",
+  "@searchPlacesError": {
+    "description": "Shown when the place search failed."
+  },
+  "searchSearching": "Searching",
+  "@searchSearching": {
+    "description": "Screen-reader text while a search runs."
+  },
+  "searchNoResultsTitle": "No results",
+  "@searchNoResultsTitle": {
+    "description": "Title when a search matched nothing."
+  },
+  "searchNoResultsBody": "No search results were found for “{query}”.",
+  "@searchNoResultsBody": {
+    "description": "Message when a search matched nothing.",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchUnavailableNoRegion": "Choose a region before searching.",
+  "@searchUnavailableNoRegion": {
+    "description": "Error when no region is selected so searches cannot run."
+  },
+  "searchUnavailableAddress": "Address search isn't set up in this app.",
+  "@searchUnavailableAddress": {
+    "description": "Error when no place search provider is configured."
+  },
+  "searchUnavailableVehicle": "Vehicle search isn't available in this region.",
+  "@searchUnavailableVehicle": {
+    "description": "Error when the region has no vehicle search server."
+  },
+  "searchEmptyTitle": "Find routes, stops and places",
+  "@searchEmptyTitle": {
+    "description": "Title of the search page before anything is typed."
+  },
+  "searchEmptyBody": "Type a route name, a stop number, an address or a vehicle ID.",
+  "@searchEmptyBody": {
+    "description": "Body of the search page before anything is typed."
+  },
+  "searchDismissMessage": "Dismiss",
+  "@searchDismissMessage": {
+    "description": "Button that closes a search error or no-results message."
+  },
+  "searchResultsHeading": "{count, plural, =1{1 result for “{query}”} other{{count} results for “{query}”}}",
+  "@searchResultsHeading": {
+    "description": "Heading of the search results list.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchResultsRoutes": "Routes",
+  "@searchResultsRoutes": {
+    "description": "Header of the route results."
+  },
+  "searchResultsStops": "Stops",
+  "@searchResultsStops": {
+    "description": "Header of the stop results."
+  },
+  "searchResultsVehicles": "Vehicles",
+  "@searchResultsVehicles": {
+    "description": "Header of the vehicle results."
+  },
+  "searchResultsPlaces": "Places",
+  "@searchResultsPlaces": {
+    "description": "Header of the place results."
+  },
+  "searchRouteRowLabel": "Route {name}, {details}",
+  "@searchRouteRowLabel": {
+    "description": "Screen-reader sentence of a route result row.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "searchVehicleTitle": "Vehicle {id}",
+  "@searchVehicleTitle": {
+    "description": "Title of a vehicle result row.",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "searchVehicleNoTrip": "Vehicle {id} isn't serving a trip right now.",
+  "@searchVehicleNoTrip": {
+    "description": "Message when the chosen vehicle has no current trip.",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "searchVehicleLoading": "Loading vehicle {id}",
+  "@searchVehicleLoading": {
+    "description": "Screen-reader text while a vehicle's status loads.",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "searchNearbyLocationPrompt": "Turn on location to see departures from stops near you.",
+  "@searchNearbyLocationPrompt": {
+    "description": "Nearby section text when location is not available yet."
+  },
+  "searchNearbyLocationButton": "Use my location",
+  "@searchNearbyLocationButton": {
+    "description": "Button that asks for location permission for nearby stops."
+  },
+  "searchNearbyLocationDenied": "Location access is off. Turn it on in your device settings to see stops near you.",
+  "@searchNearbyLocationDenied": {
+    "description": "Nearby text when location permission was denied."
+  },
+  "searchNearbyLocationServicesOff": "Location services are off. Turn them on to see stops near you.",
+  "@searchNearbyLocationServicesOff": {
+    "description": "Nearby text when the device location service is disabled."
+  },
+  "searchNearbyLocationUnavailable": "This app doesn't use your location, so it can't show stops near you.",
+  "@searchNearbyLocationUnavailable": {
+    "description": "Nearby text when the host app gives the SDK no location at all (not a permission problem; nothing the rider can turn on)."
+  },
+  "searchNearbyEmpty": "No stops nearby",
+  "@searchNearbyEmpty": {
+    "description": "Title when there are no stops near the rider."
+  },
+  "searchNearbyEmptyBody": "There are no stops within walking distance.",
+  "@searchNearbyEmptyBody": {
+    "description": "Body when there are no stops near the rider."
+  },
+  "searchNearbyMapCenter": "Showing stops near the centre of the map.",
+  "@searchNearbyMapCenter": {
+    "description": "Note shown when nearby stops are found around the map centre instead of the rider."
+  },
+  "searchNearbyNoDepartures": "No departures in the next hour",
+  "@searchNearbyNoDepartures": {
+    "description": "Subtitle of a nearby stop with nothing leaving soon."
+  },
+  "searchNearbyLoadingDepartures": "Loading departures",
+  "@searchNearbyLoadingDepartures": {
+    "description": "Subtitle of a nearby stop whose departures are loading."
+  },
+  "searchNearbyStopsCount": "{count, plural, =0{No stops nearby} =1{1 stop nearby} other{{count} stops nearby}}",
+  "@searchNearbyStopsCount": {
+    "description": "Screen-reader announcement after the nearby stops list refreshed.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchNearbyLocating": "Finding your location…",
+  "@searchNearbyLocating": {
+    "description": "Nearby section text while waiting for the first location fix."
+  },
+  "searchNearbyRefresh": "Refresh",
+  "@searchNearbyRefresh": {
+    "description": "Tooltip of the button that reloads nearby stops."
+  },
+  "searchNearbyDistance": "{distance} away",
+  "@searchNearbyDistance": {
+    "description": "Distance from the rider to a stop.",
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "searchNearbyOtherDirection": "Other stops",
+  "@searchNearbyOtherDirection": {
+    "description": "Header for nearby stops with no direction of travel."
+  },
+  "searchNearbyDirectionHeader": "{direction} stops",
+  "@searchNearbyDirectionHeader": {
+    "description": "Header grouping nearby stops by direction, e.g. \"Northbound stops\".",
+    "placeholders": {
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "searchNearbyDepartureLabel": "{route} to {headsign}, {eta}, {status}. From {stop}",
+  "@searchNearbyDepartureLabel": {
+    "description": "Screen-reader sentence of a nearby departure row.",
+    "placeholders": {
+      "route": {
+        "type": "String"
+      },
+      "headsign": {
+        "type": "String"
+      },
+      "eta": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      },
+      "stop": {
+        "type": "String"
+      }
+    }
+  },
+  "searchNearbyStopFrom": "From {stop}",
+  "@searchNearbyStopFrom": {
+    "description": "Subtitle of a nearby departure: the stop it leaves from.",
+    "placeholders": {
+      "stop": {
+        "type": "String"
+      }
+    }
+  },
+  "searchNearbyCardTitle": "Departures near you",
+  "@searchNearbyCardTitle": {
+    "description": "Title of the embeddable nearby departures card."
+  },
+  "searchExplorePlanTrip": "Plan a trip",
+  "@searchExplorePlanTrip": {
+    "description": "Explore shortcut that opens the trip planner."
+  },
+  "searchExploreWeather": "Weather",
+  "@searchExploreWeather": {
+    "description": "Explore shortcut that opens the weather forecast."
+  },
+  "searchExploreAgencies": "Agencies",
+  "@searchExploreAgencies": {
+    "description": "Explore shortcut that opens the list of transit agencies."
+  },
+  "searchPlaceAddress": "Address",
+  "@searchPlaceAddress": {
+    "description": "Label of a place's address."
+  },
+  "searchPlaceCoordinates": "Coordinates",
+  "@searchPlaceCoordinates": {
+    "description": "Label of a place's latitude and longitude."
+  },
+  "searchPlaceDistance": "Distance",
+  "@searchPlaceDistance": {
+    "description": "Label of the distance from the rider to a place."
+  },
+  "searchPlaceDirectionsTo": "Directions to here",
+  "@searchPlaceDirectionsTo": {
+    "description": "Button that plans a trip to this place."
+  },
+  "searchPlaceDirectionsFrom": "Directions from here",
+  "@searchPlaceDirectionsFrom": {
+    "description": "Button that plans a trip from this place."
+  },
+  "searchPlaceNearbyStops": "Nearby stops",
+  "@searchPlaceNearbyStops": {
+    "description": "Button that lists the stops near this place."
+  },
+  "searchPlaceShare": "Share",
+  "@searchPlaceShare": {
+    "description": "Button that shares this place."
+  },
+  "searchPlaceOpenInMaps": "Open in maps app",
+  "@searchPlaceOpenInMaps": {
+    "description": "Button that opens this place in the device's maps app."
+  },
+  "searchPlaceRemovePin": "Remove pin",
+  "@searchPlaceRemovePin": {
+    "description": "Button that removes a dropped pin from the map."
+  },
+  "searchPlaceOpenFailed": "Couldn't open a maps app.",
+  "@searchPlaceOpenFailed": {
+    "description": "Message when no maps app could be opened."
+  },
+  "searchPlaceShareFailed": "Couldn't share this place.",
+  "@searchPlaceShareFailed": {
+    "description": "Message when sharing failed."
+  },
+  "searchPlaceMarkerLabel": "Place: {name}",
+  "@searchPlaceMarkerLabel": {
+    "description": "Screen-reader label of a place marker on the map.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "searchWeatherButtonLabel": "Weather: {temperature}, {condition}",
+  "@searchWeatherButtonLabel": {
+    "description": "Screen-reader label of the map weather button.",
+    "placeholders": {
+      "temperature": {
+        "type": "String"
+      },
+      "condition": {
+        "type": "String"
+      }
+    }
+  },
+  "searchWeatherButtonHint": "Shows the forecast",
+  "@searchWeatherButtonHint": {
+    "description": "Screen-reader hint of the map weather button."
+  },
+  "searchWeatherClear": "Clear",
+  "@searchWeatherClear": {
+    "description": "Weather condition: clear skies."
+  },
+  "searchWeatherPartlyCloudy": "Partly cloudy",
+  "@searchWeatherPartlyCloudy": {
+    "description": "Weather condition: partly cloudy."
+  },
+  "searchWeatherCloudy": "Cloudy",
+  "@searchWeatherCloudy": {
+    "description": "Weather condition: cloudy."
+  },
+  "searchWeatherRain": "Rain",
+  "@searchWeatherRain": {
+    "description": "Weather condition: rain."
+  },
+  "searchWeatherSleet": "Sleet",
+  "@searchWeatherSleet": {
+    "description": "Weather condition: sleet."
+  },
+  "searchWeatherSnow": "Snow",
+  "@searchWeatherSnow": {
+    "description": "Weather condition: snow."
+  },
+  "searchWeatherWindy": "Windy",
+  "@searchWeatherWindy": {
+    "description": "Weather condition: windy."
+  },
+  "searchWeatherFog": "Fog",
+  "@searchWeatherFog": {
+    "description": "Weather condition: fog."
+  },
+  "searchWeatherUnknown": "Unknown conditions",
+  "@searchWeatherUnknown": {
+    "description": "Weather condition the app does not recognise."
+  },
+  "searchWeatherDegreesF": "{value}°F",
+  "@searchWeatherDegreesF": {
+    "description": "A temperature in degrees Fahrenheit.",
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "searchWeatherDegreesC": "{value}°C",
+  "@searchWeatherDegreesC": {
+    "description": "A temperature in degrees Celsius.",
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "searchWeatherSpokenF": "{value, plural, =1{1 degree Fahrenheit} other{{value} degrees Fahrenheit}}",
+  "@searchWeatherSpokenF": {
+    "description": "A temperature in Fahrenheit, spoken.",
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "searchWeatherSpokenC": "{value, plural, =1{1 degree Celsius} other{{value} degrees Celsius}}",
+  "@searchWeatherSpokenC": {
+    "description": "A temperature in Celsius, spoken.",
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "searchWeatherMph": "{value} mph",
+  "@searchWeatherMph": {
+    "description": "A wind speed in miles per hour.",
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "searchWeatherKmh": "{value} km/h",
+  "@searchWeatherKmh": {
+    "description": "A wind speed in kilometres per hour.",
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "searchWeatherMps": "{value} m/s",
+  "@searchWeatherMps": {
+    "description": "A wind speed in metres per second.",
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "searchWeatherPercent": "{value}%",
+  "@searchWeatherPercent": {
+    "description": "A percentage (chance of precipitation).",
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "searchWeatherFeelsLike": "Feels like",
+  "@searchWeatherFeelsLike": {
+    "description": "Label of the apparent temperature."
+  },
+  "searchWeatherWind": "Wind",
+  "@searchWeatherWind": {
+    "description": "Label of the wind speed."
+  },
+  "searchWeatherPrecip": "Chance of rain",
+  "@searchWeatherPrecip": {
+    "description": "Label of the chance of precipitation."
+  },
+  "searchWeatherHighLow": "High {high} · Low {low}",
+  "@searchWeatherHighLow": {
+    "description": "Highest and lowest temperature over the next 24 hours.",
+    "placeholders": {
+      "high": {
+        "type": "String"
+      },
+      "low": {
+        "type": "String"
+      }
+    }
+  },
+  "searchWeatherHighLowSpoken": "High {high}, low {low}, over the next 24 hours",
+  "@searchWeatherHighLowSpoken": {
+    "description": "Spoken high and low temperature.",
+    "placeholders": {
+      "high": {
+        "type": "String"
+      },
+      "low": {
+        "type": "String"
+      }
+    }
+  },
+  "searchWeatherHourly": "Next 24 hours",
+  "@searchWeatherHourly": {
+    "description": "Header of the hourly forecast list."
+  },
+  "searchWeatherNow": "Now",
+  "@searchWeatherNow": {
+    "description": "Label of the current hour in the hourly forecast."
+  },
+  "searchWeatherHourLabel": "{time}: {temperature}, {condition}, {precip} chance of rain",
+  "@searchWeatherHourLabel": {
+    "description": "Screen-reader sentence of one hour of the forecast.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "temperature": {
+        "type": "String"
+      },
+      "condition": {
+        "type": "String"
+      },
+      "precip": {
+        "type": "String"
+      }
+    }
+  },
+  "searchWeatherUnitsNote": "Temperatures in {unit}",
+  "@searchWeatherUnitsNote": {
+    "description": "Note naming the temperature unit used.",
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "searchWeatherFahrenheit": "degrees Fahrenheit (°F)",
+  "@searchWeatherFahrenheit": {
+    "description": "Unit name for the temperature note."
+  },
+  "searchWeatherCelsius": "degrees Celsius (°C)",
+  "@searchWeatherCelsius": {
+    "description": "Unit name for the temperature note."
+  },
+  "searchWeatherUpdated": "Forecast from {time}",
+  "@searchWeatherUpdated": {
+    "description": "When the forecast was retrieved.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "searchWeatherUnavailable": "Weather isn't available for this region.",
+  "@searchWeatherUnavailable": {
+    "description": "Shown when the region has no weather server."
+  },
+  "searchWeatherSummaryLabel": "Today",
+  "@searchWeatherSummaryLabel": {
+    "description": "Header of the day's weather summary."
+  },
+  "bookmarksSectionEmpty": "Bookmarked stops appear here.",
+  "@bookmarksSectionEmpty": {
+    "description": "Shown in the Bookmarks home section when there are no bookmarks."
+  },
+  "coreDirectionBoundN": "Northbound",
+  "@coreDirectionBoundN": {
+    "description": "Direction of travel at a stop facing North, e.g. 'Stop #1234 — Northbound'. Short forms follow the iOS app."
+  },
+  "coreDirectionBoundNE": "NE bound",
+  "@coreDirectionBoundNE": {
+    "description": "Direction of travel at a stop facing Northeast, e.g. 'Stop #1234 — NE bound'. Short forms follow the iOS app."
+  },
+  "coreDirectionBoundE": "Eastbound",
+  "@coreDirectionBoundE": {
+    "description": "Direction of travel at a stop facing East, e.g. 'Stop #1234 — Eastbound'. Short forms follow the iOS app."
+  },
+  "coreDirectionBoundSE": "SE bound",
+  "@coreDirectionBoundSE": {
+    "description": "Direction of travel at a stop facing Southeast, e.g. 'Stop #1234 — SE bound'. Short forms follow the iOS app."
+  },
+  "coreDirectionBoundS": "Southbound",
+  "@coreDirectionBoundS": {
+    "description": "Direction of travel at a stop facing South, e.g. 'Stop #1234 — Southbound'. Short forms follow the iOS app."
+  },
+  "coreDirectionBoundSW": "SW bound",
+  "@coreDirectionBoundSW": {
+    "description": "Direction of travel at a stop facing Southwest, e.g. 'Stop #1234 — SW bound'. Short forms follow the iOS app."
+  },
+  "coreDirectionBoundW": "Westbound",
+  "@coreDirectionBoundW": {
+    "description": "Direction of travel at a stop facing West, e.g. 'Stop #1234 — Westbound'. Short forms follow the iOS app."
+  },
+  "coreDirectionBoundNW": "NW bound",
+  "@coreDirectionBoundNW": {
+    "description": "Direction of travel at a stop facing Northwest, e.g. 'Stop #1234 — NW bound'. Short forms follow the iOS app."
+  },
+  "coreStopCodeNumeric": "Stop #{code}",
+  "@coreStopCodeNumeric": {
+    "description": "Numeric stop code, e.g. 'Stop #1234'.",
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "coreStopCodeNonNumeric": "Stop: '{code}'",
+  "@coreStopCodeNonNumeric": {
+    "description": "Stop code that is not a number, e.g. Stop: 'Old Library'.",
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "coreJustNow": "Just Now",
+  "@coreJustNow": {
+    "description": "Relative time under five seconds ago. Capitals follow the iOS app."
+  },
+  "coreSecondsAgo": "{seconds} sec. ago",
+  "@coreSecondsAgo": {
+    "description": "Relative time in seconds, e.g. 'Updated 31 sec. ago'.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "coreMinutesAgo": "{minutes} min. ago",
+  "@coreMinutesAgo": {
+    "description": "Relative time in minutes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "coreHoursAgo": "{hours} hr. ago",
+  "@coreHoursAgo": {
+    "description": "Relative time in hours.",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "coreDaysAgo": "{days, plural, =1{1 day ago} other{{days} days ago}}",
+  "@coreDaysAgo": {
+    "description": "Relative time in days.",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "coreMeters": "{value} m",
+  "@coreMeters": {
+    "description": "A distance in metres; value is already formatted, e.g. '350 m'.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "coreKilometers": "{value} km",
+  "@coreKilometers": {
+    "description": "A distance in kilometres, e.g. '1.2 km'.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "coreFeet": "{value} ft",
+  "@coreFeet": {
+    "description": "A distance in feet, e.g. '500 ft'.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "coreMiles": "{value} mi",
+  "@coreMiles": {
+    "description": "A distance in miles, e.g. '0.3 mi'.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "arrivalsNow": "now",
+  "@arrivalsNow": {
+    "description": "Arrivals panel countdown for a vehicle arriving now."
+  },
+  "arrivalsMinutesCompact": "{minutes}m",
+  "@arrivalsMinutesCompact": {
+    "description": "Arrivals panel compact countdown, e.g. '5m'.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "arrivalsCanceled": "canceled",
+  "@arrivalsCanceled": {
+    "description": "Arrivals panel status of a canceled trip."
+  },
+  "arrivalsEveryMinutesFrom": "every {minutes} min from {time}",
+  "@arrivalsEveryMinutesFrom": {
+    "description": "Frequency-based service that has not started yet; time is a clock time.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "arrivalsEveryMinutesUntil": "every {minutes} min until {time}",
+  "@arrivalsEveryMinutesUntil": {
+    "description": "Frequency-based service running now; time is a clock time.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "arrivalsDirectionBoundN": "North bound",
+  "@arrivalsDirectionBoundN": {
+    "description": "Arrivals panel header: the direction of travel at a stop facing North."
+  },
+  "arrivalsDirectionBoundNE": "Northeast bound",
+  "@arrivalsDirectionBoundNE": {
+    "description": "Arrivals panel header: the direction of travel at a stop facing Northeast."
+  },
+  "arrivalsDirectionBoundE": "East bound",
+  "@arrivalsDirectionBoundE": {
+    "description": "Arrivals panel header: the direction of travel at a stop facing East."
+  },
+  "arrivalsDirectionBoundSE": "Southeast bound",
+  "@arrivalsDirectionBoundSE": {
+    "description": "Arrivals panel header: the direction of travel at a stop facing Southeast."
+  },
+  "arrivalsDirectionBoundS": "South bound",
+  "@arrivalsDirectionBoundS": {
+    "description": "Arrivals panel header: the direction of travel at a stop facing South."
+  },
+  "arrivalsDirectionBoundSW": "Southwest bound",
+  "@arrivalsDirectionBoundSW": {
+    "description": "Arrivals panel header: the direction of travel at a stop facing Southwest."
+  },
+  "arrivalsDirectionBoundW": "West bound",
+  "@arrivalsDirectionBoundW": {
+    "description": "Arrivals panel header: the direction of travel at a stop facing West."
+  },
+  "arrivalsDirectionBoundNW": "Northwest bound",
+  "@arrivalsDirectionBoundNW": {
+    "description": "Arrivals panel header: the direction of travel at a stop facing Northwest."
+  },
+  "arrivalsDirectionBoundOther": "{code} bound",
+  "@arrivalsDirectionBoundOther": {
+    "description": "Arrivals panel header for a direction code the app doesn't know; code is shown as received.",
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "arrivalsRefresh": "Refresh arrivals",
+  "@arrivalsRefresh": {
+    "description": "Arrivals panel refresh button label."
+  },
+  "arrivalsRetry": "Retry",
+  "@arrivalsRetry": {
+    "description": "Arrivals panel button that repeats a failed request."
+  },
+  "arrivalsNoArrivals": "{minutes, plural, other{No arrivals in the next {minutes} minutes}}",
+  "@arrivalsNoArrivals": {
+    "description": "Arrivals panel empty state.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "arrivalsStopNotFound": "Stop not found or service unavailable",
+  "@arrivalsStopNotFound": {
+    "description": "Arrivals panel error when the server returns nothing for the stop."
+  },
+  "arrivalsNetworkError": "Couldn't reach the transit server. Check your connection.",
+  "@arrivalsNetworkError": {
+    "description": "Arrivals panel error when the network fails."
+  },
+  "arrivalsLoadError": "Couldn't load arrivals.",
+  "@arrivalsLoadError": {
+    "description": "Arrivals panel generic error."
+  },
+  "arrivalsStaleNotice": "Couldn't update. Showing results from {time}",
+  "@arrivalsStaleNotice": {
+    "description": "Arrivals panel notice after a failed refresh; time is a clock time.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "arrivalsArrivingNow": "arriving now",
+  "@arrivalsArrivingNow": {
+    "description": "Spoken by screen readers for an arrival happening now."
+  },
+  "arrivalsArrivingInMinutes": "{minutes, plural, =1{arriving in 1 minute} other{arriving in {minutes} minutes}}",
+  "@arrivalsArrivingInMinutes": {
+    "description": "Spoken by screen readers for an upcoming arrival.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "arrivalsRealtime": "real-time",
+  "@arrivalsRealtime": {
+    "description": "Spoken by screen readers for an arrival with a live prediction."
+  },
+  "arrivalsRowTapHint": "show details",
+  "@arrivalsRowTapHint": {
+    "description": "Screen reader hint on a tappable arrival row (\"double-tap to show details\")."
+  },
+  "arrivalsAtTime": "at {time}",
+  "@arrivalsAtTime": {
+    "description": "Spoken arrival clock time, e.g. 'at 10:47 PM'.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "arrivalsMinutesLateSemantics": "{minutes, plural, =1{1 minute late} other{{minutes} minutes late}}",
+  "@arrivalsMinutesLateSemantics": {
+    "description": "Spoken schedule deviation.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "arrivalsMinutesEarlySemantics": "{minutes, plural, =1{1 minute early} other{{minutes} minutes early}}",
+  "@arrivalsMinutesEarlySemantics": {
+    "description": "Spoken schedule deviation.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "arrivalsEveryMinutesFromSemantics": "{minutes, plural, other{every {minutes} minutes from {time}}}",
+  "@arrivalsEveryMinutesFromSemantics": {
+    "description": "Spoken form of the frequency line for service not yet started.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "arrivalsEveryMinutesUntilSemantics": "{minutes, plural, other{every {minutes} minutes until {time}}}",
+  "@arrivalsEveryMinutesUntilSemantics": {
+    "description": "Spoken form of the frequency line for service running now.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "arrivalsScheduledSemantics": "scheduled time",
+  "@arrivalsScheduledSemantics": {
+    "description": "Spoken for an arrival without a real-time prediction."
+  },
+  "arrivalsLoading": "Loading arrivals",
+  "@arrivalsLoading": {
+    "description": "Spoken by screen readers while the first request is in flight."
+  },
+  "arrivalsRefreshing": "Refreshing arrivals",
+  "@arrivalsRefreshing": {
+    "description": "Label of the refresh button's progress indicator."
+  },
+  "arrivalsUpdated": "Arrivals updated",
+  "@arrivalsUpdated": {
+    "description": "Announced after a refresh the rider asked for succeeds."
+  },
+  "tripPlannerOriginLabel": "From",
+  "@tripPlannerOriginLabel": {
+    "description": "Trip planner: label of the starting point field."
+  },
+  "tripPlannerDestinationLabel": "To",
+  "@tripPlannerDestinationLabel": {
+    "description": "Trip planner: label of the destination field."
+  },
+  "tripPlannerChooseOrigin": "Choose starting point",
+  "@tripPlannerChooseOrigin": {
+    "description": "Trip planner: placeholder of an empty starting point."
+  },
+  "tripPlannerChooseDestination": "Choose destination",
+  "@tripPlannerChooseDestination": {
+    "description": "Trip planner: placeholder of an empty destination."
+  },
+  "tripPlannerCurrentLocation": "Current Location",
+  "@tripPlannerCurrentLocation": {
+    "description": "Trip planner: name of the rider's current location as a trip endpoint."
+  },
+  "tripPlannerSwapEndpoints": "Swap starting point and destination",
+  "@tripPlannerSwapEndpoints": {
+    "description": "Trip planner: button that swaps the two endpoints."
+  },
+  "tripPlannerPlanTrip": "Plan trip",
+  "@tripPlannerPlanTrip": {
+    "description": "Trip planner: button that plans the trip."
+  },
+  "tripPlannerPlanningTrip": "Planning your trip",
+  "@tripPlannerPlanningTrip": {
+    "description": "Trip planner: shown and spoken while a trip is being planned."
+  },
+  "tripPlannerOptions": "Trip options",
+  "@tripPlannerOptions": {
+    "description": "Trip planner: heading of the options section."
+  },
+  "tripPlannerLeaveNow": "Leave now",
+  "@tripPlannerLeaveNow": {
+    "description": "Trip planner time option."
+  },
+  "tripPlannerDepartAt": "Depart at",
+  "@tripPlannerDepartAt": {
+    "description": "Trip planner time option: leave at a chosen time."
+  },
+  "tripPlannerArriveBy": "Arrive by",
+  "@tripPlannerArriveBy": {
+    "description": "Trip planner time option: arrive by a chosen time."
+  },
+  "tripPlannerChangeTime": "Change time, {dateTime}",
+  "@tripPlannerChangeTime": {
+    "description": "Trip planner: button that changes the trip time; dateTime is e.g. 'Wed, Nov 25, 9:00 AM'.",
+    "placeholders": {
+      "dateTime": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerModeTransit": "Transit",
+  "@tripPlannerModeTransit": {
+    "description": "Trip planner: a way of travelling the rider can choose (also the name of a walking, cycling, driving or transit leg)."
+  },
+  "tripPlannerModeWalk": "Walk",
+  "@tripPlannerModeWalk": {
+    "description": "Trip planner: a way of travelling the rider can choose (also the name of a walking, cycling, driving or transit leg)."
+  },
+  "tripPlannerModeBike": "Bike",
+  "@tripPlannerModeBike": {
+    "description": "Trip planner: a way of travelling the rider can choose (also the name of a walking, cycling, driving or transit leg)."
+  },
+  "tripPlannerModeCar": "Car",
+  "@tripPlannerModeCar": {
+    "description": "Trip planner: a way of travelling the rider can choose (also the name of a walking, cycling, driving or transit leg)."
+  },
+  "tripPlannerModeBikeRental": "Bikeshare Only",
+  "@tripPlannerModeBikeRental": {
+    "description": "Trip planner: a way of travelling the rider can choose (also the name of a walking, cycling, driving or transit leg)."
+  },
+  "tripPlannerModeTransitBikeRental": "Transit + Bikeshare",
+  "@tripPlannerModeTransitBikeRental": {
+    "description": "Trip planner: a way of travelling the rider can choose (also the name of a walking, cycling, driving or transit leg)."
+  },
+  "tripPlannerWheelchairAccessible": "Wheelchair accessible",
+  "@tripPlannerWheelchairAccessible": {
+    "description": "Trip planner option: only wheelchair-accessible trips."
+  },
+  "tripPlannerWalkQuarterMile": "0.25 mile",
+  "@tripPlannerWalkQuarterMile": {
+    "description": "Trip planner: maximum walking distance choice."
+  },
+  "tripPlannerWalkHalfMile": "0.5 mile",
+  "@tripPlannerWalkHalfMile": {
+    "description": "Trip planner: maximum walking distance choice."
+  },
+  "tripPlannerWalkOneMile": "1 mile",
+  "@tripPlannerWalkOneMile": {
+    "description": "Trip planner: maximum walking distance choice."
+  },
+  "tripPlannerWalkTwoMiles": "2 miles",
+  "@tripPlannerWalkTwoMiles": {
+    "description": "Trip planner: maximum walking distance choice."
+  },
+  "tripPlannerMaxWalk": "Walk up to {distance}",
+  "@tripPlannerMaxWalk": {
+    "description": "Trip planner: maximum walking distance setting, e.g. 'Walk up to 0.5 mile'.",
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerNoTripsFound": "No trips found",
+  "@tripPlannerNoTripsFound": {
+    "description": "Trip planner: no itineraries were found."
+  },
+  "tripPlannerRetry": "Retry",
+  "@tripPlannerRetry": {
+    "description": "Trip planner: button that repeats a failed request."
+  },
+  "tripPlannerRealTime": "Real-time",
+  "@tripPlannerRealTime": {
+    "description": "Trip planner: badge on a leg with live data."
+  },
+  "tripPlannerDurationMinutes": "{minutes} min",
+  "@tripPlannerDurationMinutes": {
+    "description": "Trip planner: compact trip duration under an hour.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerDurationHours": "{hours} hr",
+  "@tripPlannerDurationHours": {
+    "description": "Trip planner: compact trip duration in whole hours.",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerDurationHoursMinutes": "{hours} hr {minutes} min",
+  "@tripPlannerDurationHoursMinutes": {
+    "description": "Trip planner: compact trip duration, e.g. '1 hr 5 min'.",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerTimeRange": "{start} – {end}",
+  "@tripPlannerTimeRange": {
+    "description": "Trip planner: start and end clock times of a trip.",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerTransfers": "{count, plural, =0{No transfers} =1{1 transfer} other{{count} transfers}}",
+  "@tripPlannerTransfers": {
+    "description": "Trip planner: number of transfers in a trip.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerWalkDistance": "Walk {distance}",
+  "@tripPlannerWalkDistance": {
+    "description": "Trip planner: total walking in a trip, e.g. 'Walk 0.4 mi'.",
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerDepartsAt": "Departs {time} from {place}",
+  "@tripPlannerDepartsAt": {
+    "description": "Trip planner: when and where a trip starts.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerStatusOnTime": "On time",
+  "@tripPlannerStatusOnTime": {
+    "description": "Trip planner: real-time status of a transit leg."
+  },
+  "tripPlannerStatusLate": "{minutes} min late",
+  "@tripPlannerStatusLate": {
+    "description": "Trip planner: real-time status of a transit leg.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerStatusEarly": "{minutes} min early",
+  "@tripPlannerStatusEarly": {
+    "description": "Trip planner: real-time status of a transit leg.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerStatusScheduled": "Scheduled",
+  "@tripPlannerStatusScheduled": {
+    "description": "Trip planner: status of a transit leg with no live data."
+  },
+  "tripPlannerLegBus": "Bus",
+  "@tripPlannerLegBus": {
+    "description": "Trip planner: kind of vehicle for a transit leg, e.g. 'Take Bus 30'."
+  },
+  "tripPlannerLegTram": "Tram",
+  "@tripPlannerLegTram": {
+    "description": "Trip planner: kind of vehicle for a transit leg, e.g. 'Take Bus 30'."
+  },
+  "tripPlannerLegSubway": "Subway",
+  "@tripPlannerLegSubway": {
+    "description": "Trip planner: kind of vehicle for a transit leg, e.g. 'Take Bus 30'."
+  },
+  "tripPlannerLegRail": "Train",
+  "@tripPlannerLegRail": {
+    "description": "Trip planner: kind of vehicle for a transit leg, e.g. 'Take Bus 30'."
+  },
+  "tripPlannerLegFerry": "Ferry",
+  "@tripPlannerLegFerry": {
+    "description": "Trip planner: kind of vehicle for a transit leg, e.g. 'Take Bus 30'."
+  },
+  "tripPlannerLegCableCar": "Cable Car",
+  "@tripPlannerLegCableCar": {
+    "description": "Trip planner: kind of vehicle for a transit leg, e.g. 'Take Bus 30'."
+  },
+  "tripPlannerLegGondola": "Gondola",
+  "@tripPlannerLegGondola": {
+    "description": "Trip planner: kind of vehicle for a transit leg, e.g. 'Take Bus 30'."
+  },
+  "tripPlannerLegFunicular": "Funicular",
+  "@tripPlannerLegFunicular": {
+    "description": "Trip planner: kind of vehicle for a transit leg, e.g. 'Take Bus 30'."
+  },
+  "tripPlannerLegAirplane": "Plane",
+  "@tripPlannerLegAirplane": {
+    "description": "Trip planner: kind of vehicle for a transit leg, e.g. 'Take Bus 30'."
+  },
+  "tripPlannerLegTrolleybus": "Trolleybus",
+  "@tripPlannerLegTrolleybus": {
+    "description": "Trip planner: kind of vehicle for a transit leg, e.g. 'Take Bus 30'."
+  },
+  "tripPlannerLegMonorail": "Monorail",
+  "@tripPlannerLegMonorail": {
+    "description": "Trip planner: kind of vehicle for a transit leg, e.g. 'Take Bus 30'."
+  },
+  "tripPlannerItinerarySemantics": "{timeRange}, {duration}. {legs}. {details}",
+  "@tripPlannerItinerarySemantics": {
+    "description": "Trip planner: screen-reader summary of a trip; each part is already formatted.",
+    "placeholders": {
+      "timeRange": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "legs": {
+        "type": "String"
+      },
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerLegWalkSemantics": "Walk {duration}",
+  "@tripPlannerLegWalkSemantics": {
+    "description": "Trip planner: spoken walking leg, e.g. 'Walk 5 minutes'.",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerLegBikeSemantics": "Bike {duration}",
+  "@tripPlannerLegBikeSemantics": {
+    "description": "Trip planner: spoken cycling leg.",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerLegRentalBikeSemantics": "Rental bike {duration}",
+  "@tripPlannerLegRentalBikeSemantics": {
+    "description": "Trip planner: spoken bikeshare leg.",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerLegCarSemantics": "Drive {duration}",
+  "@tripPlannerLegCarSemantics": {
+    "description": "Trip planner: spoken driving leg.",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerLegTransitSemantics": "{mode}, {duration}",
+  "@tripPlannerLegTransitSemantics": {
+    "description": "Trip planner: spoken transit leg with no route name, e.g. 'Ferry, 32 minutes'.",
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerLegTransitRouteSemantics": "{mode} {route}, {duration}",
+  "@tripPlannerLegTransitRouteSemantics": {
+    "description": "Trip planner: spoken transit leg, e.g. 'Tram Blue, 32 minutes'.",
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "route": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerThen": "then",
+  "@tripPlannerThen": {
+    "description": "Trip planner: spoken between legs of a trip ('Walk 5 minutes, then Bus 10')."
+  },
+  "tripPlannerOpenItineraryHint": "show trip details",
+  "@tripPlannerOpenItineraryHint": {
+    "description": "Trip planner: screen reader hint on a trip (\"double-tap to show trip details\")."
+  },
+  "tripPlannerMinutesSemantics": "{minutes, plural, =1{1 minute} other{{minutes} minutes}}",
+  "@tripPlannerMinutesSemantics": {
+    "description": "Trip planner: spoken duration in minutes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerHoursSemantics": "{hours, plural, =1{1 hour} other{{hours} hours}}",
+  "@tripPlannerHoursSemantics": {
+    "description": "Trip planner: spoken duration in hours.",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerHoursMinutesSemantics": "{hours} {minutes}",
+  "@tripPlannerHoursMinutesSemantics": {
+    "description": "Trip planner: spoken duration of hours and minutes, e.g. '1 hour 5 minutes'; both parts are already formatted.",
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerFeetSemantics": "{count, plural, =1{1 foot} other{{value} feet}}",
+  "@tripPlannerFeetSemantics": {
+    "description": "Trip planner: spoken distance in feet; count is the amount, value the same amount already formatted.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerMilesSemantics": "{count, plural, =1{1 mile} other{{value} miles}}",
+  "@tripPlannerMilesSemantics": {
+    "description": "Trip planner: spoken distance in miles; count is the amount, value the same amount already formatted.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerMetersSemantics": "{count, plural, =1{1 meter} other{{value} meters}}",
+  "@tripPlannerMetersSemantics": {
+    "description": "Trip planner: spoken distance in meters; count is the amount, value the same amount already formatted.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerKilometersSemantics": "{count, plural, =1{1 kilometer} other{{value} kilometers}}",
+  "@tripPlannerKilometersSemantics": {
+    "description": "Trip planner: spoken distance in kilometers; count is the amount, value the same amount already formatted.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerTimeRangeSemantics": "{start} to {end}",
+  "@tripPlannerTimeRangeSemantics": {
+    "description": "Trip planner: spoken start and end clock times.",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerStatusOnTimeSemantics": "real-time, on time",
+  "@tripPlannerStatusOnTimeSemantics": {
+    "description": "Trip planner: spoken real-time status."
+  },
+  "tripPlannerStatusLateSemantics": "{minutes, plural, =1{real-time, 1 minute late} other{real-time, {minutes} minutes late}}",
+  "@tripPlannerStatusLateSemantics": {
+    "description": "Trip planner: spoken real-time status.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerStatusEarlySemantics": "{minutes, plural, =1{real-time, 1 minute early} other{real-time, {minutes} minutes early}}",
+  "@tripPlannerStatusEarlySemantics": {
+    "description": "Trip planner: spoken real-time status.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerStatusScheduledSemantics": "scheduled time",
+  "@tripPlannerStatusScheduledSemantics": {
+    "description": "Trip planner: spoken status of a leg with no live data."
+  },
+  "tripPlannerResultsHeading": "Suggested trips",
+  "@tripPlannerResultsHeading": {
+    "description": "Trip planner: heading above the results."
+  },
+  "tripPlannerTripsFound": "{count, plural, =1{1 trip found} other{{count} trips found}}",
+  "@tripPlannerTripsFound": {
+    "description": "Trip planner: announced when a plan finishes.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerPlacesFound": "{count, plural, =1{1 place found} other{{count} places found}}",
+  "@tripPlannerPlacesFound": {
+    "description": "Trip planner: announced when a place search finishes.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerMapSemanticsLabel": "Map of the trip. The directions below describe the same trip.",
+  "@tripPlannerMapSemanticsLabel": {
+    "description": "Trip planner: screen-reader label of the trip map."
+  },
+  "tripPlannerTripDetails": "Trip details",
+  "@tripPlannerTripDetails": {
+    "description": "Trip planner: title of a trip's directions page."
+  },
+  "tripPlannerMapLabel": "Map of the trip",
+  "@tripPlannerMapLabel": {
+    "description": "Trip planner: short label of the trip map."
+  },
+  "tripPlannerStart": "Start",
+  "@tripPlannerStart": {
+    "description": "Trip planner: name of the trip's starting point when it has no name."
+  },
+  "tripPlannerDestination": "Destination",
+  "@tripPlannerDestination": {
+    "description": "Trip planner: name of the trip's destination when it has no name."
+  },
+  "tripPlannerUnnamedPlace": "Unnamed location",
+  "@tripPlannerUnnamedPlace": {
+    "description": "Trip planner: a place or street with no name."
+  },
+  "tripPlannerRentalBike": "Rental bike",
+  "@tripPlannerRentalBike": {
+    "description": "Trip planner: a bikeshare station with no name."
+  },
+  "tripPlannerWalkTo": "Walk to {place}",
+  "@tripPlannerWalkTo": {
+    "description": "Trip planner direction.",
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerBikeTo": "Bike to {place}",
+  "@tripPlannerBikeTo": {
+    "description": "Trip planner direction.",
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerRideRentalBikeTo": "Ride rental bike to {place}",
+  "@tripPlannerRideRentalBikeTo": {
+    "description": "Trip planner direction.",
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerDriveTo": "Drive to {place}",
+  "@tripPlannerDriveTo": {
+    "description": "Trip planner direction.",
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerBoard": "Take {mode}",
+  "@tripPlannerBoard": {
+    "description": "Trip planner direction; mode is a vehicle kind such as 'Bus'.",
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerBoardRoute": "Take {mode} {route}",
+  "@tripPlannerBoardRoute": {
+    "description": "Trip planner direction, e.g. 'Take Bus 30'.",
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "route": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerBoardHeadsign": "Take {mode} toward {headsign}",
+  "@tripPlannerBoardHeadsign": {
+    "description": "Trip planner direction, e.g. 'Take Ferry toward Bainbridge'.",
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "headsign": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerBoardRouteHeadsign": "Take {mode} {route} toward {headsign}",
+  "@tripPlannerBoardRouteHeadsign": {
+    "description": "Trip planner direction, e.g. 'Take Bus 30 toward Old Town'.",
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "route": {
+        "type": "String"
+      },
+      "headsign": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerGetOffAt": "Get off at {place}",
+  "@tripPlannerGetOffAt": {
+    "description": "Trip planner direction.",
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerArriveAt": "Arrive at {place}",
+  "@tripPlannerArriveAt": {
+    "description": "Trip planner direction.",
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerStopCount": "{count, plural, =1{1 stop} other{{count} stops}}",
+  "@tripPlannerStopCount": {
+    "description": "Trip planner: stops passed on a transit leg.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerShowStops": "{count, plural, =1{Show 1 stop} other{Show {count} stops}}",
+  "@tripPlannerShowStops": {
+    "description": "Trip planner: button that lists the stops of a leg.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerHideStops": "{count, plural, =1{Hide 1 stop} other{Hide {count} stops}}",
+  "@tripPlannerHideStops": {
+    "description": "Trip planner: button that hides the stops of a leg.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerStepCount": "{count, plural, =1{1 step} other{{count} steps}}",
+  "@tripPlannerStepCount": {
+    "description": "Trip planner: turn-by-turn steps of a walking leg.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerShowSteps": "{count, plural, =1{Show 1 step} other{Show {count} steps}}",
+  "@tripPlannerShowSteps": {
+    "description": "Trip planner: button that lists the steps of a leg.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerHideSteps": "{count, plural, =1{Hide 1 step} other{Hide {count} steps}}",
+  "@tripPlannerHideSteps": {
+    "description": "Trip planner: button that hides the steps of a leg.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPlannerLegDistanceDuration": "{distance}, about {duration}",
+  "@tripPlannerLegDistanceDuration": {
+    "description": "Trip planner: length and time of a leg, e.g. '0.4 mi, about 8 min'.",
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerDirectionDepart": "Head out",
+  "@tripPlannerDirectionDepart": {
+    "description": "Trip planner: a turn-by-turn instruction, followed by 'onto <street>'."
+  },
+  "tripPlannerDirectionHardLeft": "Turn sharp left",
+  "@tripPlannerDirectionHardLeft": {
+    "description": "Trip planner: a turn-by-turn instruction, followed by 'onto <street>'."
+  },
+  "tripPlannerDirectionLeft": "Turn left",
+  "@tripPlannerDirectionLeft": {
+    "description": "Trip planner: a turn-by-turn instruction, followed by 'onto <street>'."
+  },
+  "tripPlannerDirectionSlightlyLeft": "Bear left",
+  "@tripPlannerDirectionSlightlyLeft": {
+    "description": "Trip planner: a turn-by-turn instruction, followed by 'onto <street>'."
+  },
+  "tripPlannerDirectionContinue": "Continue",
+  "@tripPlannerDirectionContinue": {
+    "description": "Trip planner: a turn-by-turn instruction, followed by 'onto <street>'."
+  },
+  "tripPlannerDirectionSlightlyRight": "Bear right",
+  "@tripPlannerDirectionSlightlyRight": {
+    "description": "Trip planner: a turn-by-turn instruction, followed by 'onto <street>'."
+  },
+  "tripPlannerDirectionRight": "Turn right",
+  "@tripPlannerDirectionRight": {
+    "description": "Trip planner: a turn-by-turn instruction, followed by 'onto <street>'."
+  },
+  "tripPlannerDirectionHardRight": "Turn sharp right",
+  "@tripPlannerDirectionHardRight": {
+    "description": "Trip planner: a turn-by-turn instruction, followed by 'onto <street>'."
+  },
+  "tripPlannerDirectionCircleClockwise": "Enter the roundabout clockwise",
+  "@tripPlannerDirectionCircleClockwise": {
+    "description": "Trip planner: a turn-by-turn instruction, followed by 'onto <street>'."
+  },
+  "tripPlannerDirectionCircleCounterclockwise": "Enter the roundabout counterclockwise",
+  "@tripPlannerDirectionCircleCounterclockwise": {
+    "description": "Trip planner: a turn-by-turn instruction, followed by 'onto <street>'."
+  },
+  "tripPlannerDirectionElevator": "Take the elevator",
+  "@tripPlannerDirectionElevator": {
+    "description": "Trip planner: a turn-by-turn instruction, followed by 'onto <street>'."
+  },
+  "tripPlannerDirectionUturnLeft": "Make a U-turn to the left",
+  "@tripPlannerDirectionUturnLeft": {
+    "description": "Trip planner: a turn-by-turn instruction, followed by 'onto <street>'."
+  },
+  "tripPlannerDirectionUturnRight": "Make a U-turn to the right",
+  "@tripPlannerDirectionUturnRight": {
+    "description": "Trip planner: a turn-by-turn instruction, followed by 'onto <street>'."
+  },
+  "tripPlannerDirectionEnterStation": "Enter the station",
+  "@tripPlannerDirectionEnterStation": {
+    "description": "Trip planner: a turn-by-turn instruction, followed by 'onto <street>'."
+  },
+  "tripPlannerDirectionExitStation": "Exit the station",
+  "@tripPlannerDirectionExitStation": {
+    "description": "Trip planner: a turn-by-turn instruction, followed by 'onto <street>'."
+  },
+  "tripPlannerDirectionFollowSigns": "Follow the signs",
+  "@tripPlannerDirectionFollowSigns": {
+    "description": "Trip planner: a turn-by-turn instruction, followed by 'onto <street>'."
+  },
+  "tripPlannerStepAlong": "Walk along {street} for {distance}.",
+  "@tripPlannerStepAlong": {
+    "description": "Trip planner: walking step with no turn.",
+    "placeholders": {
+      "street": {
+        "type": "String"
+      },
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerStepTurn": "{direction} onto {street}, walk {distance}.",
+  "@tripPlannerStepTurn": {
+    "description": "Trip planner: walking step, e.g. 'Turn right onto Pine St, walk 610 ft.'.",
+    "placeholders": {
+      "direction": {
+        "type": "String"
+      },
+      "street": {
+        "type": "String"
+      },
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "tripPlannerSearchHint": "Search for a place",
+  "@tripPlannerSearchHint": {
+    "description": "Trip planner: place search field label and placeholder."
+  },
+  "tripPlannerSearchNoResults": "No places found",
+  "@tripPlannerSearchNoResults": {
+    "description": "Trip planner: place search found nothing."
+  },
+  "tripPlannerSearchError": "Couldn't search for places. Try again.",
+  "@tripPlannerSearchError": {
+    "description": "Trip planner: place search failed."
+  },
+  "tripPlannerUseCurrentLocation": "Use current location",
+  "@tripPlannerUseCurrentLocation": {
+    "description": "Trip planner: button that uses the rider's location as an endpoint."
+  },
+  "tripPlannerLocationUnavailable": "Couldn't get your location.",
+  "@tripPlannerLocationUnavailable": {
+    "description": "Trip planner: the rider's location is unavailable."
+  },
+  "tripPlannerClearSearch": "Clear search",
+  "@tripPlannerClearSearch": {
+    "description": "Trip planner: button that clears the place search field."
+  },
+  "tripPlannerErrorMissingEndpoints": "Please select both origin and destination locations.",
+  "@tripPlannerErrorMissingEndpoints": {
+    "description": "Trip planner error: an endpoint is missing."
+  },
+  "tripPlannerErrorNetwork": "Couldn't reach the trip planner. Check your connection.",
+  "@tripPlannerErrorNetwork": {
+    "description": "Trip planner error: the network failed."
+  },
+  "tripPlannerErrorInvalidResponse": "Server returned invalid response",
+  "@tripPlannerErrorInvalidResponse": {
+    "description": "Trip planner error: the server's reply couldn't be read."
+  },
+  "tripPlannerErrorUnknown": "An unknown error occurred.",
+  "@tripPlannerErrorUnknown": {
+    "description": "Trip planner error with no specific message."
+  },
+  "tripPlannerPlannerSystemError": "We couldn’t plan your trip right now. Please try again.",
+  "@tripPlannerPlannerSystemError": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerGraphUnavailable": "Trip planning is temporarily unavailable. Try again shortly.",
+  "@tripPlannerPlannerGraphUnavailable": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerOutsideBounds": "This location isn’t supported yet.",
+  "@tripPlannerPlannerOutsideBounds": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerPathNotFound": "No route is available for this trip.",
+  "@tripPlannerPlannerPathNotFound": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerNoTransitTimes": "No transit options are available right now.",
+  "@tripPlannerPlannerNoTransitTimes": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerRequestTimeout": "This took longer than expected. Please try again.",
+  "@tripPlannerPlannerRequestTimeout": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerBogusParameter": "Something went wrong with the request. Please try again.",
+  "@tripPlannerPlannerBogusParameter": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerGeocodeFromNotFound": "We couldn’t find the starting location.",
+  "@tripPlannerPlannerGeocodeFromNotFound": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerGeocodeToNotFound": "We couldn’t find the destination.",
+  "@tripPlannerPlannerGeocodeToNotFound": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerGeocodeFromToNotFound": "We couldn’t find either the starting point or the destination.",
+  "@tripPlannerPlannerGeocodeFromToNotFound": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerTooClose": "The start and destination are too close.",
+  "@tripPlannerPlannerTooClose": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerLocationNotAccessible": "This route isn’t accessible with the selected option.",
+  "@tripPlannerPlannerLocationNotAccessible": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerGeocodeFromAmbiguous": "The starting location isn’t clear. Try being more specific.",
+  "@tripPlannerPlannerGeocodeFromAmbiguous": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerGeocodeToAmbiguous": "The destination isn’t clear. Try being more specific.",
+  "@tripPlannerPlannerGeocodeToAmbiguous": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerGeocodeFromToAmbiguous": "Both locations need more detail. Try refining them.",
+  "@tripPlannerPlannerGeocodeFromToAmbiguous": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerUnderspecifiedTriangle": "Some route options are missing.",
+  "@tripPlannerPlannerUnderspecifiedTriangle": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerTriangleNotAffine": "The selected route options don’t work together.",
+  "@tripPlannerPlannerTriangleNotAffine": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerTriangleOptimizeTypeNotSet": "Please choose a route preference.",
+  "@tripPlannerPlannerTriangleOptimizeTypeNotSet": {
+    "description": "Trip planner error returned by the trip planning server."
+  },
+  "tripPlannerPlannerTriangleValuesNotSet": "Please adjust the route preferences.",
+  "@tripPlannerPlannerTriangleValuesNotSet": {
+    "description": "Trip planner error returned by the trip planning server."
+  }
+}

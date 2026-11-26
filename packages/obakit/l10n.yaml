@@ -1,0 +1,10 @@
+# gen-l10n configuration. Regenerate with `mise exec -- flutter gen-l10n`
+# from this directory (flutter pub get / flutter test also regenerate).
+arb-dir: lib/src/l10n
+template-arb-file: app_en.arb
+output-dir: lib/src/l10n/generated
+output-localization-file: oba_localizations.dart
+output-class: ObaLocalizations
+required-resource-attributes: true
+nullable-getter: true
+format: true

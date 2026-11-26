@@ -109,6 +109,12 @@ class Transport {
     } on FormatException catch (e) {
       throw ObaFormatException('Response is not valid JSON: ${e.message}');
     }
+    if (decoded == null) {
+      throw const ObaApiException(
+        ObaApiErrorKind.emptyResponse,
+        isNullBody: true,
+      );
+    }
     final json = asJsonMap(decoded, 'response');
     final code = readInt(json, 'code');
     if (code != 200) {
@@ -123,7 +129,8 @@ class Transport {
           readEpochMs(json, 'currentTime') ??
           (throw const ObaFormatException('Missing "currentTime"')),
       version: readOptInt(json, 'version') ?? 1,
-      data: readMap(json, 'data'),
+      // Write-style calls (problem reports) may carry no data at all.
+      data: readOptMap(json, 'data') ?? const {},
     );
   }
 }
