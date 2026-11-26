@@ -72,6 +72,13 @@ The tests boot a real `ObaApplication` over an in-memory store and a
 - Tabs live in an `IndexedStack`. SDK widgets in a hidden tab stop polling
   by themselves; the host does nothing.
 
+## Map tiles
+
+The map uses CARTO's Voyager street style, with Dark Matter in dark mode
+(`lib/map_tiles.dart`). Both need no API key and serve `@2x` tiles, which
+the SDK requests on high-density screens. CARTO's free use has limits; a
+production app should choose a tile provider and plan.
+
 ## Embed points
 
 | Screen | SDK widget | Why it's there for a student |

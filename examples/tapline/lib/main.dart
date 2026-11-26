@@ -3,6 +3,7 @@ import 'package:obakit/obakit.dart';
 
 import 'app.dart';
 import 'data/wallet.dart';
+import 'map_tiles.dart';
 
 /// `--dart-define=OBA_API_KEY=...`; defaults to the public test key.
 const _apiKey = String.fromEnvironment(
@@ -21,6 +22,8 @@ Future<void> main() async {
   final oba = await ObaApplication.create(
     map: const ObaMapConfig(
       userAgentPackageName: 'org.onebusaway.examples.tapline',
+      standard: cartoVoyager,
+      standardDark: cartoDarkMatter,
     ),
     services: ObaPlatformServices(
       keyValueStore: await SharedPreferencesKeyValueStore.create(),

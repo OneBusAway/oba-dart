@@ -2,6 +2,7 @@ import 'package:http/http.dart' as http;
 import 'package:obakit/obakit.dart';
 
 import 'data/campus.dart';
+import 'map_tiles.dart';
 
 /// The OneBusAway API key. Pass your own with
 /// `--dart-define=OBA_API_KEY=...`.
@@ -40,6 +41,8 @@ Future<ObaApplication> createObaApplication({
         map ??
         const ObaMapConfig(
           userAgentPackageName: 'org.onebusaway.examples.studentlife',
+          standard: cartoVoyager,
+          standardDark: cartoDarkMatter,
         ),
     config: (s) => ObaAppConfig(
       appName: 'Student Life',

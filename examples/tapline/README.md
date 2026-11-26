@@ -52,6 +52,13 @@ code, each embed is marked with an `// OBA embed:` comment.
   logic.
 - `lib/widgets/embed_frame.dart` is the "Show OBA embeds" overlay.
 
+## Map tiles
+
+The map uses CARTO's Voyager street style, with Dark Matter in dark mode
+(`lib/map_tiles.dart`). Both need no API key and serve `@2x` tiles, which
+the SDK requests on high-density screens. CARTO's free use has limits; a
+production app should choose a tile provider and plan.
+
 ## Embed points
 
 | Screen | SDK widget | Why it's there for a fare-app rider |
