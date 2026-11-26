@@ -229,6 +229,55 @@ void main() {
     expect(count(env, 'arrivals-and-departures-for-stop'), before);
   });
 
+  testWidgets('section: no requests until a hidden IndexedStack child shows', (
+    tester,
+  ) async {
+    env = await makeEnv(location: udistrict);
+    Widget tabs(int index) => IndexedStack(
+      index: index,
+      children: [const SizedBox(), feed(const NearbyStopsSection())],
+    );
+    await env.pumpPage(tester, tabs(0), presentation: ObaPresentation.embedded);
+    await tester.pump(const Duration(seconds: 61));
+    await ObaTestEnv.settle(tester);
+    expect(count(env, 'stops-for-location'), 0);
+    expect(count(env, 'arrivals-and-departures-for-stop'), 0);
+
+    await env.pumpPage(tester, tabs(1), presentation: ObaPresentation.embedded);
+    expect(count(env, 'stops-for-location'), 1);
+    expect(count(env, 'arrivals-and-departures-for-stop'), 3);
+  });
+
+  test('controller: setCenter while hidden waits until visible', () async {
+    var requests = 0;
+    final client = OneBusAwayClient(
+      baseUrl: Uri.parse('https://a.example.org/'),
+      apiKey: 'k',
+      httpClient: MockClient((r) async {
+        if (!r.url.path.contains('stops-for-location')) {
+          return http.Response(
+            fixture('arrivals_and_departures_empty.json'),
+            200,
+          );
+        }
+        requests++;
+        return http.Response(fixture('stops_for_location_query.json'), 200);
+      }),
+    );
+    final c = NearbyDeparturesController(client: () => client);
+    addTearDown(c.dispose);
+    c.setCenter(const Coordinate(47.159439, -122.505051));
+    c.reset();
+    await pumpEventQueue();
+    expect(requests, 0);
+    expect(c.hasLoadedStops, isFalse);
+
+    c.visible = true;
+    await pumpEventQueue();
+    expect(requests, 1);
+    expect(c.stops, isNotEmpty);
+  });
+
   testWidgets('section: asks for location when it has none', (tester) async {
     env = await makeEnv();
     await env.pumpPage(

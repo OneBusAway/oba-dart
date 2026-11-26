@@ -17,8 +17,10 @@ void main() {
   });
   tearDown(() => env.dispose());
 
-  Widget feed() => ListView(
-    children: const [ObaStopDeparturesCard(stopId: '1_10020', maxArrivals: 1)],
+  Widget feed({String? title}) => ListView(
+    children: [
+      ObaStopDeparturesCard(stopId: '1_10020', maxArrivals: 1, title: title),
+    ],
   );
 
   testWidgets('shows up to maxArrivals upcoming; see all opens the stop', (
@@ -65,14 +67,51 @@ void main() {
     expect(arrivals(), greaterThan(shown));
   });
 
-  for (final mode in [ThemeMode.light, ThemeMode.dark]) {
-    testWidgets('accessibility (${mode.name})', (tester) async {
-      await env.pumpPage(tester, Scaffold(body: feed()), themeMode: mode);
-      await expectObaAccessibility(tester);
+  testWidgets('a host title keeps the stop name as a subtitle', (tester) async {
+    final handle = tester.ensureSemantics();
+    await env.pumpPage(tester, Scaffold(body: feed(title: 'Home stop')));
+    expect(
+      tester.getSemantics(find.text('Home stop')),
+      isSemantics(label: 'Home stop', isHeader: true),
+    );
+    final name = find.textContaining('NE 55TH ST & 37TH AVE NE');
+    expect(name, findsOneWidget);
+    expect(tester.getSemantics(name), isNot(isSemantics(isHeader: true)));
+    expect(
+      tester.getTopLeft(name).dy,
+      greaterThan(tester.getTopLeft(find.text('Home stop')).dy),
+    );
+    handle.dispose();
+  });
+
+  testWidgets('no subtitle when the host title is the stop name', (
+    tester,
+  ) async {
+    await env.pumpPage(
+      tester,
+      Scaffold(body: feed(title: 'NE 55TH ST & 37TH AVE NE')),
+    );
+    expect(find.textContaining('NE 55TH ST & 37TH AVE NE'), findsOneWidget);
+  });
+
+  for (final title in [null, 'Home stop']) {
+    final suffix = title == null ? '' : ', host title';
+    for (final mode in [ThemeMode.light, ThemeMode.dark]) {
+      testWidgets('accessibility (${mode.name}$suffix)', (tester) async {
+        await env.pumpPage(
+          tester,
+          Scaffold(body: feed(title: title)),
+          themeMode: mode,
+        );
+        await expectObaAccessibility(tester);
+      });
+    }
+
+    testWidgets('no overflow at 200% text$suffix', (tester) async {
+      await env.expectNoOverflowAtTextScale(
+        tester,
+        Scaffold(body: feed(title: title)),
+      );
     });
   }
-
-  testWidgets('no overflow at 200% text', (tester) async {
-    await env.expectNoOverflowAtTextScale(tester, Scaffold(body: feed()));
-  });
 }

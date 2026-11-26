@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:obakit/obakit.dart';
+import 'package:obakit_trip_planner/obakit_trip_planner.dart' as tp;
 
 import 'features/bookmarks/bookmarks_support.dart';
 import 'support/oba_test_harness.dart';
@@ -341,6 +342,42 @@ void main() {
       await env.pumpPage(tester, const ObaHomeShell());
       expect(icons(), Brightness.dark);
       await unmount(tester);
+    });
+  });
+
+  test('TileProvider is exported for ObaMapConfig.tileProvider', () {
+    // Unprefixed: resolves through package:obakit, not flutter_map.
+    final TileProvider tiles = FakeTileProvider();
+    const config = ObaMapConfig(userAgentPackageName: 'org.example.host');
+    expect(config.copyWith(tileProvider: tiles).tileProvider, same(tiles));
+  });
+
+  group('trip planner', () {
+    test('OTP requests use the configured HTTP client', () async {
+      final env = await ObaTestEnv.create();
+      addTearDown(env.app.dispose);
+      final otp = env.app.otpClient();
+      expect(otp, isNotNull);
+      // The MockClient answers 404, so the plan fails; what matters is that
+      // it went through the injected client rather than a fresh one.
+      await expectLater(
+        otp!.plan(
+          tp.TripPlanRequest(
+            origin: const tp.OtpCoordinate(47.6, -122.33),
+            destination: const tp.OtpCoordinate(47.62, -122.35),
+            dateTime: DateTime(2026, 11, 25, 9),
+          ),
+        ),
+        throwsA(isA<tp.OtpException>()),
+      );
+      final otpHosts = env.requests
+          .map((r) => r.url.host)
+          .where((h) => h.contains('otp'))
+          .toSet();
+      expect(otpHosts, {
+        'sound-transit-otp.ibi-transit.com',
+        'otp.prod.sound.obaweb.org',
+      });
     });
   });
 }
