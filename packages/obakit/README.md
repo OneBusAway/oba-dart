@@ -400,6 +400,38 @@ const ObaMapConfig(
 );
 ```
 
+#### Your own markers and layers on the map
+
+To draw your own markers, lines or stops on the SDK map, the host owns an
+`ObaMapCoordinator`, shares it with the map through
+`ObaMapCoordinatorScope`, and declares its overlay with `ObaMapOverlays`.
+The overlay shows while the page that declares it is on top. This is how
+the Tapline sample puts its reload-store pins on the map:
+
+```dart
+final coordinator = ObaMapCoordinator(); // host-owned; dispose it in State.dispose()
+
+ObaMapCoordinatorScope(
+  coordinator: coordinator,
+  child: ObaMapOverlays(
+    overlay: ObaMapOverlay(
+      markers: [
+        for (final store in stores)
+          ObaMapMarker(
+            coordinate: store.coordinate,
+            label: 'Reload location: ${store.name}', // required: screen readers announce it
+            kind: ObaMapMarkerKind.place,
+            color: pinColor, // at least 3:1 against your tiles, in both themes
+            onTap: () => showStore(store),
+          ),
+      ],
+      // polylines: [ObaMapPolyline(points: shape, color: c)],
+      // stops: stops, hideStopPins: true, fitBounds: rect,
+    ),
+    child: ObaMapView(coordinator: coordinator),
+  ),
+)
+
 ### 4. The trip planner
 
 ```dart
