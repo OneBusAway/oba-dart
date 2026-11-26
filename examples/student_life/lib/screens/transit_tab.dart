@@ -43,12 +43,12 @@ class TransitTab extends StatelessWidget {
             ),
           ),
         ),
-        const SectionTitle('Near campus'),
         // OBA embed: departures at the three closest stops to the
-        // student (here, the fixed campus location).
+        // student (here, the fixed campus location). The section brings its
+        // own heading, so the host adds none.
         const EmbedFrame(
           sdkWidget: 'NearbyStopsSection',
-          child: NearbyStopsSection(maxStops: 3),
+          child: NearbyStopsSection(maxStops: 3, title: 'Near campus'),
         ),
         // OBA embed: the student's saved stops with live departures.
         const EmbedFrame(

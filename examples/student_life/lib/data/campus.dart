@@ -61,11 +61,3 @@ const campusStops = [
     description: 'Bus connections on Gilman Drive',
   ),
 ];
-
-/// The campus stop with [id], or null for a stop the host doesn't list.
-CampusStop? campusStopById(String id) {
-  for (final stop in campusStops) {
-    if (stop.id == id) return stop;
-  }
-  return null;
-}

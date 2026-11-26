@@ -3,7 +3,6 @@ import 'package:obakit/obakit.dart';
 
 import '../data/student.dart';
 import '../settings.dart';
-import '../widgets/host_page.dart';
 import '../widgets/section_title.dart';
 import '../widgets/student_id_card.dart';
 
@@ -33,13 +32,10 @@ class MeTab extends StatelessWidget {
                   trailing: const ExcludeSemantics(
                     child: Icon(Icons.chevron_right),
                   ),
-                  onTap: () => HostObaPage.push(
-                    context,
-                    title: 'Saved stops',
-                    sdkWidget: 'BookmarksPage',
-                    // OBA embed: every bookmark, grouped, with departures.
-                    page: const BookmarksPage(),
-                  ),
+                  // OBA embed: every bookmark, grouped, with departures,
+                  // opened through the host's onNavigate.
+                  onTap: () =>
+                      ObaNavigator.of(context).push(const BookmarksRoute()),
                 ),
                 const Divider(height: 1),
                 ListTile(
@@ -50,13 +46,10 @@ class MeTab extends StatelessWidget {
                   trailing: const ExcludeSemantics(
                     child: Icon(Icons.chevron_right),
                   ),
-                  onTap: () => HostObaPage.push(
-                    context,
-                    title: 'Service alerts',
-                    sdkWidget: 'AlertsListPage',
-                    // OBA embed: region-wide alerts for the student's stops.
-                    page: const AlertsListPage(),
-                  ),
+                  // OBA embed: every alert for the student's stops, opened
+                  // through the host's onNavigate.
+                  onTap: () =>
+                      ObaNavigator.of(context).push(const AlertsListRoute()),
                 ),
               ],
             ),

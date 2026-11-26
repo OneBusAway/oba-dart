@@ -52,12 +52,17 @@ The tests boot a real `ObaApplication` over an in-memory store and a
   fixed to San Diego with `regionsPath: null`, so there is no regions
   download and no region picker.
 - `lib/app.dart`: one `ObaScope` above the navigator (`MaterialApp.builder`)
-  covers every route. Its `onNavigate` takes `StopRoute` and pushes a host
-  route: the host's app bar over an embedded `StopPage`
-  (`ObaPresentationScope.embedded(showsHeader: true, ...)`). Every other SDK
-  destination returns false, and the SDK pushes its own page.
+  covers every route. Its `onNavigate` takes every `ObaRoute` and pushes a
+  host route built with `ObaRouteBuilder.build(context, route)`: the host's
+  app bar over the embedded SDK page. So stops, trips, schedules, alerts and
+  the trip planner all open under the host's app bar, never the SDK's.
 - `lib/widgets/host_page.dart`: `HostObaPage`, the host app bar over one
-  embedded SDK page, used for stops, the trip planner, bookmarks and alerts.
+  embedded SDK page, and `hostChromeFor`, which picks each route's app bar
+  title. Pages whose title is data (a stop's name, a trip) keep the SDK's
+  compact header (`showsHeader: true`) under a generic host title such as
+  "Transit", so the stop name shows once. Pages with a fixed title (saved
+  stops, alerts, the trip planner) drop the SDK header, and the host app bar
+  carries the title.
 - `lib/widgets/embed_frame.dart`: `EmbedFrame` wraps every embedded SDK
   widget. Turn on **Me → Show OBA embeds** to outline each one with a label
   naming its SDK widget. Each embed is also marked `// OBA embed:` in the
@@ -73,15 +78,15 @@ The tests boot a real `ObaApplication` over an in-memory store and a
 |---|---|---|
 | Today | `ObaStopDeparturesCard(stopId: 'MTS_24151', maxArrivals: 3)` | The campus shuttle's next departures from Eighth College, on the home feed. "See all" opens the stop page in a host route. |
 | Today | `ServiceAlertsSection()` | Urgent detours or delays on the stops the student uses. Takes no space when there are none. |
-| Today → Directions | `TripPlannerPage(destination: Center Hall)` | Directions to the next class, under the host's app bar. |
+| Today → Directions | `TripPlannerRoute(destination: Center Hall)` | Directions to the next class, pushed through `ObaNavigator` and opened under the host's app bar. |
 | Transit | `ObaMapView` (240dp preview, plus a full-screen page) | Find stops around campus. Tapping a pin opens the stop through the host's `onNavigate`. |
-| Transit | `NearbyStopsSection(maxStops: 3)` | Departures from the three closest stops. |
+| Transit | `NearbyStopsSection(maxStops: 3, title: 'Near campus')` | Departures from the three closest stops. The section's own heading is the only one. |
 | Transit | `ObaBookmarksCard(limit: 3)` | The student's saved stops with live departures. |
 | Transit → Campus stops | `StopPage` (via `ObaNavigator.push(StopRoute(id))` and the host's `onNavigate`) | Full departures for the host's curated campus stops (Eighth College, UCSD Central Campus trolley, Gilman Transit Center). |
 | Campus → event | `ObaNearbyStopsCard(around: venue)` | Departures near the event venue (Price Center, RIMAC Arena, Geisel Library), not near the student. |
-| Campus → event → Plan a trip | `TripPlannerPage(destination: venue)` | Directions to the event. |
-| Me → Saved stops | `BookmarksPage()` | All saved stops, managed in one place. |
-| Me → Service alerts | `AlertsListPage()` | Every current alert for the student's stops. |
+| Campus → event → Plan a trip | `TripPlannerRoute(destination: venue)` | Directions to the event venue, as its own route. |
+| Me → Saved stops | `BookmarksPage()` (via `BookmarksRoute`) | All saved stops, managed in one place. |
+| Me → Service alerts | `AlertsListPage()` (via `AlertsListRoute`) | Every current alert for the student's stops. |
 
 ## Accessibility
 

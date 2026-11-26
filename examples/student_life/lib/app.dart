@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:obakit/obakit.dart';
 
-import 'data/campus.dart';
 import 'screens/home_shell.dart';
 import 'settings.dart';
 import 'theme.dart';
@@ -11,9 +10,9 @@ import 'widgets/host_page.dart';
 ///
 /// One `ObaScope` sits above the navigator (`MaterialApp.builder`), so
 /// every route, the host's and the SDK's, can show SDK widgets. Its
-/// `onNavigate` takes stop pages and shows them under the host's own app
-/// bar; every other SDK destination (trips, schedules, alerts...) is left
-/// to the SDK, which pushes its own full-screen page.
+/// `onNavigate` takes every SDK destination (stops, trips, schedules,
+/// alerts, the trip planner...) and shows it under the host's own app bar
+/// (see `hostObaRoute`).
 class StudentLifeApp extends StatefulWidget {
   const StudentLifeApp({
     super.key,
@@ -35,23 +34,13 @@ class StudentLifeApp extends StatefulWidget {
 class _StudentLifeAppState extends State<StudentLifeApp> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
+  // Every SDK destination opens as a host route, so the host's app bar is
+  // the only one on every page. Returning true for every route means the
+  // SDK never pushes a page of its own.
   bool _onNavigate(BuildContext context, ObaRoute route) {
-    if (route is! StopRoute) return false;
     final navigator = _navigatorKey.currentState;
     if (navigator == null) return false;
-    navigator.push(
-      MaterialPageRoute<void>(
-        builder: (_) => HostObaPage(
-          title: campusStopById(route.stopId)?.name ?? 'Stop',
-          sdkWidget: 'StopPage',
-          // The page shows the stop's name and its actions (refresh,
-          // bookmark, more) in its own compact header.
-          showsHeader: true,
-          // OBA embed: the full stop page, in a host route.
-          child: StopPage(stopId: route.stopId),
-        ),
-      ),
-    );
+    navigator.push(hostObaRoute<void>(route));
     return true;
   }
 

@@ -98,49 +98,67 @@ void main() {
     await tester.tap(find.text('Eighth College / Theatre District'));
     await TestEnv.settle(tester);
 
-    // The host's route: its own app bar titled with the stop name, and the
-    // SDK stop page embedded below it (no second app bar).
-    final host = find.byType(HostObaPage);
-    expect(host, findsOneWidget);
+    // The host's route: its own app bar with a generic title, and the SDK
+    // stop page embedded below it (no second app bar). The stop's name
+    // shows once, in the SDK page's compact header.
+    final host = tester.widget<HostObaPage>(find.byType(HostObaPage));
+    expect(host.title, 'Transit');
+    expect(host.showsHeader, isTrue);
+    expect(find.byType(AppBar), findsOneWidget);
     expect(
       find.descendant(
         of: find.byType(AppBar),
-        matching: find.text('Eighth College / Theatre District'),
+        matching: find.textContaining('Eighth College'),
       ),
+      findsNothing,
+    );
+    expect(
+      find.text('Eighth College / Theatre District (North)'),
       findsOneWidget,
     );
-    expect(find.byType(AppBar), findsOneWidget);
     final page = tester.widget<StopPage>(find.byType(StopPage));
     expect(page.stopId, 'MTS_24151');
     expect(e.writes, isEmpty);
   });
 
-  testWidgets('a stop the host does not list gets a generic title', (
-    tester,
-  ) async {
-    final e = await env();
-    await tester.pumpWidget(
-      e.app(
-        home: Builder(
-          builder: (context) => Scaffold(
-            body: Center(
-              child: TextButton(
-                onPressed: () =>
-                    ObaNavigator.of(context).push(const StopRoute('MTS_1')),
-                child: const Text('Open'),
+  for (final (route, title, sdkPage) in [
+    (const StopRoute('MTS_1'), 'Transit', StopPage),
+    (const AlertsListRoute(), 'Service alerts', AlertsListPage),
+    (const RecentStopsRoute(), 'Recent stops', RecentStopsPage),
+    (const TripPlannerRoute(), 'Trip planner', TripPlannerPage),
+  ]) {
+    testWidgets('onNavigate opens ${route.id} under the host app bar', (
+      tester,
+    ) async {
+      final e = await env();
+      await tester.pumpWidget(
+        e.app(
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: TextButton(
+                  onPressed: () => ObaNavigator.of(context).push(route),
+                  child: const Text('Open'),
+                ),
               ),
             ),
           ),
         ),
-      ),
-    );
-    await tester.tap(find.text('Open'));
-    await TestEnv.settle(tester);
-    expect(
-      find.descendant(of: find.byType(AppBar), matching: find.text('Stop')),
-      findsOneWidget,
-    );
-  });
+      );
+      await tester.tap(find.text('Open'));
+      await TestEnv.settle(tester);
+      expect(find.byType(sdkPage), findsOneWidget);
+      expect(
+        find.descendant(of: find.byType(AppBar), matching: find.text(title)),
+        findsOneWidget,
+      );
+      // Only the host's app bar; the SDK page is embedded.
+      expect(find.byType(AppBar), findsOneWidget);
+      final modal = ModalRoute.of(tester.element(find.byType(HostObaPage)));
+      expect(modal?.settings.arguments, route);
+      expect(e.writes, isEmpty);
+    });
+  }
 
   testWidgets('Campus: an event opens its detail page with nearby stops', (
     tester,
@@ -162,10 +180,19 @@ void main() {
       find.byType(ObaNearbyStopsCard),
     );
     expect(card.around, CampusPlaces.rimacArena.coordinate);
-    expect(
+    // Plan a trip: the trip planner as its own route, to the venue.
+    await tester.tap(
       find.widgetWithText(FilledButton, 'Plan a trip to RIMAC Arena'),
-      findsOneWidget,
     );
+    await TestEnv.settle(tester);
+    final planner = tester.widget<TripPlannerPage>(
+      find.byType(TripPlannerPage),
+    );
+    expect(planner.destination?.name, 'RIMAC Arena');
+    expect(planner.destination?.coordinate, CampusPlaces.rimacArena.coordinate);
+    expect(find.byType(EventDetailPage, skipOffstage: false), findsOneWidget);
+    expect(find.byType(AppBar), findsOneWidget);
+    expect(find.text('Directions to RIMAC Arena'), findsOneWidget);
     expect(e.writes, isEmpty);
   });
 
@@ -197,6 +224,10 @@ void main() {
     expect(find.byType(ObaMapView), findsOneWidget);
     expect(find.text('OBA · ObaMapView'), findsOneWidget);
     expect(find.byType(NearbyStopsSection), findsOneWidget);
+    // One heading for the nearby section: the SDK's own, with the host's
+    // wording. No second host heading above it.
+    expect(find.text('Near campus'), findsOneWidget);
+    expect(find.text('Nearby'), findsNothing);
     expect(find.text('Gilman Transit Center'), findsOneWidget);
     expect(find.byType(ObaBookmarksCard), findsOneWidget);
 
@@ -217,6 +248,13 @@ void main() {
 
     expect(find.byType(HostObaPage), findsOneWidget);
     expect(find.byType(TripPlannerPage), findsOneWidget);
+    // Its own route, not drawn inline in the feed.
+    expect(
+      ModalRoute.of(tester.element(find.byType(TripPlannerPage)))
+          ?.settings
+          .arguments,
+      isA<TripPlannerRoute>(),
+    );
     // Embedded: the SDK page draws no app bar of its own.
     expect(find.byType(AppBar), findsOneWidget);
     expect(find.text('Directions to Center Hall'), findsOneWidget);
@@ -237,6 +275,13 @@ void main() {
     await TestEnv.settle(tester);
     expect(find.byType(BookmarksPage), findsOneWidget);
     expect(find.byType(AppBar), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(AppBar),
+        matching: find.text('Saved stops'),
+      ),
+      findsOneWidget,
+    );
     await tester.pageBack();
     await TestEnv.settle(tester);
 
