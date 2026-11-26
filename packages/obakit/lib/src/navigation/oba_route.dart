@@ -222,6 +222,12 @@ final class TripPlannerRoute extends ObaRoute {
 
   /// See `TripPlannerPage.onItinerarySelected`. Not part of [id] or
   /// equality: the planner is one page whoever listens to it.
+  ///
+  /// In the full-app shell (`ObaApp`), pushing this route while a trip
+  /// planner with the same [id] is already open returns to that page, which
+  /// keeps the callback and places it was opened with. A host that handles
+  /// every route in `ObaScope.onNavigate` builds a new page each time and
+  /// isn't affected.
   final void Function(BuildContext context, tp.Itinerary itinerary)?
   onItinerarySelected;
   @override

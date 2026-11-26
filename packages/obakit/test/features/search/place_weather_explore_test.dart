@@ -365,6 +365,24 @@ void main() {
       expect((pushed.single as ItineraryRoute).itinerary, same(itinerary));
     });
 
+    testWidgets('a throwing onItinerarySelected still opens the itinerary', (
+      tester,
+    ) async {
+      env = await ObaTestEnv.create();
+      final pushed = <ObaRoute>[];
+      await env.pumpPage(
+        tester,
+        TripPlannerPage(onItinerarySelected: (_, _) => throw StateError('x')),
+        onNavigate: (_, r) {
+          pushed.add(r);
+          return true;
+        },
+      );
+      await openItinerary(tester, westlakeItinerary());
+      expect(tester.takeException(), isA<StateError>());
+      expect(pushed.single, isA<ItineraryRoute>());
+    });
+
     testWidgets('TripPlannerRoute passes onItinerarySelected to the page', (
       tester,
     ) async {
