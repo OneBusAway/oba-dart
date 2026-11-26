@@ -64,6 +64,7 @@ String formatTime(BuildContext context, DateTime t) =>
 
 /// "valid until 11:59 PM" today, or "valid until Dec 24" for a later day.
 String passValidity(BuildContext context, Pass pass, DateTime now) {
+  if (!pass.isActiveAt(now)) return 'Expired';
   final sameDay =
       pass.expiresAt.year == now.year &&
       pass.expiresAt.month == now.month &&

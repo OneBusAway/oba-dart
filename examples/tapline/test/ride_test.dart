@@ -86,6 +86,34 @@ void main() {
     await env.tearDown(tester);
   });
 
+  testWidgets('an expired pass shows stored value, not a validity', (
+    tester,
+  ) async {
+    final now = DateTime(2026, 11, 25, 8);
+    final wallet = Wallet(
+      balanceCents: 1850,
+      passes: [
+        Pass(
+          id: 'old',
+          product: dayPass,
+          activatedAt: DateTime(2026, 11, 24, 8),
+          expiresAt: endOfServiceDay(DateTime(2026, 11, 24)),
+        ),
+      ],
+      taps: [],
+      now: () => now,
+    );
+    await env.pumpApp(
+      tester,
+      wallet: wallet,
+      home: const RideScreen(),
+      surfaceSize: const Size(390, 2000),
+    );
+    expect(find.text('Stored value'), findsOneWidget);
+    expect(find.textContaining('valid until'), findsNothing);
+    await env.tearDown(tester);
+  });
+
   testWidgets('a last tap without a stop falls back to nearby departures', (
     tester,
   ) async {

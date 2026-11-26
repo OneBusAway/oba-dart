@@ -114,12 +114,20 @@ List<String> fareAdvice(Wallet wallet, {tp.Itinerary? trip}) {
   final active = wallet.activePass;
   final rides = wallet.ridesToday;
   final rideCost = oneRide.priceCents;
+  final hasRide = wallet.activePasses.any(
+    (p) => p.product.kind == FareProductKind.ride,
+  );
   if (active == null || active.product.kind != FareProductKind.pass) {
     if (rides + 1 >= (dayPass.priceCents / rideCost).ceil()) {
       advice.add(
         '3 or more rides today? A Day Pass (${formatMoney(dayPass.priceCents)}) '
         'costs less than 3 single rides '
         '(${formatMoney(rideCost * 3)}).',
+      );
+    } else if (hasRide) {
+      advice.add(
+        'Your 1-Ride already covers your next trip (transfers for 2 hours). '
+        'For trips after that, stored value is the cheapest way.',
       );
     } else {
       advice.add(
@@ -158,11 +166,27 @@ TripFareSuggestion tripFareSuggestion(Wallet wallet, tp.Itinerary trip) {
   final pass = wallet.activePasses
       .where((p) => _passCovers(p, trip, cents))
       .firstOrNull;
+  // A 1-Ride that doesn't pay the whole fare still pays part of it, so
+  // only the difference is left for stored value.
+  final ride = wallet.activePasses
+      .where(
+        (p) => p.product.kind == FareProductKind.ride && _rideApplies(p, trip),
+      )
+      .firstOrNull;
+  final rideCredit = ride == null
+      ? 0
+      : (cents < ride.product.priceCents ? cents : ride.product.priceCents);
+  final remaining = cents - rideCredit;
   final String covered;
   if (cents == 0) {
     covered = 'no fare to pay';
   } else if (pass != null) {
     covered = 'your ${pass.product.name} covers it';
+  } else if (ride != null) {
+    covered = wallet.balanceCents >= remaining
+        ? 'your ${ride.product.name} plus stored value covers it'
+        : 'add ${formatMoney(remaining - wallet.balanceCents)} of stored '
+              'value to cover it';
   } else if (wallet.balanceCents >= cents) {
     covered = 'stored value covers it';
   } else {
@@ -185,6 +209,11 @@ bool _passCovers(Pass pass, tp.Itinerary trip, int cents) {
     return pass.expiresAt.isAfter(trip.endTime);
   }
   if (cents > pass.product.priceCents) return false;
+  return _rideApplies(pass, trip);
+}
+
+/// Whether a 1-Ride's 2-hour window reaches the trip's last boarding.
+bool _rideApplies(Pass pass, tp.Itinerary trip) {
   final boardings = trip.legs.where((l) => l.transitLeg);
   final lastBoarding = boardings.isEmpty
       ? trip.endTime

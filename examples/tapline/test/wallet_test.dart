@@ -3,6 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:obakit/obakit.dart';
 import 'package:tapline_example/screens/home_shell.dart';
 import 'package:tapline_example/screens/ride_screen.dart';
+import 'package:tapline_example/data/mock_data.dart';
+import 'package:tapline_example/data/models.dart';
+import 'package:tapline_example/data/wallet.dart';
 
 import 'support/test_env.dart';
 
@@ -27,6 +30,33 @@ void main() {
     final urls = env.requests.map((r) => r.url.toString()).toList();
     expect(urls, contains(contains('stops-for-location')));
     env.expectReadOnly();
+    await env.tearDown(tester);
+  });
+
+  testWidgets('an expired pass shows no validity on the Wallet tab', (
+    tester,
+  ) async {
+    final now = DateTime(2026, 11, 25, 8);
+    final wallet = Wallet(
+      balanceCents: 1850,
+      passes: [
+        Pass(
+          id: 'old',
+          product: dayPass,
+          activatedAt: DateTime(2026, 11, 24, 8),
+          expiresAt: endOfServiceDay(DateTime(2026, 11, 24)),
+        ),
+      ],
+      taps: [],
+      now: () => now,
+    );
+    await env.pumpApp(
+      tester,
+      wallet: wallet,
+      surfaceSize: const Size(390, 1600),
+    );
+    expect(find.textContaining('No active pass'), findsOneWidget);
+    expect(find.textContaining('valid until'), findsNothing);
     await env.tearDown(tester);
   });
 

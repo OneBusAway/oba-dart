@@ -73,10 +73,18 @@ void main() {
       )..purchase(oneRide);
       expect(wallet.activePass?.product, oneRide);
       expect(fareAdvice(wallet).join(' '), isNot(contains('covers every')));
-      // The sample trip costs $3.00, more than the $2.50 1-Ride.
+      // Already holding a 1-Ride: don't suggest buying another one.
+      expect(fareAdvice(wallet).join(' '), isNot(contains('A 1-Ride')));
+      expect(
+        fareAdvice(wallet).join(' '),
+        contains('already covers your next trip'),
+      );
+      // The sample trip costs $3.00, more than the $2.50 1-Ride: the
+      // 1-Ride pays $2.50 and stored value pays the $0.50 difference.
       expect(
         tripFareSuggestion(wallet, westlakeItinerary()).text,
-        r'Suggested fare for your trip: $3.00 (stored value covers it)',
+        r'Suggested fare for your trip: $3.00 '
+        r'(your 1-Ride plus stored value covers it)',
       );
     });
   });
@@ -172,6 +180,32 @@ void main() {
         r'Suggested fare for your trip: $2.50 (your 1-Ride covers it)',
       );
     });
+
+    test(
+      'a 1-Ride pays part of a pricier trip; only the difference is left',
+      () {
+        final now = DateTime(2026, 11, 25, 8);
+        final w = Wallet(
+          balanceCents: 0,
+          passes: [
+            Pass(
+              id: 'ride',
+              product: oneRide,
+              activatedAt: now,
+              expiresAt: now.add(const Duration(hours: 2)),
+            ),
+          ],
+          taps: [],
+          now: () => now,
+        );
+        // Sample trip is $3.00, the 1-Ride is $2.50: ask for $0.50, not $3.00.
+        expect(
+          tripFareSuggestion(w, westlakeItinerary()).text,
+          r'Suggested fare for your trip: $3.00 '
+          r'(add $0.50 of stored value to cover it)',
+        );
+      },
+    );
 
     test('uses the itinerary fare when OTP reports one', () {
       final base = westlakeItinerary();
