@@ -3,7 +3,6 @@ import 'package:obakit/obakit.dart';
 
 import 'app.dart';
 import 'data/wallet.dart';
-import 'map_tiles.dart';
 import 'map_vector.dart';
 
 /// `--dart-define=OBA_API_KEY=...`; defaults to the public test key.
@@ -12,26 +11,26 @@ const _apiKey = String.fromEnvironment(
   defaultValue: 'org.onebusaway.iphone',
 );
 
-/// `--dart-define=TAPLINE_MAP=raster` keeps CARTO's raster tiles. The
-/// default tries vector tiles and falls back to raster when the styles
-/// can't be loaded.
+/// `--dart-define=TAPLINE_MAP=raster` keeps the SDK's default raster tiles
+/// (OpenStreetMap). The default tries vector tiles and falls back to those
+/// raster tiles when the styles can't be loaded.
 const _mapStyle = String.fromEnvironment('TAPLINE_MAP', defaultValue: 'vector');
 
 Future<ObaMapConfig> _mapConfig() async {
-  var standard = cartoVoyager;
-  var standardDark = cartoDarkMatter;
+  var standard = ObaTileSource.openStreetMap;
+  ObaTileSource? standardDark;
   if (_mapStyle == 'vector') {
     try {
       final loaded = await Future.wait([
         loadVectorTiles(
           styleUrl: openFreeMapPositron,
           palette: taplineLightPalette,
-          rasterFallback: cartoVoyager,
+          rasterFallback: ObaTileSource.openStreetMap,
         ),
         loadVectorTiles(
           styleUrl: openFreeMapDark,
           palette: taplineDarkPalette,
-          rasterFallback: cartoDarkMatter,
+          rasterFallback: ObaTileSource.openStreetMap,
         ),
       ]).timeout(const Duration(seconds: 5));
       standard = loaded[0];
