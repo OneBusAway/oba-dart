@@ -16,6 +16,8 @@ class TripMapConfig {
     this.onAttributionTap,
     this.maxZoom = 19,
     this.tileProvider,
+    this.subdomains = const [],
+    this.retinaMode = false,
   });
 
   static const openStreetMapTemplate =
@@ -37,4 +39,11 @@ class TripMapConfig {
 
   /// Overrides flutter_map's network tile provider (caching, tests).
   final TileProvider? tileProvider;
+
+  /// Values for the `{s}` placeholder in [tileUrlTemplate].
+  final List<String> subdomains;
+
+  /// Request high-density (`{r}` = `@2x`) tiles. The host decides, from
+  /// the screen density and whether its provider serves them.
+  final bool retinaMode;
 }
