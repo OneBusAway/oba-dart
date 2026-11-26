@@ -149,7 +149,13 @@ Future<void> pumpHost(
 /// depend on directly.)
 void mockMapTileCache() {
   final dir = Directory.systemTemp.createTempSync('student_life_tiles');
-  addTearDown(() => dir.deleteSync(recursive: true));
+  addTearDown(() {
+    try {
+      dir.deleteSync(recursive: true);
+    } on PathAccessException {
+      // Windows keeps tile files open briefly after the last test.
+    }
+  });
   const channel = MethodChannel('plugins.flutter.io/path_provider');
   final messenger =
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;

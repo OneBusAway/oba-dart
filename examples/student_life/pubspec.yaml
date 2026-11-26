@@ -12,6 +12,11 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.6.0
+  # Vector map tiles (same as the Tapline example). A beta, pinned exactly;
+  # it is the line that supports flutter_map 8.
+  vector_map_tiles: 9.0.0-beta.13
+  # For ThemeReader: the style is recoloured before rendering.
+  vector_tile_renderer: ^6.1.0
   obakit:
     path: ../../packages/obakit
   obakit_trip_planner:
