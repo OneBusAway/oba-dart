@@ -28,6 +28,8 @@ workspace:
   - packages/oba_arrivals/example
   - packages/obakit_trip_planner
   - packages/obakit
+  - examples/tapline
+  - examples/student_life
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
