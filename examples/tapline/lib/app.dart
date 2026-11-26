@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:obakit/obakit.dart';
+import 'package:obakit_trip_planner/obakit_trip_planner.dart' as tp;
 
 import 'app_scope.dart';
 import 'data/wallet.dart';
@@ -29,6 +30,7 @@ class TaplineApp extends StatefulWidget {
 
 class _TaplineAppState extends State<TaplineApp> {
   final _showEmbeds = ValueNotifier<bool>(false);
+  final _plannedTrip = ValueNotifier<tp.Itinerary?>(null);
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   // Every SDK destination (stops, trips, schedules, alerts, the trip
@@ -45,6 +47,7 @@ class _TaplineAppState extends State<TaplineApp> {
   @override
   void dispose() {
     _showEmbeds.dispose();
+    _plannedTrip.dispose();
     super.dispose();
   }
 
@@ -65,6 +68,7 @@ class _TaplineAppState extends State<TaplineApp> {
       builder: (context, child) => TaplineScope(
         wallet: widget.wallet,
         showEmbeds: _showEmbeds,
+        plannedTrip: _plannedTrip,
         child: ObaScope(
           application: widget.application,
           onNavigate: _onNavigate,

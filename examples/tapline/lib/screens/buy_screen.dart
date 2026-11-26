@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:obakit/obakit.dart';
+import 'package:obakit_trip_planner/obakit_trip_planner.dart' as tp;
 
 import '../app_scope.dart';
 import '../data/mock_data.dart';
@@ -13,15 +14,16 @@ class BuyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallet = TaplineScope.of(context).wallet;
+    final scope = TaplineScope.of(context);
+    final wallet = scope.wallet;
     return Scaffold(
       appBar: AppBar(title: const Text('Buy')),
       body: ListenableBuilder(
-        listenable: wallet,
+        listenable: Listenable.merge([wallet, scope.plannedTrip]),
         builder: (context, _) => ListView(
           padding: const EdgeInsets.only(top: 8, bottom: 96),
           children: [
-            _FareAdviceCard(wallet: wallet),
+            _FareAdviceCard(wallet: wallet, plannedTrip: scope.plannedTrip),
             const _PlanTripCard(),
             const SectionHeading('Tickets and passes'),
             for (final p in passProducts) _ProductTile(product: p),
@@ -42,13 +44,16 @@ class BuyScreen extends StatelessWidget {
 }
 
 class _FareAdviceCard extends StatelessWidget {
-  const _FareAdviceCard({required this.wallet});
+  const _FareAdviceCard({required this.wallet, required this.plannedTrip});
 
   final Wallet wallet;
+  final ValueNotifier<tp.Itinerary?> plannedTrip;
 
   @override
   Widget build(BuildContext context) {
-    final advice = fareAdvice(wallet);
+    final trip = plannedTrip.value;
+    final advice = fareAdvice(wallet, trip: trip);
+    final text = Theme.of(context).textTheme;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -60,20 +65,53 @@ class _FareAdviceCard extends StatelessWidget {
               padding: EdgeInsets.zero,
             ),
             const SizedBox(height: 8),
-            for (final line in advice)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const ExcludeSemantics(
-                      child: Icon(Icons.lightbulb_outline, size: 20),
+            // A live region: the suggestion changes when the rider picks a
+            // trip in the planner and comes back.
+            Semantics(
+              liveRegion: true,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (final line in advice)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const ExcludeSemantics(
+                            child: Icon(Icons.lightbulb_outline, size: 20),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(child: Text(line)),
+                        ],
+                      ),
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text(line)),
-                  ],
-                ),
+                ],
               ),
+            ),
+            const SizedBox(height: 8),
+            if (trip == null)
+              Text(
+                'Plan a trip below and open the itinerary you want, and '
+                "you'll get a fare suggestion for it here.",
+                style: text.bodyMedium,
+              )
+            else ...[
+              Text(
+                tripFareSuggestion(wallet, trip).fromPlanner
+                    ? 'Sample suggestion, using the fare the trip planner '
+                          'reported.'
+                    : "Sample suggestion from Tapline's demo fare table, "
+                          'counting the trip\'s transit legs.',
+                style: text.bodyMedium,
+              ),
+              TextButton.icon(
+                style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+                onPressed: () => plannedTrip.value = null,
+                icon: const Icon(Icons.close),
+                label: const Text('Clear planned trip'),
+              ),
+            ],
           ],
         ),
       ),
@@ -83,10 +121,18 @@ class _FareAdviceCard extends StatelessWidget {
 
 /// Opens the SDK trip planner as its own route. It goes through
 /// `ObaNavigator`, so Tapline's `onNavigate` shows it under Tapline's app
-/// bar.
+/// bar. The itinerary the rider opens there comes back through
+/// `onItinerarySelected` and becomes the planned trip the fare suggestion
+/// is for.
 // OBA embed: TripPlannerPage, via TripPlannerRoute.
-void openTripPlanner(BuildContext context) =>
-    ObaNavigator.of(context).push<void>(const TripPlannerRoute());
+void openTripPlanner(BuildContext context) {
+  final plannedTrip = TaplineScope.of(context).plannedTrip;
+  ObaNavigator.of(context).push<void>(
+    TripPlannerRoute(
+      onItinerarySelected: (_, itinerary) => plannedTrip.value = itinerary,
+    ),
+  );
+}
 
 class _PlanTripCard extends StatelessWidget {
   const _PlanTripCard();
@@ -116,7 +162,10 @@ class _PlanTripCard extends StatelessWidget {
                         'Not sure which fare? Plan your trip',
                         style: TextStyle(fontWeight: FontWeight.w700),
                       ),
-                      Text('See the routes and transfers for your journey.'),
+                      Text(
+                        'Open the itinerary you want, and Tapline suggests '
+                        'a fare for it.',
+                      ),
                     ],
                   ),
                 ),

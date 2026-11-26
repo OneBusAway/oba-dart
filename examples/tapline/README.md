@@ -48,7 +48,8 @@ code, each embed is marked with an `// OBA embed:` comment.
 - Tabs live in an `IndexedStack`. SDK widgets in hidden tabs stop polling
   and release location on their own.
 - `lib/data/` holds the mock wallet, products, taps and stores.
-  `fareAdvice()` there is host logic, not SDK logic.
+  `fareAdvice()` and `tripFareSuggestion()` there are host logic, not SDK
+  logic.
 - `lib/widgets/embed_frame.dart` is the "Show OBA embeds" overlay.
 
 ## Embed points
@@ -59,7 +60,7 @@ code, each embed is marked with an `// OBA embed:` comment.
 | Wallet | `ObaNearbyStopsCard` | "Departures near you": after checking their balance, the rider's next question is when the bus comes. |
 | Ride | `ObaStopDeparturesCard` (stop of the last tap, host title "Ride again from ...") | The ticket screen is open while the rider waits. Most trips repeat, so the last tap's stop is a good guess, but on a return trip it's the wrong end, hence "Ride again" rather than "Your next ride". Tapping a departure opens the SDK's `TripPage` under Tapline's app bar. |
 | Ride (no stop known) | `ObaNearbyStopsCard` | When the last tap has no stop (see below), departures near the rider instead. |
-| Buy | `TripPlannerPage`, pushed as `TripPlannerRoute` and shown under Tapline's app bar | "Not sure which fare? Plan your trip": seeing the legs and transfers helps the rider pick a fare. |
+| Buy | `TripPlannerPage`, pushed as `TripPlannerRoute(onItinerarySelected: ...)` and shown under Tapline's app bar | "Not sure which fare? Plan your trip". When the rider opens an itinerary, `onItinerarySelected` hands it to Tapline, and the Buy screen shows a sample suggestion such as "Suggested fare for your trip: $2.50 (stored value covers it)". It uses the itinerary's `fare` when the OTP server reports one, and otherwise Tapline's sample fare table (by agency, then mode), counting the transit legs with 2-hour transfers. |
 | Activity, Ride details | `ObaStopDeparturesCard(stopId: tap.stopId)`, titled "Ride again from ..." | Turns a past tap into the next trip. The card's title is the only place the stop's name appears. |
 | Map | `ObaMapView` with Tapline's reload-store markers added through `ObaMapCoordinator` and `ObaMapOverlays` | Riders find stops and the stores where they can reload with cash on one map. The map's "Stops on the map" button opens the SDK's `StopsOnMapPage` under Tapline's app bar. The floating Ride button is hidden on this tab so it doesn't cover the map; the app bar has a ticket button instead. |
 | Map (stop tapped) | `ObaStopDeparturesCard` in a host bottom sheet | A quick look at a stop's departures without leaving the map. The `ObaScope` above the navigator covers the sheet, so no `ObaScope.rewrap` is needed. |

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:obakit/obakit.dart';
+import 'package:obakit_trip_planner/obakit_trip_planner.dart' as tp;
 import 'package:tapline_example/data/mock_data.dart';
 import 'package:tapline_example/data/models.dart';
 import 'package:tapline_example/data/wallet.dart';
@@ -57,6 +58,105 @@ void main() {
       );
       expect(fareAdvice(quiet).first, contains('1-Ride'));
       expect(formatMoney(1850), r'$18.50');
+    });
+  });
+
+  group('Trip fare suggestion', () {
+    final morning = DateTime(2026, 11, 25, 8);
+    Wallet wallet({int balance = 1850, bool pass = false}) => Wallet(
+      balanceCents: balance,
+      passes: [
+        if (pass)
+          Pass(
+            id: 'p',
+            product: dayPass,
+            activatedAt: morning,
+            expiresAt: endOfServiceDay(morning),
+          ),
+      ],
+      taps: [],
+      now: () => morning,
+    );
+
+    test('without a fare from OTP, uses the sample table by agency', () {
+      final trip = westlakeItinerary(); // one Sound Transit leg, no fare
+      expect(trip.fare, isNull);
+      expect(sampleTripFareCents(trip), 300);
+      final s = tripFareSuggestion(wallet(), trip);
+      expect(s.fromPlanner, isFalse);
+      expect(
+        s.text,
+        r'Suggested fare for your trip: $3.00 (stored value covers it)',
+      );
+      expect(
+        tripFareSuggestion(wallet(pass: true), trip).text,
+        r'Suggested fare for your trip: $3.00 (your Day Pass covers it)',
+      );
+      expect(
+        tripFareSuggestion(wallet(balance: 100), trip).text,
+        r'Suggested fare for your trip: $3.00 '
+        r'(add $2.00 of stored value to cover it)',
+      );
+      expect(
+        fareAdvice(wallet(), trip: trip).first,
+        startsWith('Suggested fare for your trip'),
+      );
+      expect(fareAdvice(wallet()).first, isNot(contains('Suggested fare')));
+    });
+
+    test('uses the itinerary fare when OTP reports one', () {
+      final base = westlakeItinerary();
+      final trip = tp.Itinerary(
+        duration: base.duration,
+        startTime: base.startTime,
+        endTime: base.endTime,
+        legs: base.legs,
+        fare: const tp.Money(cents: 275, currencyCode: 'USD'),
+      );
+      final s = tripFareSuggestion(wallet(), trip);
+      expect(s.fromPlanner, isTrue);
+      expect(s.cents, 275);
+      expect(s.text, contains(r'$2.75'));
+    });
+
+    test('the sample table counts transit legs, with 2-hour transfers', () {
+      final t0 = DateTime(2026, 11, 25, 9);
+      final here = westlakeItinerary().legs.first.from;
+      tp.Leg leg(String mode, Duration after) => tp.Leg(
+        startTime: t0.add(after),
+        endTime: t0.add(after + const Duration(minutes: 20)),
+        mode: mode,
+        from: here,
+        to: here,
+        transitLeg: mode != 'WALK',
+      );
+      tp.Itinerary trip(List<tp.Leg> legs) => tp.Itinerary(
+        duration: 0,
+        startTime: legs.first.startTime,
+        endTime: legs.last.endTime,
+        legs: legs,
+      );
+      expect(sampleTripFareCents(trip([leg('WALK', Duration.zero)])), 0);
+      // Bus then a transfer to rail within 2 hours: pay the difference.
+      expect(
+        sampleTripFareCents(
+          trip([
+            leg('BUS', Duration.zero),
+            leg('RAIL', const Duration(minutes: 30)),
+          ]),
+        ),
+        500,
+      );
+      // Two buses 3 hours apart: two fares.
+      expect(
+        sampleTripFareCents(
+          trip([
+            leg('BUS', Duration.zero),
+            leg('BUS', const Duration(hours: 3)),
+          ]),
+        ),
+        500,
+      );
     });
   });
 
@@ -139,6 +239,51 @@ void main() {
       expect(find.byType(AppBar), findsOneWidget);
       final route = ModalRoute.of(tester.element(find.byType(TripPlannerPage)));
       expect(route?.settings.arguments, isA<TripPlannerRoute>());
+      env.expectReadOnly();
+      await env.tearDown(tester);
+    });
+
+    testWidgets('the itinerary opened in the planner drives the fare '
+        'suggestion, and clears', (tester) async {
+      // The itinerary's details page draws a map.
+      mockMapTileCache();
+      final wallet = Wallet.sample(now: () => DateTime(2026, 11, 25, 8));
+      await env.pumpApp(
+        tester,
+        wallet: wallet,
+        home: const BuyScreen(),
+        surfaceSize: const Size(390, 1600),
+      );
+      expect(find.textContaining('Suggested fare'), findsNothing);
+      expect(find.textContaining('get a fare suggestion'), findsOneWidget);
+
+      await tester.tap(find.text('Not sure which fare? Plan your trip'));
+      await TestEnv.settle(tester);
+      expect(
+        tester
+            .widget<TripPlannerPage>(find.byType(TripPlannerPage))
+            .onItinerarySelected,
+        isNotNull,
+      );
+      await openItinerary(tester, westlakeItinerary());
+      await TestEnv.settle(tester);
+      tester
+          .state<NavigatorState>(find.byType(Navigator).first)
+          .popUntil((r) => r.isFirst);
+      await TestEnv.settle(tester);
+
+      expect(
+        find.text(
+          r'Suggested fare for your trip: $3.00 (your Day Pass covers it)',
+        ),
+        findsOneWidget,
+      );
+      expect(find.textContaining("demo fare table"), findsOneWidget);
+      await expectAccessible(tester);
+
+      await tester.tap(find.text('Clear planned trip'));
+      await tester.pump();
+      expect(find.textContaining('Suggested fare'), findsNothing);
       env.expectReadOnly();
       await env.tearDown(tester);
     });
