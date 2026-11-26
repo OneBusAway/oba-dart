@@ -60,7 +60,11 @@ Widget buildPlaceRoute(BuildContext context, PlaceRoute route) =>
     PlacePage(place: route.place, isDroppedPin: route.isDroppedPin);
 
 Widget buildTripPlannerRoute(BuildContext context, TripPlannerRoute route) =>
-    TripPlannerPage(origin: route.origin, destination: route.destination);
+    TripPlannerPage(
+      origin: route.origin,
+      destination: route.destination,
+      onItinerarySelected: route.onItinerarySelected,
+    );
 
 Widget buildWeatherRoute(BuildContext context, WeatherRoute route) =>
     const WeatherPage();
@@ -86,10 +90,21 @@ List<ObaHomeSection> get searchHomeSections => [
 /// The OTP trip planner for the current region, wired to the app's place
 /// search, location and map tiles. Embeddable: needs only an `ObaScope`.
 class TripPlannerPage extends StatelessWidget {
-  const TripPlannerPage({super.key, this.origin, this.destination});
+  const TripPlannerPage({
+    super.key,
+    this.origin,
+    this.destination,
+    this.onItinerarySelected,
+  });
 
   final Place? origin;
   final Place? destination;
+
+  /// Called when the rider opens one of the planned itineraries, just
+  /// before its details page is pushed (the push still happens). Lets a
+  /// host remember the chosen trip, e.g. to show "Leave by 9:12" or a fare.
+  final void Function(BuildContext context, tp.Itinerary itinerary)?
+  onItinerarySelected;
 
   @override
   Widget build(BuildContext context) {
@@ -129,9 +144,11 @@ class TripPlannerPage extends StatelessWidget {
         // Through ObaNavigator, so in the shell the details open as a sheet
         // page with the trip drawn on the main map (not a second map under
         // a full-screen app bar), and a host's onNavigate can take over.
-        onItineraryTap: (context, itinerary) =>
-            ObaNavigator.of(context)
-                .push(ItineraryRoute(itinerary, mapConfig: mapConfig)),
+        onItineraryTap: (context, itinerary) {
+          onItinerarySelected?.call(context, itinerary);
+          ObaNavigator.of(context)
+              .push(ItineraryRoute(itinerary, mapConfig: mapConfig));
+        },
         initialOrigin: origin == null
             ? null
             : PlaceSearchTripBridge.toTripPlace(origin!),

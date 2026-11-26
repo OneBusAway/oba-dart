@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:obakit_core/obakit_core.dart';
+import 'package:obakit_trip_planner/obakit_trip_planner.dart' as tp;
 
 import 'sheet_detents.dart';
 
@@ -211,9 +212,18 @@ final class PlaceRoute extends ObaRoute {
 }
 
 final class TripPlannerRoute extends ObaRoute {
-  const TripPlannerRoute({this.origin, this.destination});
+  const TripPlannerRoute({
+    this.origin,
+    this.destination,
+    this.onItinerarySelected,
+  });
   final Place? origin;
   final Place? destination;
+
+  /// See `TripPlannerPage.onItinerarySelected`. Not part of [id] or
+  /// equality: the planner is one page whoever listens to it.
+  final void Function(BuildContext context, tp.Itinerary itinerary)?
+  onItinerarySelected;
   @override
   String get id =>
       'tripPlanner_${[if (origin != null) 'origin', if (destination != null) 'destination'].join('_').ifEmpty('blank')}';
