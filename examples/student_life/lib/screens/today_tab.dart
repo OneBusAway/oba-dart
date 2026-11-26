@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:obakit/obakit.dart';
 
+import '../chosen_trip.dart';
 import '../data/dining.dart';
 import '../data/events.dart';
 import '../data/schedule.dart';
@@ -23,6 +24,9 @@ class TodayTab extends StatelessWidget {
       children: [
         const _Greeting(),
         const NextClassCard(meeting: nextClass),
+        // When to leave, from the itinerary the student chose in the SDK
+        // trip planner (onItinerarySelected), or a prompt to plan one.
+        const ChosenTripCard(),
         // OBA embed: urgent unread service alerts. Renders nothing at all
         // when there are none, so it costs the feed no space.
         const EmbedFrame(
@@ -84,8 +88,9 @@ class _Greeting extends StatelessWidget {
   }
 }
 
-/// The student's next class, with when to leave and a Directions button
-/// that opens the SDK trip planner.
+/// The student's next class, with a Directions button that opens the SDK
+/// trip planner. When to leave comes from the trip the student picks
+/// there (see [ChosenTripCard]).
 class NextClassCard extends StatelessWidget {
   const NextClassCard({super.key, required this.meeting});
 
@@ -96,7 +101,6 @@ class NextClassCard extends StatelessWidget {
     final theme = Theme.of(context);
     final loc = MaterialLocalizations.of(context);
     final start = loc.formatTimeOfDay(meeting.start);
-    final leaveBy = loc.formatTimeOfDay(meeting.leaveBy);
     const onNavy = Colors.white;
     return Card(
       color: Brand.navy,
@@ -118,22 +122,6 @@ class NextClassCard extends StatelessWidget {
             Text(
               meeting.title,
               style: theme.textTheme.bodyMedium?.copyWith(color: onNavy),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const ExcludeSemantics(
-                  child: Icon(Icons.directions_walk, color: Brand.gold),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Leave by $leaveBy · ${meeting.walkMinutes} min walk',
-                    style: theme.textTheme.bodyLarge?.copyWith(color: onNavy),
-                  ),
-                ),
-              ],
             ),
             const SizedBox(height: 12),
             FilledButton.icon(
@@ -214,4 +202,91 @@ class FeaturedEventCard extends StatelessWidget {
       onTap: () => EventDetailPage.push(context, event),
     ),
   );
+}
+
+/// The trip the student chose in the SDK trip planner: when to leave, the
+/// first route, and where it goes, with a way to clear it. With no trip
+/// chosen, a prompt to plan one; never made-up times.
+class ChosenTripCard extends StatelessWidget {
+  const ChosenTripCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final trip = ChosenTripScope.of(context);
+    final itinerary = trip.itinerary;
+    final theme = Theme.of(context);
+    if (itinerary == null) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ObaHeading('Your trip', style: theme.textTheme.titleMedium),
+              const SizedBox(height: 4),
+              Text(
+                'No trip planned. Plan one and open the itinerary you want, '
+                'and this card shows when to leave.',
+                style: theme.textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(48, 48),
+                ),
+                onPressed: () => openTripPlanner(context),
+                icon: const Icon(Icons.directions),
+                label: const Text('Plan a trip'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    final leaveAt = MaterialLocalizations.of(context)
+        .formatTimeOfDay(TimeOfDay.fromDateTime(itinerary.startTime.toLocal()));
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ObaHeading('Your trip', style: theme.textTheme.titleMedium),
+            const SizedBox(height: 4),
+            // A live region: screen readers hear the new time when the
+            // student picks another itinerary.
+            Semantics(
+              liveRegion: true,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const ExcludeSemantics(child: Icon(Icons.directions_walk)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Leave by $leaveAt · ${tripRouteLabel(itinerary)}',
+                      style: theme.textTheme.bodyLarge,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              'To ${trip.destination}',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextButton.icon(
+              style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+              onPressed: trip.clear,
+              icon: const Icon(Icons.close),
+              label: const Text('Clear trip'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

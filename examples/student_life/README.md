@@ -78,13 +78,14 @@ The tests boot a real `ObaApplication` over an in-memory store and a
 |---|---|---|
 | Today | `ObaStopDeparturesCard(stopId: 'MTS_24151', maxArrivals: 3)` | The campus shuttle's next departures from Eighth College, on the home feed. "See all" opens the stop page in a host route. |
 | Today | `ServiceAlertsSection()` | Urgent detours or delays on the stops the student uses. Takes no space when there are none. |
-| Today → Directions | `TripPlannerRoute(destination: Center Hall)` | Directions to the next class, pushed through `ObaNavigator` and opened under the host's app bar. |
+| Today → Directions | `TripPlannerRoute(destination: Center Hall, onItinerarySelected: ...)` | Directions to the next class, pushed through `ObaNavigator` and opened under the host's app bar. |
+| Today → Your trip | the `tp.Itinerary` from `onItinerarySelected` | When the student opens an itinerary in the planner, the app keeps it (`lib/chosen_trip.dart`, provided above the navigator) and Today shows "Leave by <start time> · <first route>" and the destination, with a Clear button. With no trip chosen it shows a prompt to plan one. |
 | Transit | `ObaMapView` (240dp preview, plus a full-screen page) | Find stops around campus. Tapping a pin opens the stop through the host's `onNavigate`. |
 | Transit | `NearbyStopsSection(maxStops: 3, title: 'Near campus')` | Departures from the three closest stops. The section's own heading is the only one. |
 | Transit | `ObaBookmarksCard(limit: 3)` | The student's saved stops with live departures. |
 | Transit → Campus stops | `StopPage` (via `ObaNavigator.push(StopRoute(id))` and the host's `onNavigate`) | Full departures for the host's curated campus stops (Eighth College, UCSD Central Campus trolley, Gilman Transit Center). |
 | Campus → event | `ObaNearbyStopsCard(around: venue)` | Departures near the event venue (Price Center, RIMAC Arena, Geisel Library), not near the student. |
-| Campus → event → Plan a trip | `TripPlannerRoute(destination: venue)` | Directions to the event venue, as its own route. |
+| Campus → event → Plan a trip | `TripPlannerRoute(destination: venue, onItinerarySelected: ...)` | Directions to the event venue, as its own route. The itinerary the student opens shows on Today. |
 | Me → Saved stops | `BookmarksPage()` (via `BookmarksRoute`) | All saved stops, managed in one place. |
 | Me → Service alerts | `AlertsListPage()` (via `AlertsListRoute`) | Every current alert for the student's stops. |
 

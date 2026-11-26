@@ -4,6 +4,7 @@
 // that answers from the onebusaway package's captured fixtures. Nothing
 // reaches the network, and nothing is ever written to a server.
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:obakit/obakit.dart';
+import 'package:obakit_trip_planner/obakit_trip_planner.dart' as tp;
 import 'package:student_life_example/app.dart';
 import 'package:student_life_example/data/campus.dart';
 import 'package:student_life_example/oba_setup.dart';
@@ -153,4 +155,32 @@ void mockMapTileCache() {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
   messenger.setMockMethodCallHandler(channel, (call) async => dir.path);
   addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
+}
+
+/// A real itinerary: the first one in obakit_trip_planner's captured OTP
+/// GraphQL response (Westlake to U District on Sound Transit's 1 Line,
+/// leaving 9:00 AM Pacific on Nov 25, 2026; the response reports no fare).
+tp.Itinerary westlakeItinerary() => tp
+    .parseGraphQLPlanResponse(
+      jsonDecode(
+        File(
+          '../../packages/obakit_trip_planner/test/fixtures/graphql/'
+          'soundtransit_westlake_to_udistrict.json',
+        ).readAsStringSync(),
+      ) as Map<String, dynamic>,
+    )
+    .itineraries
+    .first;
+
+/// Opens [itinerary] in the trip planner on screen, the way a tap on its
+/// row does. The region's OTP server isn't mocked, so this calls the
+/// planner's tap callback directly instead of planning a trip (as obakit's
+/// own tests do). The SDK then calls `onItinerarySelected`.
+Future<void> openItinerary(WidgetTester tester, tp.Itinerary itinerary) async {
+  final finder = find.byType(tp.TripPlannerView);
+  tester.widget<tp.TripPlannerView>(finder).onItineraryTap!(
+    tester.element(finder),
+    itinerary,
+  );
+  await tester.pump();
 }

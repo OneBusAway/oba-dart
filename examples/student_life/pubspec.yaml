@@ -14,6 +14,8 @@ dependencies:
   http: ^1.6.0
   obakit:
     path: ../../packages/obakit
+  obakit_trip_planner:
+    path: ../../packages/obakit_trip_planner
 
 dev_dependencies:
   flutter_test:

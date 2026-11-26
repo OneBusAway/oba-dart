@@ -10,7 +10,6 @@ class ClassMeeting {
     required this.building,
     required this.room,
     required this.start,
-    required this.walkMinutes,
   });
 
   final String course;
@@ -18,15 +17,6 @@ class ClassMeeting {
   final CampusPlace building;
   final String room;
   final TimeOfDay start;
-
-  /// Walking time from the student's usual spot, from the host's own data.
-  final int walkMinutes;
-
-  /// When to leave to arrive five minutes early.
-  TimeOfDay get leaveBy {
-    final minutes = start.hour * 60 + start.minute - walkMinutes - 5;
-    return TimeOfDay(hour: minutes ~/ 60, minute: minutes % 60);
-  }
 }
 
 const nextClass = ClassMeeting(
@@ -35,5 +25,4 @@ const nextClass = ClassMeeting(
   building: CampusPlaces.centerHall,
   room: '105',
   start: TimeOfDay(hour: 9, minute: 30),
-  walkMinutes: 13,
 );

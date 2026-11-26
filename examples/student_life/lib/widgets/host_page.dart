@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:obakit/obakit.dart';
+import 'package:obakit_trip_planner/obakit_trip_planner.dart' as tp;
 
+import '../chosen_trip.dart';
 import 'embed_frame.dart';
 
 /// A full-screen host route: the host's own app bar over one embedded OBA
@@ -133,17 +135,30 @@ Route<T> hostObaRoute<T>(ObaRoute route) => MaterialPageRoute<T>(
   },
 );
 
-/// The trip planner to [name] at [coordinate], as its own route.
+/// The trip planner, as its own route, to [name] at [coordinate] (or with
+/// no destination when they are null).
 ///
 /// Goes through `ObaNavigator`, so it reaches the host's `onNavigate` and
-/// opens under the host app bar like any other SDK destination.
+/// opens under the host app bar like any other SDK destination. When the
+/// student opens an itinerary, `onItinerarySelected` keeps it in the app's
+/// [ChosenTrip], and Today shows when to leave.
 Future<void> openTripPlanner(
   BuildContext context, {
-  required String name,
-  required Coordinate coordinate,
+  String? name,
+  Coordinate? coordinate,
 }) => ObaNavigator.of(context).push<void>(
   // OBA embed: the OTP trip planner, destination prefilled.
   TripPlannerRoute(
-    destination: Place(name: name, coordinate: coordinate),
+    destination: name == null || coordinate == null
+        ? null
+        : Place(name: name, coordinate: coordinate),
+    onItinerarySelected: (context, itinerary) =>
+        ChosenTripScope.read(context)
+            ?.choose(itinerary, destination: name ?? _lastPlaceName(itinerary)),
   ),
 );
+
+String _lastPlaceName(tp.Itinerary itinerary) {
+  final name = itinerary.legs.isEmpty ? '' : itinerary.legs.last.to.name;
+  return name.isEmpty ? 'your destination' : name;
+}

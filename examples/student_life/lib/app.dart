@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:obakit/obakit.dart';
 
+import 'chosen_trip.dart';
 import 'screens/home_shell.dart';
 import 'settings.dart';
 import 'theme.dart';
@@ -34,6 +35,16 @@ class StudentLifeApp extends StatefulWidget {
 class _StudentLifeAppState extends State<StudentLifeApp> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
+  /// The itinerary the student last chose in the trip planner (Today shows
+  /// it).
+  final _chosenTrip = ChosenTrip();
+
+  @override
+  void dispose() {
+    _chosenTrip.dispose();
+    super.dispose();
+  }
+
   // Every SDK destination opens as a host route, so the host's app bar is
   // the only one on every page. Returning true for every route means the
   // SDK never pushes a page of its own.
@@ -58,10 +69,13 @@ class _StudentLifeAppState extends State<StudentLifeApp> {
         themeMode: mode,
         localizationsDelegates: obaLocalizationsDelegates,
         supportedLocales: obaSupportedLocales,
-        builder: (context, child) => ObaScope(
-          application: widget.oba,
-          onNavigate: _onNavigate,
-          child: child!,
+        builder: (context, child) => ChosenTripScope(
+          trip: _chosenTrip,
+          child: ObaScope(
+            application: widget.oba,
+            onNavigate: _onNavigate,
+            child: child!,
+          ),
         ),
         home: widget.home,
       ),

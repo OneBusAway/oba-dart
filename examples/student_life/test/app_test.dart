@@ -2,9 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:obakit/obakit.dart';
+import 'package:obakit_trip_planner/obakit_trip_planner.dart' as tp;
+import 'package:student_life_example/chosen_trip.dart';
 import 'package:student_life_example/data/campus.dart';
 import 'package:student_life_example/screens/campus_tab.dart';
 import 'package:student_life_example/screens/event_detail_page.dart';
+import 'package:student_life_example/screens/today_tab.dart';
 import 'package:student_life_example/screens/transit_tab.dart';
 import 'package:student_life_example/widgets/host_page.dart';
 
@@ -39,6 +42,9 @@ void main() {
     tester,
   ) async {
     final e = await env();
+    // Tall enough to build the whole feed.
+    await tester.binding.setSurfaceSize(const Size(600, 1600));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(e.app());
     await TestEnv.settle(tester);
 
@@ -74,6 +80,9 @@ void main() {
     tester,
   ) async {
     final e = await env(showObaEmbeds: true);
+    // Tall enough to build the whole feed.
+    await tester.binding.setSurfaceSize(const Size(600, 1600));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(e.app());
     await TestEnv.settle(tester);
     expect(find.text('OBA · ObaStopDeparturesCard'), findsOneWidget);
@@ -290,5 +299,119 @@ void main() {
     expect(find.byType(AlertsListPage), findsOneWidget);
     expect(find.byType(AppBar), findsOneWidget);
     expect(e.writes, isEmpty);
+  });
+
+  group('Your trip on Today', () {
+    testWidgets('prompts to plan a trip when none is chosen', (tester) async {
+      final e = await env();
+      await tester.pumpWidget(e.app());
+      await TestEnv.settle(tester);
+      expect(find.byType(ChosenTripCard), findsOneWidget);
+      expect(find.textContaining('No trip planned'), findsOneWidget);
+      expect(find.textContaining('Leave by'), findsNothing);
+
+      await tester.ensureVisible(
+        find.widgetWithText(OutlinedButton, 'Plan a trip'),
+      );
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Plan a trip'));
+      await TestEnv.settle(tester);
+      final page = tester.widget<TripPlannerPage>(find.byType(TripPlannerPage));
+      expect(page.destination, isNull);
+      expect(page.onItinerarySelected, isNotNull);
+    });
+
+    testWidgets('Directions: the itinerary the student opens shows on Today, '
+        'and clears', (tester) async {
+      final e = await env();
+      // The itinerary's details page draws a map.
+      mockMapTileCache();
+      await tester.pumpWidget(e.app());
+      await TestEnv.settle(tester);
+      await tester.tap(find.text('Directions to Center Hall'));
+      await TestEnv.settle(tester);
+
+      await openItinerary(tester, westlakeItinerary());
+      await TestEnv.settle(tester);
+      // The SDK still opens the itinerary's details after the callback.
+      expect(find.byType(TripPlannerPage, skipOffstage: false), findsOneWidget);
+      final navigator = tester.state<NavigatorState>(
+        find.byType(Navigator).first,
+      );
+      navigator.popUntil((r) => r.isFirst);
+      await TestEnv.settle(tester);
+
+      expect(find.text('Leave by 9:00 AM · 1 Line'), findsOneWidget);
+      expect(find.text('To Center Hall'), findsOneWidget);
+      expect(find.textContaining('No trip planned'), findsNothing);
+      await expectAccessible(tester);
+
+      await tester.ensureVisible(find.text('Clear trip'));
+      await tester.tap(find.text('Clear trip'));
+      await tester.pump();
+      expect(find.textContaining('Leave by'), findsNothing);
+      expect(find.textContaining('No trip planned'), findsOneWidget);
+      expect(e.writes, isEmpty);
+    });
+
+    testWidgets('an event\'s Plan a trip sets the trip to its venue', (
+      tester,
+    ) async {
+      final e = await env();
+      // The itinerary's details page draws a map.
+      mockMapTileCache();
+      await tester.pumpWidget(e.app());
+      await TestEnv.settle(tester);
+      await tester.scrollUntilVisible(find.text('Winter Career Fair'), 300);
+      await tester.tap(find.text('Winter Career Fair'));
+      await TestEnv.settle(tester);
+      await tester.tap(
+        find.widgetWithText(FilledButton, 'Plan a trip to Price Center'),
+      );
+      await TestEnv.settle(tester);
+      await openItinerary(tester, westlakeItinerary());
+      await TestEnv.settle(tester);
+
+      final trip = ChosenTripScope.read(
+        tester.element(find.byType(TripPlannerPage, skipOffstage: false)),
+      )!;
+      expect(trip.destination, 'Price Center');
+      expect(tripRouteLabel(trip.itinerary!), '1 Line');
+      tester
+          .state<NavigatorState>(find.byType(Navigator).first)
+          .popUntil((r) => r.isFirst);
+      await TestEnv.settle(tester);
+      await tester.scrollUntilVisible(find.text('To Price Center'), -300);
+      expect(find.text('Leave by 9:00 AM · 1 Line'), findsOneWidget);
+    });
+  });
+
+  test('the route label falls back to the mode, then to Walk', () {
+    final it = westlakeItinerary();
+    final noName = tp.Itinerary(
+      duration: it.duration,
+      startTime: it.startTime,
+      endTime: it.endTime,
+      legs: [
+        for (final leg in it.legs)
+          leg.transitLeg
+              ? tp.Leg(
+                  startTime: leg.startTime,
+                  endTime: leg.endTime,
+                  mode: 'BUS',
+                  from: leg.from,
+                  to: leg.to,
+                  transitLeg: true,
+                )
+              : leg,
+      ],
+    );
+    expect(tripRouteLabel(noName), 'Bus');
+    final walk = tp.Itinerary(
+      duration: 60,
+      startTime: it.startTime,
+      endTime: it.endTime,
+      legs: [it.legs.first],
+    );
+    expect(tripRouteLabel(walk), 'Walk');
   });
 }

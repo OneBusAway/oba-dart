@@ -24,13 +24,13 @@ Widget todayHostCards() => Scaffold(
 
 void main() {
   group('Today host cards', () {
-    testWidgets('show the next class, leave-by time and dining hours', (
+    testWidgets('show the next class, Directions and dining hours', (
       tester,
     ) async {
       await pumpHost(tester, todayHostCards());
       expect(find.text('CSE 110 · Center Hall 105 · 9:30 AM'), findsOneWidget);
-      // 9:30 minus a 13 minute walk minus 5 minutes' margin.
-      expect(find.text('Leave by 9:12 AM · 13 min walk'), findsOneWidget);
+      // No made-up leave-by time: that comes from a chosen itinerary.
+      expect(find.textContaining('Leave by'), findsNothing);
       expect(
         find.widgetWithText(FilledButton, 'Directions to Center Hall'),
         findsOneWidget,
