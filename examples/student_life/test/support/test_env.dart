@@ -160,17 +160,25 @@ void mockMapTileCache() {
 /// A real itinerary: the first one in obakit_trip_planner's captured OTP
 /// GraphQL response (Westlake to U District on Sound Transit's 1 Line,
 /// leaving 9:00 AM Pacific on Nov 25, 2026; the response reports no fare).
-tp.Itinerary westlakeItinerary() => tp
-    .parseGraphQLPlanResponse(
-      jsonDecode(
-        File(
-          '../../packages/obakit_trip_planner/test/fixtures/graphql/'
-          'soundtransit_westlake_to_udistrict.json',
-        ).readAsStringSync(),
-      ) as Map<String, dynamic>,
-    )
-    .itineraries
-    .first;
+///
+/// [endingAt] moves the trip's last place there, for tests that need the
+/// trip to end at a campus destination.
+tp.Itinerary westlakeItinerary({Coordinate? endingAt}) {
+  final json = jsonDecode(
+    File(
+      '../../packages/obakit_trip_planner/test/fixtures/graphql/'
+      'soundtransit_westlake_to_udistrict.json',
+    ).readAsStringSync(),
+  ) as Map<String, dynamic>;
+  if (endingAt != null) {
+    final plan = json['data']['plan'] as Map<String, dynamic>;
+    final legs = (plan['itineraries'] as List).first['legs'] as List;
+    final to = legs.last['to'] as Map<String, dynamic>;
+    to['lat'] = endingAt.lat;
+    to['lon'] = endingAt.lon;
+  }
+  return tp.parseGraphQLPlanResponse(json).itineraries.first;
+}
 
 /// Opens [itinerary] in the trip planner on screen, the way a tap on its
 /// row does. The region's OTP server isn't mocked, so this calls the
