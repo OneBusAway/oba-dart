@@ -158,7 +158,9 @@ class ObaApplication {
   Region? _otpRegion;
 
   /// An OTP client for the current region (cached until the region
-  /// changes), or null when trip planning is off there.
+  /// changes), or null when trip planning is off there. It shares the
+  /// core application's HTTP client (the host's `ObaAppConfig.httpClient`
+  /// when given); closing the OTP client never closes that shared client.
   tp.OtpClient? otpClient() {
     final region = core.currentRegion;
     if (core.tripPlanningStatus != FeatureStatus.running || region == null) {
@@ -170,6 +172,7 @@ class ObaApplication {
     return _otp = tp.OtpClient.fromRegion(
       otpBaseGraphqlUrl: region.otpBaseGraphqlUrl?.toString(),
       otpBaseUrl: region.otpBaseUrl?.toString(),
+      httpClient: core.httpClient,
     );
   }
 
