@@ -19,19 +19,36 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   // The host owns the coordinator, so it can add overlays and move the map.
   final _coordinator = ObaMapCoordinator();
-  late final ObaMapOverlay _reloadOverlay = ObaMapOverlay(
-    markers: [
-      for (final store in reloadLocations)
-        ObaMapMarker(
-          coordinate: store.coordinate,
-          // Every marker needs a label: screen readers announce it.
-          label: 'Reload location: ${store.name}',
-          kind: ObaMapMarkerKind.place,
-          color: TaplineColors.teal,
-          onTap: () => _showStore(store),
-        ),
-    ],
-  );
+  ObaMapOverlay? _reloadOverlay;
+  Brightness? _overlayBrightness;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final brightness = Theme.of(context).brightness;
+    if (_reloadOverlay == null || _overlayBrightness != brightness) {
+      _overlayBrightness = brightness;
+      // Dark vector tiles are teal-black, so dark teal pins vanish on them
+      // (1.9:1). Light teal keeps >3:1 on the dark palette, dark teal
+      // keeps >3:1 on the light palette.
+      final color = brightness == Brightness.dark
+          ? TaplineColors.tealLight
+          : TaplineColors.teal;
+      _reloadOverlay = ObaMapOverlay(
+        markers: [
+          for (final store in reloadLocations)
+            ObaMapMarker(
+              coordinate: store.coordinate,
+              // Every marker needs a label: screen readers announce it.
+              label: 'Reload location: ${store.name}',
+              kind: ObaMapMarkerKind.place,
+              color: color,
+              onTap: () => _showStore(store),
+            ),
+        ],
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -126,7 +143,7 @@ class _MapScreenState extends State<MapScreen> {
       body: ObaMapCoordinatorScope(
         coordinator: _coordinator,
         child: ObaMapOverlays(
-          overlay: _reloadOverlay,
+          overlay: _reloadOverlay!,
           // OBA embed: ObaMapView — tiles, stop pins, the rider's location
           // and the host's reload-location markers. A tapped stop opens in
           // Tapline's own bottom sheet.

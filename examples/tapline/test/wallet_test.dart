@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:obakit/obakit.dart';
 import 'package:tapline_example/screens/home_shell.dart';
+import 'package:tapline_example/screens/map_screen.dart';
 import 'package:tapline_example/screens/ride_screen.dart';
+import 'package:tapline_example/theme.dart';
 
 import 'support/test_env.dart';
 
@@ -84,6 +86,37 @@ void main() {
     await tester.tap(find.text('Buy'));
     await TestEnv.settle(tester);
     await expectAccessible(tester);
+    await env.tearDown(tester);
+  });
+
+  testWidgets('reload markers use a colour with 3:1 contrast on the map', (
+    tester,
+  ) async {
+    mockMapTileCache();
+    // Dark map: light teal pins (10.6:1 on the dark palette).
+    await env.pumpApp(
+      tester,
+      home: const MapScreen(),
+      brightness: Brightness.dark,
+    );
+    var overlays = tester.widget<ObaMapOverlays>(find.byType(ObaMapOverlays));
+    expect(overlays.overlay.markers, isNotEmpty);
+    for (final marker in overlays.overlay.markers) {
+      expect(marker.color, TaplineColors.tealLight);
+    }
+    await env.tearDown(tester);
+
+    env = await TestEnv.create();
+    // Light map: dark teal pins (8.1:1 on the light palette).
+    await env.pumpApp(
+      tester,
+      home: const MapScreen(),
+      brightness: Brightness.light,
+    );
+    overlays = tester.widget<ObaMapOverlays>(find.byType(ObaMapOverlays));
+    for (final marker in overlays.overlay.markers) {
+      expect(marker.color, TaplineColors.teal);
+    }
     await env.tearDown(tester);
   });
 
