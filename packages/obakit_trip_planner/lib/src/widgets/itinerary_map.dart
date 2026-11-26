@@ -68,6 +68,8 @@ class ItineraryMap extends StatelessWidget {
               userAgentPackageName: config.userAgentPackageName,
               tileProvider: config.tileProvider,
               maxNativeZoom: config.maxZoom.floor(),
+              subdomains: config.subdomains,
+              retinaMode: config.retinaMode,
             ),
           ),
           PolylineLayer(
