@@ -35,7 +35,8 @@ class ObaStopDeparturesCard extends StatefulWidget {
   final String stopId;
   final int maxArrivals;
 
-  /// Replaces the stop name in the header.
+  /// Replaces the stop name in the header. The stop name then shows under
+  /// it, unless it is the same text.
   final String? title;
 
   /// Share a controller with a `StopPage` pushed from the card.
@@ -126,7 +127,12 @@ class _ObaStopDeparturesCardState extends State<ObaStopDeparturesCard> {
       preferences: prefs,
       filter: core.settings.arrivalDepartureFilter,
     );
-    final title = widget.title ?? s.stop?.name ?? l10n.titleStop;
+    final stopName = s.stop?.name;
+    final title = widget.title ?? stopName ?? l10n.titleStop;
+    final subtitle =
+        widget.title != null && stopName != null && stopName != widget.title
+        ? stopName
+        : null;
     final nav = ObaNavigator.of(context);
     final Widget body;
     if (!s.hasData) {
@@ -172,6 +178,16 @@ class _ObaStopDeparturesCardState extends State<ObaStopDeparturesCard> {
             actionLabel: l10n.commonSeeAll,
             onAction: () => nav.push(StopRoute(widget.stopId)),
           ),
+          if (subtitle != null)
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 4),
+              child: Text(
+                obaBidiIsolate(context, subtitle),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
           if (s.isStale)
             Padding(
               padding: const EdgeInsetsDirectional.symmetric(horizontal: 16),
