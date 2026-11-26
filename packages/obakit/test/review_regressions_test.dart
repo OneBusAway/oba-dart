@@ -133,6 +133,7 @@ void main() {
       var current = a;
       final c = NearbyDeparturesController(client: () => current);
       addTearDown(c.dispose);
+      c.visible = true;
       c.setCenter(const Coordinate(47.6495, -122.3038));
       await pumpEventQueue();
       final oldIds = {for (final s in c.stops) s.id};

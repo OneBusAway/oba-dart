@@ -59,7 +59,9 @@ enum NearbyCenterSource {
 /// Polite to the server: one stops request per [refetchDistance] of
 /// movement, arrivals for at most [stopLimit] stops (fetched together, one
 /// notification per round), each again only once older than
-/// [NearbyDepartures.staleAfter], and only while [visible].
+/// [NearbyDepartures.staleAfter], and nothing at all while not [visible]
+/// (a stops request [setCenter] or [reset] asks for while hidden waits
+/// until it becomes visible).
 class NearbyDeparturesController extends ChangeNotifier
     with ObaDisposeSafeNotifier {
   NearbyDeparturesController({
@@ -89,6 +91,9 @@ class NearbyDeparturesController extends ChangeNotifier
   Object? _error;
   Duration _serverOffset = Duration.zero;
   bool _visible = false;
+
+  /// The stops need fetching around [_center], deferred while hidden.
+  bool _stopsPending = false;
   int _generation = 0;
 
   /// Bumped by [reset]: departures requested before it are another
@@ -118,7 +123,13 @@ class NearbyDeparturesController extends ChangeNotifier
   set visible(bool value) {
     if (value == _visible) return;
     _visible = value;
-    if (value) unawaited(loadIfNeeded());
+    if (!value) return;
+    final c = _center;
+    if (_stopsPending && c != null) {
+      unawaited(_loadStops(c));
+    } else {
+      unawaited(loadIfNeeded());
+    }
   }
 
   /// The section's rows now.
@@ -132,7 +143,7 @@ class NearbyDeparturesController extends ChangeNotifier
       );
 
   /// Moves the search point. Stops are fetched again only when it moved
-  /// more than [refetchDistance].
+  /// more than [refetchDistance], and only once [visible].
   void setCenter(Coordinate? value) {
     _center = value;
     if (value == null) return;
@@ -140,7 +151,15 @@ class NearbyDeparturesController extends ChangeNotifier
     if (last != null && distanceBetween(last, value) < refetchDistance) {
       return;
     }
-    unawaited(_loadStops(value));
+    _requestStops(value);
+  }
+
+  void _requestStops(Coordinate c) {
+    if (_visible) {
+      unawaited(_loadStops(c));
+    } else {
+      _stopsPending = true;
+    }
   }
 
   /// Uses stops someone else already loaded (the map's visible stops)
@@ -153,6 +172,7 @@ class NearbyDeparturesController extends ChangeNotifier
   ) {
     _center = center;
     _fetchedCenter = null;
+    _stopsPending = false;
     _generation++;
     final nearest = nearestStops(stops, center, limit: stopLimit);
     final same =
@@ -196,13 +216,14 @@ class NearbyDeparturesController extends ChangeNotifier
     _error = null;
     notifyListeners();
     final c = _center;
-    if (c != null) unawaited(_loadStops(c));
+    if (c != null) _requestStops(c);
   }
 
   Future<void> _loadStops(Coordinate c) async {
     final api = client();
     if (api == null) return;
     final generation = ++_generation;
+    _stopsPending = false;
     _fetchedCenter = c;
     _loadingStops = true;
     notifyListeners();
@@ -448,7 +469,10 @@ class _NearbyStopsSectionState extends State<NearbyStopsSection>
   }
 
   @override
-  void onVisibilityChanged(bool visible) => _syncVisible();
+  void onVisibilityChanged(bool visible) {
+    _syncVisible();
+    if (mounted) setState(() {});
+  }
 
   void _syncVisible() {
     final c = _controller;
@@ -546,7 +570,9 @@ class _NearbyStopsSectionState extends State<NearbyStopsSection>
     }
     if (c.stops.isEmpty) {
       if (!c.hasLoadedStops || c.isLoadingStops) {
-        return [const ObaLoadingState()];
+        // While hidden the stops request waits; a hidden IndexedStack child
+        // keeps its tickers, so a spinner there would animate for nothing.
+        return [if (isVisible) const ObaLoadingState()];
       }
       if (c.error != null) {
         return [
