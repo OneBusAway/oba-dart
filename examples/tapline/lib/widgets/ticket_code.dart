@@ -113,10 +113,27 @@ class _RotatingTicketTokenState extends State<RotatingTicketToken> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(
-      const Duration(seconds: 30),
-      (_) => setState(() {}),
-    );
+    _scheduleNext();
+  }
+
+  // Fires at the next 30-second window boundary, so the code changes when
+  // the token does, not up to 30 seconds later.
+  void _scheduleNext() {
+    final ms = widget.now().millisecondsSinceEpoch % 30000;
+    _timer = Timer(Duration(milliseconds: 30000 - ms), () {
+      if (!mounted) return;
+      setState(() {});
+      _scheduleNext();
+    });
+  }
+
+  @override
+  void didUpdateWidget(RotatingTicketToken oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.now != widget.now) {
+      _timer?.cancel();
+      _scheduleNext();
+    }
   }
 
   @override

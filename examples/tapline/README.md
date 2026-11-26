@@ -63,11 +63,11 @@ key). At startup the app loads the Positron and Dark styles and repaints
 their background, land and water toward Tapline's palette. Roads, rail and
 labels keep the base style.
 
-- If the styles don't load within 5 seconds, the app falls back to CARTO's
-  raster tiles (`lib/map_tiles.dart`). So does
-  `--dart-define=TAPLINE_MAP=raster`, for comparing the two.
+- If the styles don't load within 5 seconds, the app falls back to the
+  SDK's default raster tiles (OpenStreetMap's public server, light use
+  only). So does `--dart-define=TAPLINE_MAP=raster`, for comparing the two.
 - The trip planner's itinerary map draws raster tiles only. It uses the
-  same CARTO tiles, through the source's `rasterFallback`.
+  same OpenStreetMap tiles, through the source's `rasterFallback`.
 - Still to check on real devices: frame rate while panning on low-end
   Android, label quality, and web support.
 
@@ -77,10 +77,10 @@ labels keep the base style.
 |---|---|---|
 | Wallet | `ServiceAlertsSection` | Disruptions show up where riders look before every trip. It renders nothing when there are no alerts, so it costs nothing on a normal day. |
 | Wallet | `ObaNearbyStopsCard` | "Departures near you": after checking their balance, the rider's next question is when the bus comes. |
-| Ride | `ObaStopDeparturesCard` (stop of the last tap, host title "Ride again from ...") | The ticket screen is open while the rider waits. Most trips repeat, so the last tap's stop is a good guess, but on a return trip it's the wrong end, hence "Ride again" rather than "Your next ride". Tapping a departure opens the SDK's `TripPage` under Tapline's app bar. |
+| Ride | `ObaStopDeparturesCard` (stop of the last tap, host title "Ride again", with the stop's name under it) | The ticket screen is open while the rider waits. Most trips repeat, so the last tap's stop is a good guess, but on a return trip it's the wrong end, hence "Ride again" rather than "Your next ride". Tapping a departure opens the SDK's `TripPage` under Tapline's app bar. |
 | Ride (no stop known) | `ObaNearbyStopsCard` | When the last tap has no stop (see below), departures near the rider instead. |
 | Buy | `TripPlannerPage`, pushed as `TripPlannerRoute(onItinerarySelected: ...)` and shown under Tapline's app bar | "Not sure which fare? Plan your trip". When the rider opens an itinerary, `onItinerarySelected` hands it to Tapline, and the Buy screen shows a sample suggestion such as "Suggested fare for your trip: $2.50 (stored value covers it)". It uses the itinerary's `fare` when the OTP server reports one, and otherwise Tapline's sample fare table (by agency, then mode), counting the transit legs with 2-hour transfers. |
-| Activity, Ride details | `ObaStopDeparturesCard(stopId: tap.stopId)`, titled "Ride again from ..." | Turns a past tap into the next trip. The card's title is the only place the stop's name appears. |
+| Activity, Ride details | `ObaStopDeparturesCard(stopId: tap.stopId)`, titled "Ride again" | Turns a past tap into the next trip. The stop's name appears once, under the card's title. |
 | Map | `ObaMapView` with Tapline's reload-store markers added through `ObaMapCoordinator` and `ObaMapOverlays` | Riders find stops and the stores where they can reload with cash on one map. The map's "Stops on the map" button opens the SDK's `StopsOnMapPage` under Tapline's app bar. The floating Ride button is hidden on this tab so it doesn't cover the map; the app bar has a ticket button instead. |
 | Map (stop tapped) | `ObaStopDeparturesCard` in a host bottom sheet | A quick look at a stop's departures without leaving the map. The `ObaScope` above the navigator covers the sheet, so no `ObaScope.rewrap` is needed. |
 

@@ -67,9 +67,10 @@ const topUps = [
 
 const passProducts = [oneRide, dayPass, monthPass];
 
-/// End of the service day (11:59 PM) for [now].
+/// End of the service day (the last moment of 11:59 PM) for [now], so a
+/// pass bought during 11:59 PM is still active.
 DateTime endOfServiceDay(DateTime now) =>
-    DateTime(now.year, now.month, now.day, 23, 59);
+    DateTime(now.year, now.month, now.day, 23, 59, 59, 999);
 
 /// Sample tap history, newest first, relative to [now].
 List<Tap> sampleTaps(DateTime now) => [
