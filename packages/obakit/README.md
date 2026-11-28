@@ -644,7 +644,8 @@ StopPage(stopId: 'MTS_11589', controller: departures);
   mirror iOS `SheetDetentConfiguration`. For example, the stop page opens at
   medium, search opens full, and home starts collapsed to the search field
   and tabs. Popping restores the previous page's detent. Pushing a route
-  that is already open goes back to it. At 840dp and wider, the sheet
+  that is already open goes back to it (a trip planner to other places, or
+  with another `onItinerarySelected`, replaces the open one). At 840dp and wider, the sheet
   becomes a 400dp side panel.
 
 ## Theming
