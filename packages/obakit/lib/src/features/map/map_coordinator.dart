@@ -70,8 +70,8 @@ class ObaMapMarker {
   final String label;
   final ObaMapMarkerKind kind;
 
-  /// Degrees clockwise from north (vehicles). Rotates the glyph, including
-  /// an [icon].
+  /// Degrees clockwise from north. Rotates a [ObaMapMarkerKind.vehicle]
+  /// marker's glyph, including an [icon]; other kinds ignore it.
   final double? heading;
 
   /// The pin's fill. Null uses the [kind]'s colour.

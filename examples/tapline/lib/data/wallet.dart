@@ -63,6 +63,15 @@ class Wallet extends ChangeNotifier {
     if (!hasListeners) _cancelExpiry();
   }
 
+  // A listener removed while listeners are being notified stays counted
+  // until the notification ends, so removeListener can't see the last one
+  // go. Check again once it has.
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
+    if (!hasListeners) _cancelExpiry();
+  }
+
   @override
   void dispose() {
     _cancelExpiry();
