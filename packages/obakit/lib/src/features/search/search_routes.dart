@@ -153,7 +153,20 @@ class TripPlannerPage extends StatelessWidget {
         // page with the trip drawn on the main map (not a second map under
         // a full-screen app bar), and a host's onNavigate can take over.
         onItineraryTap: (context, itinerary) {
-          onItinerarySelected?.call(context, itinerary);
+          // A throwing host callback is reported, not allowed to stop the
+          // push: the details page always opens.
+          try {
+            onItinerarySelected?.call(context, itinerary);
+          } catch (error, stack) {
+            FlutterError.reportError(
+              FlutterErrorDetails(
+                exception: error,
+                stack: stack,
+                library: 'obakit',
+                context: ErrorDescription('while calling onItinerarySelected'),
+              ),
+            );
+          }
           ObaNavigator.of(context)
               .push(ItineraryRoute(itinerary, mapConfig: mapConfig));
         },
