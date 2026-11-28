@@ -153,12 +153,35 @@ Future<void> openTripPlanner(
         ? null
         : Place(name: name, coordinate: coordinate),
     onItinerarySelected: (context, itinerary) =>
-        ChosenTripScope.read(context)
-            ?.choose(itinerary, destination: name ?? _lastPlaceName(itinerary)),
+        ChosenTripScope.read(context)?.choose(
+          itinerary,
+          destination: tripDestinationName(
+            itinerary,
+            name: name,
+            coordinate: coordinate,
+          ),
+        ),
   ),
 );
 
-String _lastPlaceName(tp.Itinerary itinerary) {
-  final name = itinerary.legs.isEmpty ? '' : itinerary.legs.last.to.name;
-  return name.isEmpty ? 'your destination' : name;
+/// What Today calls the end of [itinerary]. The student can change the
+/// destination in the planner, so the prefilled [name] is used only when
+/// the trip ends within 100 m of [coordinate] (campus buildings are only
+/// 200 to 300 m apart, so a wider radius would keep the old name after the
+/// student picks a neighbouring building). Otherwise it's the last
+/// place's name, unless OTP gave only its generic "Destination".
+String tripDestinationName(
+  tp.Itinerary itinerary, {
+  String? name,
+  Coordinate? coordinate,
+}) {
+  if (itinerary.legs.isEmpty) return name ?? 'your destination';
+  final end = itinerary.legs.last.to;
+  if (name != null &&
+      coordinate != null &&
+      distanceBetween(Coordinate(end.lat, end.lon), coordinate) <= 100) {
+    return name;
+  }
+  final last = end.name.trim();
+  return last.isEmpty || last == 'Destination' ? 'your destination' : last;
 }

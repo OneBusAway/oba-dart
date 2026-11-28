@@ -47,8 +47,8 @@ void main() {
       find.byType(ObaStopDeparturesCard),
     );
     expect(card.stopId, Stops.eighthCollege);
-    // The stop's name shows once: in the departures card's title.
-    expect(card.title, 'Ride again from Eighth College / Theatre District');
+    // The stop's name shows once: under the departures card's title.
+    expect(card.title, 'Ride again');
     expect(find.textContaining('Eighth College'), findsOneWidget);
     expect(
       env.requests.map((r) => r.url.path),

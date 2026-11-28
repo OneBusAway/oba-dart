@@ -25,7 +25,10 @@ void main() {
       expect(wallet.balanceCents, 2850);
       wallet.purchase(dayPass);
       expect(wallet.activePass?.product, dayPass);
-      expect(wallet.activePass?.expiresAt, DateTime(2026, 11, 25, 23, 59));
+      expect(
+        wallet.activePass?.expiresAt,
+        DateTime(2026, 11, 25, 23, 59, 59, 999),
+      );
       wallet.purchase(monthPass);
       expect(wallet.activePass?.product, monthPass, reason: 'lasts longest');
     });
@@ -58,6 +61,23 @@ void main() {
       );
       expect(fareAdvice(quiet).first, contains('1-Ride'));
       expect(formatMoney(1850), r'$18.50');
+    });
+
+    test('a 1-Ride does not count as covering the whole day', () {
+      final now = DateTime(2026, 11, 25, 8);
+      final wallet = Wallet(
+        balanceCents: 1850,
+        passes: [],
+        taps: [],
+        now: () => now,
+      )..purchase(oneRide);
+      expect(wallet.activePass?.product, oneRide);
+      expect(fareAdvice(wallet).join(' '), isNot(contains('covers every')));
+      // The sample trip costs $3.00, more than the $2.50 1-Ride.
+      expect(
+        tripFareSuggestion(wallet, westlakeItinerary()).text,
+        r'Suggested fare for your trip: $3.00 (stored value covers it)',
+      );
     });
   });
 
@@ -102,6 +122,55 @@ void main() {
         startsWith('Suggested fare for your trip'),
       );
       expect(fareAdvice(wallet()).first, isNot(contains('Suggested fare')));
+    });
+
+    test('a 1-Ride covers a late trip that outlasts the Day Pass', () {
+      final late = DateTime(2026, 11, 25, 23, 30);
+      final base = westlakeItinerary();
+      final shift = late.difference(base.startTime);
+      final legs = [
+        for (final l in base.legs)
+          tp.Leg(
+            startTime: l.startTime.add(shift),
+            endTime: l.endTime.add(shift),
+            mode: l.mode,
+            from: l.from,
+            to: l.to,
+            transitLeg: l.transitLeg,
+            agencyName: l.agencyName,
+          ),
+      ];
+      final trip = tp.Itinerary(
+        duration: base.duration,
+        startTime: legs.first.startTime,
+        endTime: late.add(const Duration(hours: 1)),
+        legs: legs,
+        fare: const tp.Money(cents: 250, currencyCode: 'USD'),
+      );
+      final w = Wallet(
+        balanceCents: 0,
+        passes: [
+          Pass(
+            id: 'day',
+            product: dayPass,
+            activatedAt: morning,
+            expiresAt: endOfServiceDay(morning),
+          ),
+          Pass(
+            id: 'ride',
+            product: oneRide,
+            activatedAt: late,
+            expiresAt: late.add(const Duration(hours: 2)),
+          ),
+        ],
+        taps: [],
+        now: () => late,
+      );
+      expect(w.activePass?.product, dayPass);
+      expect(
+        tripFareSuggestion(w, trip).text,
+        r'Suggested fare for your trip: $2.50 (your 1-Ride covers it)',
+      );
     });
 
     test('uses the itinerary fare when OTP reports one', () {

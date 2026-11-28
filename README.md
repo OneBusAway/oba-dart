@@ -16,6 +16,7 @@ the UCSD Student Life app. Running the whole app is the second use case.
 | `packages/oba_arrivals` | Arrivals panel (`ObaArrivalsPanel`). Released as 0.1.0. `example/` is the UCSD Student Life embedding demo | Yes |
 | `packages/obakit` | UI SDK: `ObaApp`, `ObaScope`, theme, localization, map, and every screen, each exported for standalone embedding | Yes |
 | `packages/obakit_trip_planner` | OpenTripPlanner client (GraphQL, falling back to REST) and trip planner UI | Yes |
+| `examples/` | Sample host apps that embed the SDK: Tapline (a fare app) and Student Life (a university app) | Yes |
 | `lib/` | The app shim: `main.dart` and `app_config.dart` only (the regions list comes from `obakit`) | Yes |
 | `integration_test/` | Live end-to-end walkthrough of the app | Yes |
 | `docs/superpowers/` | Design spec and implementation plans | |
@@ -127,6 +128,22 @@ than one package, give every entry the same full 40-character commit SHA as
 `ref`: pub resolves the siblings from that one commit, and a branch, tag or
 short SHA in a second entry fails to resolve (see
 [`packages/obakit/README.md`](packages/obakit/README.md#install)).
+
+## Example apps
+
+[`examples/`](examples/README.md) has two sample host apps that embed the
+SDK in someone else's product, using live San Diego MTS data:
+
+- **[Tapline](examples/tapline/)**, a transit fare and payment app. It shows
+  departures on its wallet and ticket screens, puts the SDK map in its own
+  tab, and turns the trip a rider plans into a fare suggestion.
+- **[Student Life](examples/student_life/)**, a university app. It puts the
+  campus shuttle and alerts on its Today feed, shows directions to the next
+  class with a "Leave by" time, and lists departures near each campus event.
+
+Both open every SDK page under their own app bar through
+`ObaScope.onNavigate`. See [`examples/README.md`](examples/README.md) for
+screenshots, how the apps are wired, and how to run them.
 
 ## Set up
 

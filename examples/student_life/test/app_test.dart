@@ -330,7 +330,10 @@ void main() {
       await tester.tap(find.text('Directions to Center Hall'));
       await TestEnv.settle(tester);
 
-      await openItinerary(tester, westlakeItinerary());
+      await openItinerary(
+        tester,
+        westlakeItinerary(endingAt: CampusPlaces.centerHall.coordinate),
+      );
       await TestEnv.settle(tester);
       // The SDK still opens the itinerary's details after the callback.
       expect(find.byType(TripPlannerPage, skipOffstage: false), findsOneWidget);
@@ -368,7 +371,10 @@ void main() {
         find.widgetWithText(FilledButton, 'Plan a trip to Price Center'),
       );
       await TestEnv.settle(tester);
-      await openItinerary(tester, westlakeItinerary());
+      await openItinerary(
+        tester,
+        westlakeItinerary(endingAt: CampusPlaces.priceCenter.coordinate),
+      );
       await TestEnv.settle(tester);
 
       final trip = ChosenTripScope.read(
@@ -383,6 +389,29 @@ void main() {
       await tester.scrollUntilVisible(find.text('To Price Center'), -300);
       expect(find.text('Leave by 9:00 AM · 1 Line'), findsOneWidget);
     });
+  });
+
+  test('the trip keeps the prefilled name only if it ends there', () {
+    final hall = CampusPlaces.centerHall;
+    // Ends at Center Hall: the prefilled name.
+    expect(
+      tripDestinationName(
+        westlakeItinerary(endingAt: hall.coordinate),
+        name: hall.name,
+        coordinate: hall.coordinate,
+      ),
+      'Center Hall',
+    );
+    // The student picked somewhere else in the planner, and OTP calls it
+    // only "Destination".
+    expect(
+      tripDestinationName(
+        westlakeItinerary(),
+        name: hall.name,
+        coordinate: hall.coordinate,
+      ),
+      'your destination',
+    );
   });
 
   test('the route label falls back to the mode, then to Walk', () {

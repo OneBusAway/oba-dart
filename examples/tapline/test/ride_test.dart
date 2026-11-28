@@ -37,7 +37,7 @@ void main() {
       find.byType(ObaStopDeparturesCard),
     );
     expect(card.stopId, Stops.ucsdCentralCampus);
-    expect(card.title, 'Ride again from UCSD Central Campus');
+    expect(card.title, 'Ride again');
     expect(find.textContaining('Your next ride'), findsNothing);
     await expectAccessible(tester);
     semantics.dispose();

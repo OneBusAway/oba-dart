@@ -52,12 +52,22 @@ class Wallet extends ChangeNotifier {
 
   Tap? get lastTap => _taps.isEmpty ? null : _taps.first;
 
-  /// The active pass that lasts longest, or null.
+  /// The active pass that lasts longest, or null. An unlimited pass wins
+  /// over a 1-Ride, even one bought late in the day that outlasts it.
   Pass? get activePass {
-    final t = now();
-    final active = _passes.where((p) => p.isActiveAt(t)).toList()
-      ..sort((a, b) => b.expiresAt.compareTo(a.expiresAt));
+    final active = activePasses;
     return active.isEmpty ? null : active.first;
+  }
+
+  /// Every active pass, best first: unlimited passes before 1-Rides, then
+  /// the one that lasts longest.
+  List<Pass> get activePasses {
+    final t = now();
+    int unlimited(Pass p) => p.product.kind == FareProductKind.pass ? 0 : 1;
+    return _passes.where((p) => p.isActiveAt(t)).toList()..sort((a, b) {
+      final byKind = unlimited(a).compareTo(unlimited(b));
+      return byKind != 0 ? byKind : b.expiresAt.compareTo(a.expiresAt);
+    });
   }
 
   /// Taps since midnight today.
@@ -100,10 +110,11 @@ List<String> fareAdvice(Wallet wallet, {tp.Itinerary? trip}) {
   final advice = <String>[
     if (trip != null) tripFareSuggestion(wallet, trip).text,
   ];
+  // A 1-Ride only covers transfers for 2 hours, not the rest of the day.
   final active = wallet.activePass;
   final rides = wallet.ridesToday;
   final rideCost = oneRide.priceCents;
-  if (active == null) {
+  if (active == null || active.product.kind != FareProductKind.pass) {
     if (rides + 1 >= (dayPass.priceCents / rideCost).ceil()) {
       advice.add(
         '3 or more rides today? A Day Pass (${formatMoney(dayPass.priceCents)}) '
@@ -142,11 +153,15 @@ TripFareSuggestion tripFareSuggestion(Wallet wallet, tp.Itinerary trip) {
   final fare = trip.fare;
   final fromPlanner = fare != null && fare.currencyCode == 'USD';
   final cents = fromPlanner ? fare.cents : sampleTripFareCents(trip);
-  final pass = wallet.activePass;
+  // Any active pass that pays for it: a Day Pass that runs out mid-trip
+  // doesn't, but a 1-Ride bought late in the day still might.
+  final pass = wallet.activePasses
+      .where((p) => _passCovers(p, trip, cents))
+      .firstOrNull;
   final String covered;
   if (cents == 0) {
     covered = 'no fare to pay';
-  } else if (pass != null && pass.expiresAt.isAfter(trip.endTime)) {
+  } else if (pass != null) {
     covered = 'your ${pass.product.name} covers it';
   } else if (wallet.balanceCents >= cents) {
     covered = 'stored value covers it';
@@ -160,6 +175,21 @@ TripFareSuggestion tripFareSuggestion(Wallet wallet, tp.Itinerary trip) {
     fromPlanner: fromPlanner,
     text: 'Suggested fare for your trip: ${formatMoney(cents)} ($covered)',
   );
+}
+
+/// Whether [pass] pays for [trip], which costs [cents]. An unlimited pass
+/// must last until the trip ends. A 1-Ride pays for one fare, and only for
+/// boardings before it expires (its transfers run out, not the ride).
+bool _passCovers(Pass pass, tp.Itinerary trip, int cents) {
+  if (pass.product.kind == FareProductKind.pass) {
+    return pass.expiresAt.isAfter(trip.endTime);
+  }
+  if (cents > pass.product.priceCents) return false;
+  final boardings = trip.legs.where((l) => l.transitLeg);
+  final lastBoarding = boardings.isEmpty
+      ? trip.endTime
+      : boardings.last.startTime;
+  return pass.expiresAt.isAfter(lastBoarding);
 }
 
 /// SAMPLE prices per boarding, by agency name, then by OTP mode. Made up

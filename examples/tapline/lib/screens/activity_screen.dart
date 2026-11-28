@@ -164,14 +164,12 @@ class TapDetailScreen extends StatelessWidget {
           if (stopId != null) ...[
             const SizedBox(height: 16),
             // OBA embed: ObaStopDeparturesCard — live departures at the
-            // stop of this tap, so a past ride turns into the next one. Its
-            // title is the only place the stop's name appears.
+            // stop of this tap, so a past ride turns into the next one. The
+            // card shows the stop's name under the host's title, and this is
+            // the only place it appears.
             EmbedFrame(
               sdkWidget: 'ObaStopDeparturesCard',
-              child: ObaStopDeparturesCard(
-                stopId: stopId,
-                title: 'Ride again from ${tap.stopName ?? 'this stop'}',
-              ),
+              child: ObaStopDeparturesCard(stopId: stopId, title: 'Ride again'),
             ),
           ],
         ],
