@@ -236,9 +236,40 @@ class ObaOverlayMarker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final label =
+        marker.label.isEmpty && marker.kind == ObaMapMarkerKind.vehicle
+        ? context.obaL10n.mapVehicle
+        : marker.label;
+    final builder = marker.builder;
+    return Semantics(
+      container: true,
+      label: label,
+      button: marker.onTap != null,
+      onTap: marker.onTap,
+      excludeSemantics: true,
+      child: GestureDetector(
+        onTap: marker.onTap,
+        behavior: HitTestBehavior.opaque,
+        child: SizedBox.square(
+          dimension: kObaMarkerTarget,
+          child: ClipRect(
+            child: Center(
+              child: builder != null ? builder(context) : _pin(context),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _pin(BuildContext context) {
     final theme = ObaTheme.of(context);
     final scheme = Theme.of(context).colorScheme;
-    final (IconData icon, Color color, Color onColor) = switch (marker.kind) {
+    final (
+      IconData kindIcon,
+      Color color,
+      Color onColor,
+    ) = switch (marker.kind) {
       ObaMapMarkerKind.vehicle => (
         Icons.navigation,
         marker.color ?? theme.vehicle,
@@ -256,40 +287,20 @@ class ObaOverlayMarker extends StatelessWidget {
       ),
       _ => (Icons.place, marker.color ?? scheme.primary, scheme.onPrimary),
     };
-    Widget glyph = Icon(icon, size: 22, color: onColor);
+    Widget glyph = Icon(marker.icon ?? kindIcon, size: 22, color: onColor);
     if (marker.kind == ObaMapMarkerKind.vehicle && marker.heading != null) {
       glyph = Transform.rotate(
         angle: marker.heading! * math.pi / 180,
         child: glyph,
       );
     }
-    final label =
-        marker.label.isEmpty && marker.kind == ObaMapMarkerKind.vehicle
-        ? context.obaL10n.mapVehicle
-        : marker.label;
-    return Semantics(
-      container: true,
-      label: label,
-      button: marker.onTap != null,
-      onTap: marker.onTap,
-      excludeSemantics: true,
-      child: GestureDetector(
-        onTap: marker.onTap,
-        behavior: HitTestBehavior.opaque,
-        child: SizedBox.square(
-          dimension: kObaMarkerTarget,
-          child: Center(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-                border: Border.all(color: theme.stopPinFill, width: 2),
-              ),
-              child: Padding(padding: const EdgeInsets.all(5), child: glyph),
-            ),
-          ),
-        ),
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        border: Border.all(color: theme.stopPinFill, width: 2),
       ),
+      child: Padding(padding: const EdgeInsets.all(5), child: glyph),
     );
   }
 }

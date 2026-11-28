@@ -790,6 +790,12 @@ ObaMapOverlays(
 ```
 
 Every `ObaMapMarker` needs a `label`, because screen readers announce it.
+The SDK draws a round pin with a glyph for the marker's `kind`. Pass `icon`
+to choose the glyph (`icon: Icons.storefront`), or `builder` to draw the
+whole marker yourself (`builder: (context) => MyBuildingPin()`). Either
+way the SDK keeps the label, the `onTap` and the 48dp tap target, and
+clips a `builder` widget to that target. Give a custom marker 3:1 contrast
+with the map tiles in light and dark.
 
 ### Shared widgets
 

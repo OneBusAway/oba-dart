@@ -49,6 +49,14 @@ void main() {
       );
       final fills = _pinFills(tester);
       expect(fills, isNotEmpty);
+      // The host's own glyph in the SDK pin.
+      expect(
+        find.descendant(
+          of: find.bySemanticsLabel(RegExp('^Reload location: ')),
+          matching: find.byIcon(Icons.storefront),
+        ),
+        findsNWidgets(fills.length),
+      );
       final ground = _hex(palette.background);
       for (final fill in fills) {
         expect(
