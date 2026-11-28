@@ -38,7 +38,12 @@ class HostObaPage extends StatelessWidget {
       // A data title (a stop's name) can be long. It wraps in full, at any
       // text size, and the toolbar grows to fit it.
       toolbarHeight: _toolbarHeight(context, title),
-      title: Text(title, softWrap: true, overflow: TextOverflow.visible),
+      // AppBar clamps its title to 1.34x text; restore the rider's scale so
+      // the title reaches 200% and matches the height measured above.
+      title: MediaQuery(
+        data: MediaQuery.of(context),
+        child: Text(title, softWrap: true, overflow: TextOverflow.visible),
+      ),
     ),
     // OBA embed: a whole SDK page under the host app bar.
     body: EmbedFrame(
@@ -65,7 +70,7 @@ HostChrome hostChromeFor(ObaRoute route) => switch (route) {
   // The SDK passes the stop's name when the screen that opened it knew
   // it. Then the app bar carries the name from the first frame and the SDK
   // header (which would repeat it) is hidden.
-  StopRoute(:final name?) => (
+  StopRoute(:final name?) when name.trim().isNotEmpty => (
     title: name,
     showsHeader: false,
     sdkWidget: 'StopPage',

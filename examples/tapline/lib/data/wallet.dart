@@ -48,6 +48,7 @@ class Wallet extends ChangeNotifier {
   /// Fires when the next active pass expires, so screens that show it
   /// rebuild. Runs only while someone listens.
   Timer? _expiryTimer;
+  static const _maxExpiryWait = Duration(days: 1);
 
   @override
   void addListener(VoidCallback listener) {
@@ -84,8 +85,12 @@ class Wallet extends ChangeNotifier {
       }
     }
     if (next == null) return;
-    _expiryTimer = Timer(next.difference(t), () {
-      notifyListeners();
+    // Browsers fire a setTimeout longer than ~24.8 days at once, so a
+    // 30-Day Pass would spin. Wake at least daily and check again.
+    final wait = next.difference(t);
+    final capped = wait > _maxExpiryWait;
+    _expiryTimer = Timer(capped ? _maxExpiryWait : wait, () {
+      if (!capped) notifyListeners();
       _scheduleExpiry();
     });
   }

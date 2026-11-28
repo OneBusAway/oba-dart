@@ -231,9 +231,11 @@ final class TripPlannerRoute extends ObaRoute {
   /// equality: the planner is one page whoever listens to it.
   ///
   /// In the full-app shell (`ObaApp`), pushing this route while a trip
-  /// planner is already open returns to that page. If the new route's
-  /// places or callback differ, the shell replaces the page with one built
-  /// from the new route. Pass a stable function (not a new closure each
+  /// planner with the same [id] (the same places set: none, origin,
+  /// destination or both) is already open returns to that page. If the new
+  /// route's places or callback differ, the shell replaces the page with
+  /// one built from the new route. A planner with a different [id] opens
+  /// as a new page. Pass a stable function (not a new closure each
   /// time) to keep an open planner's state.
   final void Function(BuildContext context, tp.Itinerary itinerary)?
   onItinerarySelected;

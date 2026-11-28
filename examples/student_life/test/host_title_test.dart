@@ -39,6 +39,8 @@ void main() {
       final title = find.text(_long);
       final paragraph = tester.renderObject<RenderParagraph>(title);
       expect(paragraph.didExceedMaxLines, isFalse, reason: 'truncated');
+      // At the rider's full text size (AppBar would cap it at 1.34x).
+      expect(paragraph.textScaler.scale(10), closeTo(10 * scale, 0.01));
       // Wrapped onto more than one line, and inside the app bar.
       expect(
         paragraph.size.height,

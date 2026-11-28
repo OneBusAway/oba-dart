@@ -137,6 +137,8 @@ void main() {
   for (final (route, title, sdkPage) in [
     (const StopRoute('MTS_1'), 'Transit', StopPage),
     (const StopRoute('MTS_1', name: 'Gilman Dr'), 'Gilman Dr', StopPage),
+    // A blank name is no hint.
+    (const StopRoute('MTS_1', name: ' '), 'Transit', StopPage),
     (const AlertsListRoute(), 'Service alerts', AlertsListPage),
     (const RecentStopsRoute(), 'Recent stops', RecentStopsPage),
     (const TripPlannerRoute(), 'Trip planner', TripPlannerPage),

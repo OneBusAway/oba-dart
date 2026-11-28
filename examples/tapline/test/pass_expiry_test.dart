@@ -45,4 +45,35 @@ void main() {
     // Unmounting removes the last listener and cancels the expiry timer.
     await tester.pumpWidget(const SizedBox());
   });
+
+  testWidgets('a 30-day pass waits without notifying until it expires', (
+    tester,
+  ) async {
+    final start = clock.now();
+    final wallet = Wallet(
+      balanceCents: 0,
+      passes: [
+        Pass(
+          id: 'month',
+          product: monthPass,
+          activatedAt: start,
+          expiresAt: start.add(const Duration(days: 30)),
+        ),
+      ],
+      taps: [],
+      now: clock.now,
+    );
+    var notified = 0;
+    void listener() => notified++;
+    wallet.addListener(listener);
+    // Timers wake at most daily (browsers can't wait 30 days), but a wake
+    // before the pass expires changes nothing, so nothing is notified.
+    await tester.pump(const Duration(days: 29, hours: 23));
+    expect(notified, 0);
+    expect(wallet.activePass?.product, monthPass);
+    await tester.pump(const Duration(hours: 2));
+    expect(notified, 1);
+    expect(wallet.activePass, isNull);
+    wallet.removeListener(listener);
+  });
 }
