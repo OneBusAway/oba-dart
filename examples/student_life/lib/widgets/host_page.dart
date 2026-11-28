@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:obakit/obakit.dart';
 import 'package:obakit_trip_planner/obakit_trip_planner.dart' as tp;
@@ -32,7 +34,12 @@ class HostObaPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(title)),
+    appBar: AppBar(
+      // A data title (a stop's name) can be long. It wraps in full, at any
+      // text size, and the toolbar grows to fit it.
+      toolbarHeight: _toolbarHeight(context, title),
+      title: Text(title, softWrap: true, overflow: TextOverflow.visible),
+    ),
     // OBA embed: a whole SDK page under the host app bar.
     body: EmbedFrame(
       sdkWidget: sdkWidget,
@@ -192,4 +199,21 @@ String tripDestinationName(
   }
   final last = end.name.trim();
   return last.isEmpty || last == 'Destination' ? 'your destination' : last;
+}
+
+/// The app bar height that fits [title] wrapped: at least the standard
+/// toolbar, taller when the title needs more lines.
+double _toolbarHeight(BuildContext context, String title) {
+  final theme = Theme.of(context);
+  final style = theme.appBarTheme.titleTextStyle ?? theme.textTheme.titleLarge;
+  // The back button, and the title's spacing on both sides.
+  const reserved = kToolbarHeight + 2 * NavigationToolbar.kMiddleSpacing;
+  final painter = TextPainter(
+    text: TextSpan(text: title, style: style),
+    textDirection: Directionality.of(context),
+    textScaler: MediaQuery.textScalerOf(context),
+  )..layout(maxWidth: MediaQuery.sizeOf(context).width - reserved);
+  final height = painter.height;
+  painter.dispose();
+  return math.max(kToolbarHeight, height + 16);
 }
