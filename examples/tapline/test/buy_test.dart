@@ -73,11 +73,39 @@ void main() {
       )..purchase(oneRide);
       expect(wallet.activePass?.product, oneRide);
       expect(fareAdvice(wallet).join(' '), isNot(contains('covers every')));
+    });
+
+    test('a 1-Ride pays toward a pricier trip; the rider pays only the '
+        'difference', () {
+      final now = DateTime(2026, 11, 25, 8);
+      Wallet withRide(int balance) =>
+          Wallet(balanceCents: balance, passes: [], taps: [], now: () => now)
+            ..purchase(oneRide);
       // The sample trip costs $3.00, more than the $2.50 1-Ride.
+      final trip = westlakeItinerary();
       expect(
-        tripFareSuggestion(wallet, westlakeItinerary()).text,
-        r'Suggested fare for your trip: $3.00 (stored value covers it)',
+        tripFareSuggestion(withRide(1850), trip).text,
+        r'Suggested fare for your trip: $3.00 (your 1-Ride covers $2.50 '
+        r'and stored value the other $0.50)',
       );
+      expect(
+        tripFareSuggestion(withRide(20), trip).text,
+        r'Suggested fare for your trip: $3.00 (your 1-Ride covers $2.50; '
+        r'add $0.30 of stored value to cover the rest)',
+      );
+    });
+
+    test('fare advice does not suggest a 1-Ride to a rider holding one', () {
+      final now = DateTime(2026, 11, 25, 8);
+      final wallet = Wallet(
+        balanceCents: 0,
+        passes: [],
+        taps: [],
+        now: () => now,
+      )..purchase(oneRide);
+      final first = fareAdvice(wallet).first;
+      expect(first, isNot(contains('A 1-Ride')));
+      expect(first, contains('Your 1-Ride'));
     });
   });
 
