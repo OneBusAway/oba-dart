@@ -6,15 +6,21 @@ import 'package:tapline_example/widgets/host_oba_page.dart';
 const _long = 'Eighth College / Theatre District (North), Southwest bound';
 
 void main() {
-  for (final scale in [1.0, 2.0]) {
-    testWidgets('a long host title wraps in full at ${scale}x text', (
-      tester,
-    ) async {
+  for (final (scale, bold) in [(1.0, false), (2.0, false), (2.0, true)]) {
+    testWidgets('a long host title wraps in full at ${scale}x text'
+        '${bold ? ', bold' : ''}', (tester) async {
       tester.view.devicePixelRatio = 3;
       tester.view.physicalSize = const Size(390 * 3, 844 * 3);
       addTearDown(tester.view.reset);
       tester.platformDispatcher.textScaleFactorTestValue = scale;
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      if (bold) {
+        tester.platformDispatcher.accessibilityFeaturesTestValue =
+            const FakeAccessibilityFeatures(boldText: true);
+        addTearDown(
+          tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+        );
+      }
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(

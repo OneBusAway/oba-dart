@@ -176,7 +176,7 @@ List<String> fareAdvice(Wallet wallet, {tp.Itinerary? trip}) {
       );
     } else if (active?.product.kind == FareProductKind.ride) {
       advice.add(
-        'Your ${active!.product.name} covers your next trip. For one or two '
+        'Your ${active!.product.name} pays toward your next trip. For one or two '
         'more today, stored value (${formatMoney(rideCost)} a ride) is the '
         'cheapest way.',
       );

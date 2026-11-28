@@ -159,14 +159,24 @@ Route<T> hostObaRoute<T>(ObaRoute route) => MaterialPageRoute<T>(
 /// toolbar, taller when the title needs more lines.
 double _toolbarHeight(BuildContext context, String title) {
   final theme = Theme.of(context);
-  final style = theme.appBarTheme.titleTextStyle ?? theme.textTheme.titleLarge;
-  // The back button, and the title's spacing on both sides.
-  const reserved = kToolbarHeight + 2 * NavigationToolbar.kMiddleSpacing;
+  var style = theme.appBarTheme.titleTextStyle ?? theme.textTheme.titleLarge;
+  // Text draws bold under the bold-text setting, so measure it that way.
+  if (MediaQuery.boldTextOf(context)) {
+    style = (style ?? const TextStyle()).merge(
+      const TextStyle(fontWeight: FontWeight.bold),
+    );
+  }
+  // The back button, the title's spacing on both sides, and the side
+  // insets the app bar's SafeArea takes (a notch in landscape).
+  final reserved =
+      kToolbarHeight +
+      2 * NavigationToolbar.kMiddleSpacing +
+      MediaQuery.paddingOf(context).horizontal;
   final painter = TextPainter(
     text: TextSpan(text: title, style: style),
     textDirection: Directionality.of(context),
     textScaler: MediaQuery.textScalerOf(context),
-  )..layout(maxWidth: MediaQuery.sizeOf(context).width - reserved);
+  )..layout(maxWidth: math.max(0, MediaQuery.sizeOf(context).width - reserved));
   final height = painter.height;
   painter.dispose();
   return math.max(kToolbarHeight, height + 16);
