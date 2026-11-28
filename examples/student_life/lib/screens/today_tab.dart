@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:obakit/obakit.dart';
 
@@ -243,8 +244,11 @@ class ChosenTripCard extends StatelessWidget {
         ),
       );
     }
-    final leaveAt = MaterialLocalizations.of(context)
-        .formatTimeOfDay(TimeOfDay.fromDateTime(itinerary.startTime.toLocal()));
+    final leave = leaveLabel(
+      MaterialLocalizations.of(context),
+      itinerary.startTime,
+      now: clock.now(),
+    );
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -264,7 +268,7 @@ class ChosenTripCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Leave by $leaveAt · ${tripRouteLabel(itinerary)}',
+                      '$leave · ${tripRouteLabel(itinerary)}',
                       style: theme.textTheme.bodyLarge,
                     ),
                   ),

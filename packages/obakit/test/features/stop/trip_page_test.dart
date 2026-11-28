@@ -82,6 +82,8 @@ void main() {
     await tester.scrollUntilVisible(find.text('Last stop'), 200);
     await tester.tap(find.text('Last stop'));
     expect(pushed.last, const StopRoute('1_76680'));
+    // The page knows the stop's name, so a host can title its page.
+    expect((pushed.last as StopRoute).name, isNotNull);
   });
 
   testWidgets('without an arrival: stop list only', (tester) async {

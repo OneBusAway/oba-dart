@@ -39,6 +39,7 @@ void main() {
     expect(find.byType(ObaDepartureRow), findsOneWidget);
     await tester.tap(find.text('See all'));
     expect(pushed.single, const StopRoute('1_10020'));
+    expect((pushed.single as StopRoute).name, 'NE 55TH ST & 37TH AVE NE');
     await tester.tap(find.byType(ObaDepartureRow));
     expect(pushed.last, isA<TripRoute>());
   });

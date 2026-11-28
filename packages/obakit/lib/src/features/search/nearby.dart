@@ -695,7 +695,8 @@ class NearbyDepartureTile extends StatelessWidget {
       status.a11y,
       [stop.name, ?distance].join(', '),
     );
-    void open() => ObaNavigator.of(context).push(StopRoute(stop.id));
+    void open() =>
+        ObaNavigator.of(context).push(StopRoute(stop.id, name: stop.name));
 
     final badge = ObaRouteBadge(
       label: routeName,

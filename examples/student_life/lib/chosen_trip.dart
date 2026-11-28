@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:obakit_trip_planner/obakit_trip_planner.dart' as tp;
 
 /// The trip the student last chose in the SDK trip planner, and where it
@@ -46,6 +46,22 @@ class ChosenTripScope extends InheritedNotifier<ChosenTrip> {
   /// Reads the trip without depending on it (for callbacks).
   static ChosenTrip? read(BuildContext context) =>
       context.getInheritedWidgetOfExactType<ChosenTripScope>()?.notifier;
+}
+
+/// When to leave for a trip that starts at [start]: "Leave by 9:00 AM" on
+/// the day of [now], or with the date on any other day ("Leave Fri, Nov 27
+/// at 9:00 AM"). Both are compared in local time.
+String leaveLabel(
+  MaterialLocalizations m,
+  DateTime start, {
+  required DateTime now,
+}) {
+  final local = start.toLocal();
+  final today = now.toLocal();
+  final time = m.formatTimeOfDay(TimeOfDay.fromDateTime(local));
+  return DateUtils.isSameDay(local, today)
+      ? 'Leave by $time'
+      : 'Leave ${m.formatMediumDate(local)} at $time';
 }
 
 /// What Today shows for a chosen trip: the first transit leg's route short

@@ -42,6 +42,11 @@ class ObaMapPolyline {
 enum ObaMapMarkerKind { place, origin, destination, vehicle, generic }
 
 /// A point marker. Every marker has a screen reader [label].
+///
+/// The SDK draws a round pin with a glyph for the marker's [kind]. A host
+/// can pick the glyph with [icon], or draw the whole marker with
+/// [builder]. Either way the SDK keeps the [label], the [onTap] and the
+/// 48dp tap target.
 @immutable
 class ObaMapMarker {
   const ObaMapMarker({
@@ -50,16 +55,36 @@ class ObaMapMarker {
     this.kind = ObaMapMarkerKind.generic,
     this.heading,
     this.color,
+    this.icon,
+    this.builder,
     this.onTap,
-  });
+  }) : assert(
+         icon == null || builder == null,
+         'Pass an icon or a builder, not both',
+       );
 
   final Coordinate coordinate;
+
+  /// Read by screen readers. Also the semantics of a [builder] marker,
+  /// whose own semantics are excluded.
   final String label;
   final ObaMapMarkerKind kind;
 
-  /// Degrees clockwise from north (vehicles).
+  /// Degrees clockwise from north. Rotates a [ObaMapMarkerKind.vehicle]
+  /// marker's glyph, including an [icon]; other kinds ignore it.
   final double? heading;
+
+  /// The pin's fill. Null uses the [kind]'s colour.
   final Color? color;
+
+  /// The glyph in the SDK's pin, in place of the [kind]'s. It is drawn in
+  /// the pin's foreground colour (for example `onPrimary` on a place pin).
+  final IconData? icon;
+
+  /// Draws the whole marker in place of the SDK's pin, centred in its 48dp
+  /// target (and clipped to it). Draw something that has 3:1 contrast with
+  /// the map tiles, in light and dark.
+  final WidgetBuilder? builder;
   final VoidCallback? onTap;
 }
 

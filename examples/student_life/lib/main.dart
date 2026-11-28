@@ -6,6 +6,6 @@ import 'settings.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final oba = await createObaApplication();
+  final oba = await createObaApplication(map: await studentLifeMapConfig());
   runApp(StudentLifeApp(oba: oba, settings: StudentLifeSettings()));
 }

@@ -1,4 +1,5 @@
 // The app with real SDK widgets over a MockClient (captured fixtures).
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:obakit/obakit.dart';
@@ -12,6 +13,9 @@ import 'package:student_life_example/screens/transit_tab.dart';
 import 'package:student_life_example/widgets/host_page.dart';
 
 import 'support/test_env.dart';
+
+/// 8:00 AM on the day of [westlakeItinerary], which leaves at 9:00 AM.
+final _tripDay = DateTime(2026, 11, 25, 8);
 
 void main() {
   Future<TestEnv> env({
@@ -107,23 +111,23 @@ void main() {
     await tester.tap(find.text('Eighth College / Theatre District'));
     await TestEnv.settle(tester);
 
-    // The host's route: its own app bar with a generic title, and the SDK
-    // stop page embedded below it (no second app bar). The stop's name
-    // shows once, in the SDK page's compact header.
+    // The host's route: its own app bar, titled from the route's name hint
+    // before the stop loads, and the SDK stop page embedded below it (no
+    // second app bar, and no SDK header repeating the name).
     final host = tester.widget<HostObaPage>(find.byType(HostObaPage));
-    expect(host.title, 'Transit');
-    expect(host.showsHeader, isTrue);
+    expect(host.title, 'Eighth College / Theatre District');
+    expect(host.showsHeader, isFalse);
     expect(find.byType(AppBar), findsOneWidget);
     expect(
       find.descendant(
         of: find.byType(AppBar),
-        matching: find.textContaining('Eighth College'),
+        matching: find.text('Eighth College / Theatre District'),
       ),
-      findsNothing,
+      findsOneWidget,
     );
     expect(
       find.text('Eighth College / Theatre District (North)'),
-      findsOneWidget,
+      findsNothing,
     );
     final page = tester.widget<StopPage>(find.byType(StopPage));
     expect(page.stopId, 'MTS_24151');
@@ -132,6 +136,9 @@ void main() {
 
   for (final (route, title, sdkPage) in [
     (const StopRoute('MTS_1'), 'Transit', StopPage),
+    (const StopRoute('MTS_1', name: 'Gilman Dr'), 'Gilman Dr', StopPage),
+    // A blank name is no hint.
+    (const StopRoute('MTS_1', name: ' '), 'Transit', StopPage),
     (const AlertsListRoute(), 'Service alerts', AlertsListPage),
     (const RecentStopsRoute(), 'Recent stops', RecentStopsPage),
     (const TripPlannerRoute(), 'Trip planner', TripPlannerPage),
@@ -322,73 +329,119 @@ void main() {
 
     testWidgets('Directions: the itinerary the student opens shows on Today, '
         'and clears', (tester) async {
-      final e = await env();
-      // The itinerary's details page draws a map.
-      mockMapTileCache();
-      await tester.pumpWidget(e.app());
-      await TestEnv.settle(tester);
-      await tester.tap(find.text('Directions to Center Hall'));
-      await TestEnv.settle(tester);
+      // The same day as the itinerary, which leaves 9:00 AM on Nov 25.
+      await withClock(Clock.fixed(_tripDay), () async {
+        final e = await env();
+        // The itinerary's details page draws a map.
+        mockMapTileCache();
+        await tester.pumpWidget(e.app());
+        await TestEnv.settle(tester);
+        await tester.tap(find.text('Directions to Center Hall'));
+        await TestEnv.settle(tester);
 
-      await openItinerary(
-        tester,
-        westlakeItinerary(endingAt: CampusPlaces.centerHall.coordinate),
-      );
-      await TestEnv.settle(tester);
-      // The SDK still opens the itinerary's details after the callback.
-      expect(find.byType(TripPlannerPage, skipOffstage: false), findsOneWidget);
-      final navigator = tester.state<NavigatorState>(
-        find.byType(Navigator).first,
-      );
-      navigator.popUntil((r) => r.isFirst);
-      await TestEnv.settle(tester);
+        await openItinerary(
+          tester,
+          westlakeItinerary(endingAt: CampusPlaces.centerHall.coordinate),
+        );
+        await TestEnv.settle(tester);
+        // The SDK still opens the itinerary's details after the callback.
+        expect(
+          find.byType(TripPlannerPage, skipOffstage: false),
+          findsOneWidget,
+        );
+        final navigator = tester.state<NavigatorState>(
+          find.byType(Navigator).first,
+        );
+        navigator.popUntil((r) => r.isFirst);
+        await TestEnv.settle(tester);
 
-      expect(find.text('Leave by 9:00 AM · 1 Line'), findsOneWidget);
-      expect(find.text('To Center Hall'), findsOneWidget);
-      expect(find.textContaining('No trip planned'), findsNothing);
-      await expectAccessible(tester);
+        expect(find.text('Leave by 9:00 AM · 1 Line'), findsOneWidget);
+        expect(find.text('To Center Hall'), findsOneWidget);
+        expect(find.textContaining('No trip planned'), findsNothing);
+        await expectAccessible(tester);
 
-      await tester.ensureVisible(find.text('Clear trip'));
-      await tester.tap(find.text('Clear trip'));
-      await tester.pump();
-      expect(find.textContaining('Leave by'), findsNothing);
-      expect(find.textContaining('No trip planned'), findsOneWidget);
-      expect(e.writes, isEmpty);
+        await tester.ensureVisible(find.text('Clear trip'));
+        await tester.tap(find.text('Clear trip'));
+        await tester.pump();
+        expect(find.textContaining('Leave by'), findsNothing);
+        expect(find.textContaining('No trip planned'), findsOneWidget);
+        expect(e.writes, isEmpty);
+      });
     });
 
     testWidgets('an event\'s Plan a trip sets the trip to its venue', (
       tester,
     ) async {
-      final e = await env();
-      // The itinerary's details page draws a map.
-      mockMapTileCache();
-      await tester.pumpWidget(e.app());
-      await TestEnv.settle(tester);
-      await tester.scrollUntilVisible(find.text('Winter Career Fair'), 300);
-      await tester.tap(find.text('Winter Career Fair'));
-      await TestEnv.settle(tester);
-      await tester.tap(
-        find.widgetWithText(FilledButton, 'Plan a trip to Price Center'),
-      );
-      await TestEnv.settle(tester);
-      await openItinerary(
-        tester,
-        westlakeItinerary(endingAt: CampusPlaces.priceCenter.coordinate),
-      );
-      await TestEnv.settle(tester);
+      // The same day as the itinerary, which leaves 9:00 AM on Nov 25.
+      await withClock(Clock.fixed(_tripDay), () async {
+        final e = await env();
+        // The itinerary's details page draws a map.
+        mockMapTileCache();
+        await tester.pumpWidget(e.app());
+        await TestEnv.settle(tester);
+        await tester.scrollUntilVisible(find.text('Winter Career Fair'), 300);
+        await tester.tap(find.text('Winter Career Fair'));
+        await TestEnv.settle(tester);
+        await tester.tap(
+          find.widgetWithText(FilledButton, 'Plan a trip to Price Center'),
+        );
+        await TestEnv.settle(tester);
+        await openItinerary(
+          tester,
+          westlakeItinerary(endingAt: CampusPlaces.priceCenter.coordinate),
+        );
+        await TestEnv.settle(tester);
 
-      final trip = ChosenTripScope.read(
-        tester.element(find.byType(TripPlannerPage, skipOffstage: false)),
-      )!;
-      expect(trip.destination, 'Price Center');
-      expect(tripRouteLabel(trip.itinerary!), '1 Line');
-      tester
-          .state<NavigatorState>(find.byType(Navigator).first)
-          .popUntil((r) => r.isFirst);
-      await TestEnv.settle(tester);
-      await tester.scrollUntilVisible(find.text('To Price Center'), -300);
-      expect(find.text('Leave by 9:00 AM · 1 Line'), findsOneWidget);
+        final trip = ChosenTripScope.read(
+          tester.element(find.byType(TripPlannerPage, skipOffstage: false)),
+        )!;
+        expect(trip.destination, 'Price Center');
+        expect(tripRouteLabel(trip.itinerary!), '1 Line');
+        tester
+            .state<NavigatorState>(find.byType(Navigator).first)
+            .popUntil((r) => r.isFirst);
+        await TestEnv.settle(tester);
+        await tester.scrollUntilVisible(find.text('To Price Center'), -300);
+        expect(find.text('Leave by 9:00 AM · 1 Line'), findsOneWidget);
+      });
     });
+
+    testWidgets('a trip on another day shows its date', (tester) async {
+      // The day before the itinerary, which leaves 9:00 AM on Wed, Nov 25.
+      await withClock(Clock.fixed(DateTime(2026, 11, 24, 18)), () async {
+        final e = await env();
+        await tester.pumpWidget(e.app());
+        await TestEnv.settle(tester);
+        ChosenTripScope.read(tester.element(find.byType(ChosenTripCard)))!
+            .choose(westlakeItinerary(), destination: 'Center Hall');
+        await tester.pump();
+        expect(
+          find.text('Leave Wed, Nov 25 at 9:00 AM · 1 Line'),
+          findsOneWidget,
+        );
+      });
+    });
+  });
+
+  test('the leave label has a date only for another day', () {
+    const m = DefaultMaterialLocalizations();
+    final start = DateTime(2026, 11, 25, 9);
+    expect(
+      leaveLabel(m, start, now: DateTime(2026, 11, 25, 0, 1)),
+      'Leave by 9:00 AM',
+    );
+    expect(
+      leaveLabel(m, start, now: DateTime(2026, 11, 25, 23, 59)),
+      'Leave by 9:00 AM',
+    );
+    expect(
+      leaveLabel(m, start, now: DateTime(2026, 11, 24, 23, 59)),
+      'Leave Wed, Nov 25 at 9:00 AM',
+    );
+    expect(
+      leaveLabel(m, start, now: DateTime(2026, 11, 26, 8)),
+      'Leave Wed, Nov 25 at 9:00 AM',
+    );
   });
 
   test('the trip keeps the prefilled name only if it ends there', () {

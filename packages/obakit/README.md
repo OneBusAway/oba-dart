@@ -187,7 +187,7 @@ hosts.
 | API key, app name and version, URL scheme, fixed region, More tab, donations | `ObaAppConfig` (obakit_core) | See the obakit_core README. `ObaAppConfig.fromOBAKitConfig` reads an iOS-style map |
 | Tile server | `ObaMapConfig.standard` (`ObaTileSource`) | Defaults to OpenStreetMap, which allows light use only. Production apps should use their own provider. The attribution is always shown |
 | High-density tiles | `ObaTileSource.retinaMode` | Automatic when the URL template has `{r}` and the screen is high-density (the provider serves `@2x` tiles). Without `{r}` it stays off unless you pass `true` |
-| Vector tiles or another custom base layer | `ObaTileSource.custom(layerBuilder:, attribution:, rasterFallback:)` | Return any flutter_map layer (for example `VectorTileLayer` from `vector_map_tiles`, which the SDK doesn't depend on). The trip planner's itinerary map draws raster tiles only and uses `rasterFallback` (OpenStreetMap by default). `examples/tapline` has a working setup |
+| Vector tiles or another custom base layer | `ObaTileSource.custom(layerBuilder:, attribution:, rasterFallback:)` | Return any flutter_map layer (for example `VectorTileLayer` from `vector_map_tiles`, which the SDK doesn't depend on). The trip planner's itinerary map draws raster tiles only and uses `rasterFallback` (OpenStreetMap by default). `examples/tapline` and `examples/student_life` have working setups (OpenFreeMap, no API key) |
 | Dark street tiles | `ObaMapConfig.standardDark` | Used when the theme is dark; null (default) uses `standard` in both. Its own attribution is shown. The shell's status-bar icons turn light over them |
 | Regions list | `ObaAppConfig.bundledRegionsJson` | Defaults to the list bundled with the SDK |
 | Location | `ObaPlatformServices.locationProvider` | `GeolocatorLocationProvider` (default), `FixedLocationProvider`, `NoLocationProvider`, or your own |
@@ -328,7 +328,10 @@ ObaScope(
   application: app,
   onNavigate: (context, route) {
     if (route is StopRoute) {
-      myRouter.openStop(route.stopId);   // open it your way...
+      // open it your way. route.name is the stop's name when the screen
+      // that opened it knew it (nearby rows, bookmarks, search results),
+      // so your page can show a title before the stop loads.
+      myRouter.openStop(route.stopId, title: route.name);
       return true;
     }
     return false;                        // ...or let the SDK push its page
@@ -386,6 +389,78 @@ first shown. It also shows
 your location, the recentre button, and the tile attribution. Pass an
 `ObaMapCoordinator` to drive it from your code (`moveTo`, `focusStop`,
 overlays). `onShowStopsList` adds the accessible list of visible stops.
+
+#### Your own markers and lines on the map
+
+To draw your own places on the SDK map (stores, campus buildings, a
+shuttle route), own an `ObaMapCoordinator`, give it to the map and to an
+`ObaMapCoordinatorScope`, and put an `ObaMapOverlays` under that scope.
+The overlay shows while the widget is mounted and goes away when it is
+disposed:
+
+```dart
+class CampusMap extends StatefulWidget {
+  const CampusMap({super.key});
+  @override
+  State<CampusMap> createState() => _CampusMapState();
+}
+
+class _CampusMapState extends State<CampusMap> {
+  final _coordinator = ObaMapCoordinator();
+
+  // Build the overlay once (or when your data changes), not in build():
+  // ObaMapOverlays re-applies it whenever it gets a new instance.
+  late final _overlay = ObaMapOverlay(
+    markers: [
+      for (final b in buildings)
+        ObaMapMarker(
+          coordinate: b.coordinate,
+          label: 'Building: ${b.name}', // required: screen readers read it
+          kind: ObaMapMarkerKind.place,
+          icon: Icons.apartment,         // or builder: (context) => ...
+          onTap: () => showBuilding(b),
+        ),
+    ],
+    polylines: [ObaMapPolyline(points: shuttleLoop, color: shuttleBlue)],
+  );
+
+  @override
+  void dispose() {
+    _coordinator.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => ObaMapCoordinatorScope(
+    coordinator: _coordinator,
+    child: ObaMapOverlays(
+      overlay: _overlay,
+      child: ObaMapView(coordinator: _coordinator),
+    ),
+  );
+}
+```
+
+- `ObaMapOverlays` finds the coordinator through `ObaMapCoordinatorScope`.
+  Passing it to `ObaMapView` alone isn't enough; without a scope the
+  overlay does nothing.
+- Outside the full-app shell the map draws one overlay: the most recently
+  set. Put all of a screen's markers and lines in one `ObaMapOverlay`.
+- Markers take an `icon` or a `builder` (see
+  [Driving the map](#driving-the-map)). Stop pins, the rider's location and
+  the attribution stay.
+- To change the map from code, use the coordinator:
+  `_coordinator.moveTo(store.coordinate, zoom: 17)`, `fitBounds(rect)`,
+  `focusStop(stop)`. Code under the scope can reach it with
+  `ObaMapCoordinator.maybeOf(context)?.moveTo(...)`, which does nothing
+  when there is no map.
+- A route you push above the map doesn't see the scope. Wrap it in
+  `ObaMapCoordinatorScope(coordinator: _coordinator, ...)` again when it
+  needs the map (for example `StopsOnMapPage`).
+
+`examples/tapline/lib/screens/map_screen.dart` is a working example
+(reload-store markers with a storefront icon, a store list that moves the
+map, and the stops list).
 
 For a dark theme, give the map dark street tiles (and their attribution).
 Without them the default tiles show in both themes:
@@ -641,7 +716,8 @@ StopPage(stopId: 'MTS_11589', controller: departures);
   mirror iOS `SheetDetentConfiguration`. For example, the stop page opens at
   medium, search opens full, and home starts collapsed to the search field
   and tabs. Popping restores the previous page's detent. Pushing a route
-  that is already open goes back to it. At 840dp and wider, the sheet
+  that is already open goes back to it (a trip planner to other places, or
+  with another `onItinerarySelected`, replaces the open one). At 840dp and wider, the sheet
   becomes a 400dp side panel.
 
 ## Theming
@@ -733,6 +809,11 @@ new public widgets to the `show` list for your file in `lib/obakit.dart`.
   `build(context)`.
 - To change a shared route's parameters or detents, edit `oba_route.dart`,
   but only that route's class. Detents mirror iOS `SheetRoute.swift`.
+- The shell goes back to an open page whose route has the same `id`. If
+  the `id` leaves out something the page shows (it never holds
+  coordinates), override `showsSameContentAs` so a route that differs
+  rebuilds the page. `TripPlannerRoute` does this for its places and
+  callback.
 - To navigate, call `ObaNavigator.of(context).push(SomeRoute(...))`. Never
   call `Navigator.push` for an SDK destination. Pop with
   `ObaNavigator.of(context).pop()`.
@@ -787,6 +868,12 @@ ObaMapOverlays(
 ```
 
 Every `ObaMapMarker` needs a `label`, because screen readers announce it.
+The SDK draws a round pin with a glyph for the marker's `kind`. Pass `icon`
+to choose the glyph (`icon: Icons.storefront`), or `builder` to draw the
+whole marker yourself (`builder: (context) => MyBuildingPin()`). Either
+way the SDK keeps the label, the `onTap` and the 48dp tap target, and
+clips a `builder` widget to that target. Give a custom marker 3:1 contrast
+with the map tiles in light and dark.
 
 ### Shared widgets
 

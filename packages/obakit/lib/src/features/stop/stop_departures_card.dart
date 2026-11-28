@@ -176,7 +176,7 @@ class _ObaStopDeparturesCardState extends State<ObaStopDeparturesCard> {
           ObaSectionHeader(
             title: title,
             actionLabel: l10n.commonSeeAll,
-            onAction: () => nav.push(StopRoute(widget.stopId)),
+            onAction: () => nav.push(StopRoute(widget.stopId, name: stopName)),
           ),
           if (subtitle != null)
             Padding(

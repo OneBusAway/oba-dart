@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:obakit/obakit.dart';
 
@@ -30,7 +32,17 @@ class HostObaPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(title)),
+    appBar: AppBar(
+      // A data title (a stop's name) can be long. It wraps in full, at any
+      // text size, and the toolbar grows to fit it.
+      toolbarHeight: _toolbarHeight(context, title),
+      // AppBar clamps its title to 1.34x text; restore the rider's scale so
+      // the title reaches 200% and matches the height measured above.
+      title: MediaQuery(
+        data: MediaQuery.of(context),
+        child: Text(title, softWrap: true, overflow: TextOverflow.visible),
+      ),
+    ),
     // OBA embed: a whole SDK page under Tapline's app bar.
     body: EmbedFrame(
       sdkWidget: sdkWidget,
@@ -52,6 +64,14 @@ class HostObaPage extends StatelessWidget {
 typedef HostChrome = ({String title, bool showsHeader, String sdkWidget});
 
 HostChrome hostChromeFor(ObaRoute route) => switch (route) {
+  // The SDK passes the stop's name when the screen that opened it knew
+  // it. Then the app bar carries the name from the first frame and the SDK
+  // header (which would repeat it) is hidden.
+  StopRoute(:final name?) when name.trim().isNotEmpty => (
+    title: name,
+    showsHeader: false,
+    sdkWidget: 'StopPage',
+  ),
   StopRoute() => (title: 'Transit', showsHeader: true, sdkWidget: 'StopPage'),
   TripRoute() => (title: 'Transit', showsHeader: true, sdkWidget: 'TripPage'),
   RouteStopsRoute() => (
@@ -134,3 +154,30 @@ Route<T> hostObaRoute<T>(ObaRoute route) => MaterialPageRoute<T>(
     );
   },
 );
+
+/// The app bar height that fits [title] wrapped: at least the standard
+/// toolbar, taller when the title needs more lines.
+double _toolbarHeight(BuildContext context, String title) {
+  final theme = Theme.of(context);
+  var style = theme.appBarTheme.titleTextStyle ?? theme.textTheme.titleLarge;
+  // Text draws bold under the bold-text setting, so measure it that way.
+  if (MediaQuery.boldTextOf(context)) {
+    style = (style ?? const TextStyle()).merge(
+      const TextStyle(fontWeight: FontWeight.bold),
+    );
+  }
+  // The back button, the title's spacing on both sides, and the side
+  // insets the app bar's SafeArea takes (a notch in landscape).
+  final reserved =
+      kToolbarHeight +
+      2 * NavigationToolbar.kMiddleSpacing +
+      MediaQuery.paddingOf(context).horizontal;
+  final painter = TextPainter(
+    text: TextSpan(text: title, style: style),
+    textDirection: Directionality.of(context),
+    textScaler: MediaQuery.textScalerOf(context),
+  )..layout(maxWidth: math.max(0, MediaQuery.sizeOf(context).width - reserved));
+  final height = painter.height;
+  painter.dispose();
+  return math.max(kToolbarHeight, height + 16);
+}

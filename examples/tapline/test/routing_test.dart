@@ -24,6 +24,14 @@ void main() {
 
   for (final (route, title, showsHeader) in [
     (const StopRoute('MTS_24151'), 'Transit', true),
+    // With a name hint the app bar carries it and the SDK header goes.
+    (
+      const StopRoute('MTS_24151', name: 'Eighth College'),
+      'Eighth College',
+      false,
+    ),
+    // A blank name is no hint.
+    (const StopRoute('MTS_24151', name: ''), 'Transit', true),
     (const TripPlannerRoute(), 'Plan a trip', false),
     (const AlertsListRoute(), 'Service alerts', false),
     (const BookmarksRoute(), 'Saved stops', false),

@@ -88,7 +88,8 @@ class BookmarkCard extends StatelessWidget {
           subtitle: details == null ? null : Text(details),
           minTileHeight: 48,
           contentPadding: const EdgeInsetsDirectional.only(start: 16, end: 0),
-          onTap: () => navigator.push<void>(StopRoute(stop.id)),
+          onTap: () =>
+              navigator.push<void>(StopRoute(stop.id, name: stop.name)),
         ),
       ),
     );
@@ -212,7 +213,9 @@ class BookmarkCard extends StatelessWidget {
               route: departures.references?.route(a.routeId),
               onTap: () => bookmark.isTripBookmark
                   ? navigator.push<void>(TripRoute(TripRef.fromArrival(a)))
-                  : navigator.push<void>(StopRoute(stopId)),
+                  : navigator.push<void>(
+                      StopRoute(stopId, name: bookmark.stop.name),
+                    ),
             ),
         if (departures.isStale)
           Padding(

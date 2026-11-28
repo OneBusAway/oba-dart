@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart' show FlutterMap, MarkerLayer;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:obakit/obakit.dart';
+import 'package:obakit_trip_planner/obakit_trip_planner.dart' show Itinerary;
 
 import 'support/oba_test_harness.dart';
 
@@ -17,6 +18,16 @@ void main() {
       );
       expect(const StopRoute('1_75403'), StopRoute('1_75403', transfer: t));
       expect(const StopRoute('1_75403').id, 'stopDetails-1_75403');
+      // The name is a display hint, not identity.
+      expect(
+        const StopRoute('1_75403', name: 'Pine St'),
+        const StopRoute('1_75403'),
+      );
+      expect(
+        const StopRoute('1_75403', name: 'Pine St').id,
+        'stopDetails-1_75403',
+      );
+      expect(const StopRoute('1_75403', name: 'Pine St').name, 'Pine St');
       expect(const StopRoute('a') == const StopRoute('b'), isFalse);
     });
 
@@ -537,6 +548,84 @@ void main() {
       await ObaTestEnv.settle(tester);
       expect(shell.routeStack.last, isA<_OverlayRoute>());
       expect(shell.coordinator.overlay.markers.single.label, 'Here');
+    });
+
+    group('an open trip planner', () {
+      const pike = Place(
+        name: 'Pike Place Market',
+        coordinate: Coordinate(47.6097, -122.3422),
+      );
+      const zoo = Place(
+        name: 'Woodland Park Zoo',
+        coordinate: Coordinate(47.6685, -122.3505),
+      );
+
+      int planners() =>
+          find.byType(TripPlannerPage, skipOffstage: false).evaluate().length;
+      TripPlannerPage page(WidgetTester tester) =>
+          tester.widget<TripPlannerPage>(find.byType(TripPlannerPage));
+
+      testWidgets('is reused for the same places and callback', (tester) async {
+        final shell = await pumpShell(tester);
+        void chose(BuildContext _, Itinerary _) {}
+        shell.navigator.push(
+          TripPlannerRoute(destination: pike, onItinerarySelected: chose),
+        );
+        await ObaTestEnv.settle(tester);
+        final element = tester.element(find.byType(TripPlannerPage));
+        shell.navigator.push(const StopRoute('1_75403'));
+        await ObaTestEnv.settle(tester);
+
+        shell.navigator.push(
+          TripPlannerRoute(destination: pike, onItinerarySelected: chose),
+        );
+        await ObaTestEnv.settle(tester);
+        expect(shell.routeStack, [
+          const HomeRoute(),
+          const TripPlannerRoute(destination: pike),
+        ]);
+        expect(tester.element(find.byType(TripPlannerPage)), same(element));
+      });
+
+      testWidgets('is replaced by a planner to another place', (tester) async {
+        final shell = await pumpShell(tester);
+        shell.navigator.push(const TripPlannerRoute(destination: pike));
+        await ObaTestEnv.settle(tester);
+        shell.navigator.push(const StopRoute('1_75403'));
+        await ObaTestEnv.settle(tester);
+
+        shell.navigator.push(const TripPlannerRoute(destination: zoo));
+        await ObaTestEnv.settle(tester);
+        expect(shell.routeStack, [
+          const HomeRoute(),
+          const TripPlannerRoute(destination: zoo),
+        ]);
+        expect((shell.routeStack.last as TripPlannerRoute).destination, zoo);
+        expect(planners(), 1);
+        expect(page(tester).destination, zoo);
+      });
+
+      testWidgets('is replaced by a planner with another callback', (
+        tester,
+      ) async {
+        final shell = await pumpShell(tester);
+        final chosen = <String>[];
+        shell.navigator.push(
+          TripPlannerRoute(
+            destination: pike,
+            onItinerarySelected: (_, _) => chosen.add('first'),
+          ),
+        );
+        await ObaTestEnv.settle(tester);
+
+        void second(BuildContext _, Itinerary _) => chosen.add('second');
+        shell.navigator.push(
+          TripPlannerRoute(destination: pike, onItinerarySelected: second),
+        );
+        await ObaTestEnv.settle(tester);
+        expect(planners(), 1);
+        expect(page(tester).onItinerarySelected, second);
+      });
     });
   });
 }

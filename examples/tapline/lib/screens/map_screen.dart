@@ -3,7 +3,6 @@ import 'package:obakit/obakit.dart';
 
 import '../data/mock_data.dart';
 import '../data/models.dart';
-import '../theme.dart';
 import '../widgets/embed_frame.dart';
 import '../widgets/host_oba_page.dart';
 import 'wallet_screen.dart';
@@ -27,7 +26,11 @@ class _MapScreenState extends State<MapScreen> {
           // Every marker needs a label: screen readers announce it.
           label: 'Reload location: ${store.name}',
           kind: ObaMapMarkerKind.place,
-          color: TaplineColors.teal,
+          // Tapline's own glyph in the SDK pin.
+          icon: Icons.storefront,
+          // No colour: the pin takes the theme's primary with onPrimary
+          // for its glyph. That is Tapline teal on the light map and the
+          // light teal (3:1 or better) on the dark map.
           onTap: () => _showStore(store),
         ),
     ],

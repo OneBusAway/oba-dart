@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:obakit_trip_planner/obakit_trip_planner.dart' as tp;
 
@@ -42,6 +44,65 @@ class Wallet extends ChangeNotifier {
   final List<Pass> _passes;
   final List<Tap> _taps;
   int _nextId = 1;
+
+  /// Fires when the next active pass expires, so screens that show it
+  /// rebuild. Runs only while someone listens.
+  Timer? _expiryTimer;
+  static const _maxExpiryWait = Duration(days: 1);
+
+  @override
+  void addListener(VoidCallback listener) {
+    final first = !hasListeners;
+    super.addListener(listener);
+    if (first) _scheduleExpiry();
+  }
+
+  @override
+  void removeListener(VoidCallback listener) {
+    super.removeListener(listener);
+    if (!hasListeners) _cancelExpiry();
+  }
+
+  // A listener removed while listeners are being notified stays counted
+  // until the notification ends, so removeListener can't see the last one
+  // go. Check again once it has.
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
+    if (!hasListeners) _cancelExpiry();
+  }
+
+  @override
+  void dispose() {
+    _cancelExpiry();
+    super.dispose();
+  }
+
+  void _cancelExpiry() {
+    _expiryTimer?.cancel();
+    _expiryTimer = null;
+  }
+
+  void _scheduleExpiry() {
+    _cancelExpiry();
+    if (!hasListeners) return;
+    final t = now();
+    DateTime? next;
+    for (final p in _passes) {
+      if (p.isActiveAt(t) && (next == null || p.expiresAt.isBefore(next))) {
+        next = p.expiresAt;
+      }
+    }
+    if (next == null) return;
+    // Browsers fire a setTimeout longer than ~24.8 days at once, so a
+    // 30-Day Pass would spin. Wake at least daily and check again.
+    final wait = next.difference(t);
+    final capped = wait > _maxExpiryWait;
+    _expiryTimer = Timer(capped ? _maxExpiryWait : wait, () {
+      if (!capped) notifyListeners();
+      _scheduleExpiry();
+    });
+  }
 
   DateTime now() => _now();
 
@@ -95,6 +156,7 @@ class Wallet extends ChangeNotifier {
                 : t.add(product.validity!),
           ),
         );
+        _scheduleExpiry();
     }
     notifyListeners();
   }
@@ -120,6 +182,12 @@ List<String> fareAdvice(Wallet wallet, {tp.Itinerary? trip}) {
         '3 or more rides today? A Day Pass (${formatMoney(dayPass.priceCents)}) '
         'costs less than 3 single rides '
         '(${formatMoney(rideCost * 3)}).',
+      );
+    } else if (active?.product.kind == FareProductKind.ride) {
+      advice.add(
+        'Your ${active!.product.name} pays toward your next trip. For one or two '
+        'more today, stored value (${formatMoney(rideCost)} a ride) is the '
+        'cheapest way.',
       );
     } else {
       advice.add(
@@ -155,14 +223,30 @@ TripFareSuggestion tripFareSuggestion(Wallet wallet, tp.Itinerary trip) {
   final cents = fromPlanner ? fare.cents : sampleTripFareCents(trip);
   // Any active pass that pays for it: a Day Pass that runs out mid-trip
   // doesn't, but a 1-Ride bought late in the day still might.
-  final pass = wallet.activePasses
-      .where((p) => _passCovers(p, trip, cents))
+  final usable = wallet.activePasses.where((p) => _passApplies(p, trip));
+  final pass = usable
+      .where(
+        (p) =>
+            p.product.kind == FareProductKind.pass ||
+            p.product.priceCents >= cents,
+      )
       .firstOrNull;
+  // A 1-Ride worth less than the trip pays its value toward it, the way a
+  // transfer to a pricier leg pays only the difference.
+  final ride = pass == null ? usable.firstOrNull : null;
+  final credit = ride?.product.priceCents ?? 0;
+  final rest = cents - credit;
   final String covered;
   if (cents == 0) {
     covered = 'no fare to pay';
   } else if (pass != null) {
     covered = 'your ${pass.product.name} covers it';
+  } else if (ride != null) {
+    final part = 'your ${ride.product.name} covers ${formatMoney(credit)}';
+    covered = wallet.balanceCents >= rest
+        ? '$part and stored value the other ${formatMoney(rest)}'
+        : '$part; add ${formatMoney(rest - wallet.balanceCents)} of stored '
+              'value to cover the rest';
   } else if (wallet.balanceCents >= cents) {
     covered = 'stored value covers it';
   } else {
@@ -177,14 +261,13 @@ TripFareSuggestion tripFareSuggestion(Wallet wallet, tp.Itinerary trip) {
   );
 }
 
-/// Whether [pass] pays for [trip], which costs [cents]. An unlimited pass
-/// must last until the trip ends. A 1-Ride pays for one fare, and only for
-/// boardings before it expires (its transfers run out, not the ride).
-bool _passCovers(Pass pass, tp.Itinerary trip, int cents) {
+/// Whether [pass] can pay toward [trip]. An unlimited pass must last until
+/// the trip ends. A 1-Ride pays for one fare (up to its price), and only
+/// for boardings before it expires (its transfers run out, not the ride).
+bool _passApplies(Pass pass, tp.Itinerary trip) {
   if (pass.product.kind == FareProductKind.pass) {
     return pass.expiresAt.isAfter(trip.endTime);
   }
-  if (cents > pass.product.priceCents) return false;
   final boardings = trip.legs.where((l) => l.transitLeg);
   final lastBoarding = boardings.isEmpty
       ? trip.endTime

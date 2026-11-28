@@ -351,7 +351,8 @@ class _SearchPageState extends State<SearchPage> {
     obaAnnounce(context, message);
   }
 
-  void _openStop(String stopId) => openFromSearch(context, StopRoute(stopId));
+  void _openStop(StoredStop stop) =>
+      openFromSearch(context, StopRoute(stop.id, name: stop.name));
 
   void _openPlace(Place place) {
     rememberPlace(_session.app, place);
@@ -447,7 +448,7 @@ class _SearchPageState extends State<SearchPage> {
             ObaListRow(
               leading: const Icon(Icons.history),
               title: s.name,
-              onTap: () => _openStop(s.id),
+              onTap: () => _openStop(s),
             ),
         ]),
       ],
@@ -515,7 +516,7 @@ class _SearchPageState extends State<SearchPage> {
               leading: const Icon(Icons.history),
               title: stop.name,
               subtitle: context.obaFormatters.storedStopSubtitle(stop),
-              onTap: () => _openStop(stop.id),
+              onTap: () => _openStop(stop),
             ),
         ]),
       ],
@@ -527,7 +528,7 @@ class _SearchPageState extends State<SearchPage> {
               leading: const Icon(Icons.bookmark_outline),
               title: b.name,
               subtitle: b.stop.name == b.name ? null : b.stop.name,
-              onTap: () => _openStop(b.stop.id),
+              onTap: () => _openStop(b.stop),
             ),
         ]),
       ],

@@ -147,6 +147,11 @@ class ObaSheetNavigatorHostState extends State<ObaSheetNavigatorHost> {
     );
     if (existing != null) {
       nav.popUntil((r) => identical(r, existing));
+      final open = existing.settings.arguments as ObaRoute;
+      if (!open.showsSameContentAs(route)) {
+        // Same page, different content: build it again in place.
+        return nav.pushReplacement<T, Object?>(_pageRoute<T>(route));
+      }
       widget.sheet?.setDetents(route.detents);
       return Future.value();
     }

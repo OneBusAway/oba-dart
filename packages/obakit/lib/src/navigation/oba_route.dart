@@ -121,6 +121,13 @@ sealed class ObaRoute {
   /// Sheet heights for this route.
   ObaSheetDetents get detents;
 
+  /// Whether an open page built for this route already shows what [other]
+  /// (a route with the same [id]) asks for. When it doesn't, the shell
+  /// rebuilds the page from [other] instead of going back to it. True by
+  /// default; a route whose [id] leaves out part of what its page shows
+  /// overrides it.
+  bool showsSameContentAs(ObaRoute other) => true;
+
   @override
   bool operator ==(Object other) =>
       other is ObaRoute && other.runtimeType == runtimeType && other.id == id;
@@ -224,12 +231,20 @@ final class TripPlannerRoute extends ObaRoute {
   /// equality: the planner is one page whoever listens to it.
   ///
   /// In the full-app shell (`ObaApp`), pushing this route while a trip
-  /// planner with the same [id] is already open returns to that page, which
-  /// keeps the callback and places it was opened with. A host that handles
-  /// every route in `ObaScope.onNavigate` builds a new page each time and
-  /// isn't affected.
+  /// planner with the same [id] (the same places set: none, origin,
+  /// destination or both) is already open returns to that page. If the new
+  /// route's places or callback differ, the shell replaces the page with
+  /// one built from the new route. A planner with a different [id] opens
+  /// as a new page. Pass a stable function (not a new closure each
+  /// time) to keep an open planner's state.
   final void Function(BuildContext context, tp.Itinerary itinerary)?
   onItinerarySelected;
+  @override
+  bool showsSameContentAs(ObaRoute other) =>
+      other is TripPlannerRoute &&
+      other.origin == origin &&
+      other.destination == destination &&
+      other.onItinerarySelected == onItinerarySelected;
   @override
   String get id =>
       'tripPlanner_${[if (origin != null) 'origin', if (destination != null) 'destination'].join('_').ifEmpty('blank')}';
@@ -240,8 +255,14 @@ final class TripPlannerRoute extends ObaRoute {
 // -- Stop, trip, schedules, reporting -----------------------------------------
 
 final class StopRoute extends ObaRoute {
-  const StopRoute(this.stopId, {this.transfer});
+  const StopRoute(this.stopId, {this.transfer, this.name});
   final String stopId;
+
+  /// The stop's name, when the screen that opened it already knew it
+  /// (nearby rows, bookmarks, search results, a trip's stop list). A hint
+  /// for a host that titles its own page before the stop loads; null when
+  /// unknown. Not part of [id], and the stop page doesn't depend on it.
+  final String? name;
 
   /// Not part of [id]: a stop is one page however it was reached.
   final ObaTransferContext? transfer;
