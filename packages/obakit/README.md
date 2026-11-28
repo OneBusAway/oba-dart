@@ -328,7 +328,10 @@ ObaScope(
   application: app,
   onNavigate: (context, route) {
     if (route is StopRoute) {
-      myRouter.openStop(route.stopId);   // open it your way...
+      // open it your way. route.name is the stop's name when the screen
+      // that opened it knew it (nearby rows, bookmarks, search results),
+      // so your page can show a title before the stop loads.
+      myRouter.openStop(route.stopId, title: route.name);
       return true;
     }
     return false;                        // ...or let the SDK push its page

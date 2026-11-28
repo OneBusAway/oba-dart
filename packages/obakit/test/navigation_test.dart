@@ -17,6 +17,16 @@ void main() {
       );
       expect(const StopRoute('1_75403'), StopRoute('1_75403', transfer: t));
       expect(const StopRoute('1_75403').id, 'stopDetails-1_75403');
+      // The name is a display hint, not identity.
+      expect(
+        const StopRoute('1_75403', name: 'Pine St'),
+        const StopRoute('1_75403'),
+      );
+      expect(
+        const StopRoute('1_75403', name: 'Pine St').id,
+        'stopDetails-1_75403',
+      );
+      expect(const StopRoute('1_75403', name: 'Pine St').name, 'Pine St');
       expect(const StopRoute('a') == const StopRoute('b'), isFalse);
     });
 

@@ -81,7 +81,9 @@ class CampusStopsList extends StatelessWidget {
             title: Text(stop.name),
             subtitle: Text(stop.description),
             trailing: const ExcludeSemantics(child: Icon(Icons.chevron_right)),
-            onTap: () => ObaNavigator.of(context).push(StopRoute(stop.id)),
+            onTap: () =>
+                ObaNavigator.of(context)
+                    .push(StopRoute(stop.id, name: stop.name)),
           ),
       ],
     ),

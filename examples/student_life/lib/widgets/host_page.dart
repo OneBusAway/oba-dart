@@ -55,6 +55,14 @@ class HostObaPage extends StatelessWidget {
 typedef HostChrome = ({String title, bool showsHeader, String sdkWidget});
 
 HostChrome hostChromeFor(ObaRoute route) => switch (route) {
+  // The SDK passes the stop's name when the screen that opened it knew
+  // it. Then the app bar carries the name from the first frame and the SDK
+  // header (which would repeat it) is hidden.
+  StopRoute(:final name?) => (
+    title: name,
+    showsHeader: false,
+    sdkWidget: 'StopPage',
+  ),
   StopRoute() => (title: 'Transit', showsHeader: true, sdkWidget: 'StopPage'),
   TripRoute() => (title: 'Transit', showsHeader: true, sdkWidget: 'TripPage'),
   RouteStopsRoute() => (

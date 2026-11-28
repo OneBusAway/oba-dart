@@ -82,6 +82,7 @@ void main() {
     await tester.tap(find.byType(NearbyDepartureTile).first);
     await tester.pump();
     expect(pushed.single, isA<StopRoute>());
+    expect((pushed.single as StopRoute).name, isNotEmpty);
 
     await tester.tap(find.text('See all'));
     await tester.pump();

@@ -111,23 +111,23 @@ void main() {
     await tester.tap(find.text('Eighth College / Theatre District'));
     await TestEnv.settle(tester);
 
-    // The host's route: its own app bar with a generic title, and the SDK
-    // stop page embedded below it (no second app bar). The stop's name
-    // shows once, in the SDK page's compact header.
+    // The host's route: its own app bar, titled from the route's name hint
+    // before the stop loads, and the SDK stop page embedded below it (no
+    // second app bar, and no SDK header repeating the name).
     final host = tester.widget<HostObaPage>(find.byType(HostObaPage));
-    expect(host.title, 'Transit');
-    expect(host.showsHeader, isTrue);
+    expect(host.title, 'Eighth College / Theatre District');
+    expect(host.showsHeader, isFalse);
     expect(find.byType(AppBar), findsOneWidget);
     expect(
       find.descendant(
         of: find.byType(AppBar),
-        matching: find.textContaining('Eighth College'),
+        matching: find.text('Eighth College / Theatre District'),
       ),
-      findsNothing,
+      findsOneWidget,
     );
     expect(
       find.text('Eighth College / Theatre District (North)'),
-      findsOneWidget,
+      findsNothing,
     );
     final page = tester.widget<StopPage>(find.byType(StopPage));
     expect(page.stopId, 'MTS_24151');
@@ -136,6 +136,7 @@ void main() {
 
   for (final (route, title, sdkPage) in [
     (const StopRoute('MTS_1'), 'Transit', StopPage),
+    (const StopRoute('MTS_1', name: 'Gilman Dr'), 'Gilman Dr', StopPage),
     (const AlertsListRoute(), 'Service alerts', AlertsListPage),
     (const RecentStopsRoute(), 'Recent stops', RecentStopsPage),
     (const TripPlannerRoute(), 'Trip planner', TripPlannerPage),

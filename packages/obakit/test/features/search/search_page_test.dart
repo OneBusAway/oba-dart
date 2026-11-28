@@ -175,6 +175,7 @@ void main() {
     await tester.testTextInput.receiveAction(TextInputAction.search);
     await ObaTestEnv.settle(tester);
     expect(pushed.single, isA<StopRoute>());
+    expect((pushed.single as StopRoute).name, isNotEmpty);
     expect(find.textContaining('No search results'), findsNothing);
   });
 

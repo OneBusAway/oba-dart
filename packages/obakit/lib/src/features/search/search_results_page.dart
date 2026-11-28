@@ -241,7 +241,9 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                 ObaStopRow(
                   stop: s,
                   routes: [for (final id in s.routeIds) ?references.route(id)],
-                  onTap: () => ObaNavigator.of(context).push(StopRoute(s.id)),
+                  onTap: () =>
+                      ObaNavigator.of(context)
+                          .push(StopRoute(s.id, name: s.name)),
                 ),
             ],
           ),

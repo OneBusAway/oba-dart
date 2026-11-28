@@ -240,8 +240,14 @@ final class TripPlannerRoute extends ObaRoute {
 // -- Stop, trip, schedules, reporting -----------------------------------------
 
 final class StopRoute extends ObaRoute {
-  const StopRoute(this.stopId, {this.transfer});
+  const StopRoute(this.stopId, {this.transfer, this.name});
   final String stopId;
+
+  /// The stop's name, when the screen that opened it already knew it
+  /// (nearby rows, bookmarks, search results, a trip's stop list). A hint
+  /// for a host that titles its own page before the stop loads; null when
+  /// unknown. Not part of [id], and the stop page doesn't depend on it.
+  final String? name;
 
   /// Not part of [id]: a stop is one page however it was reached.
   final ObaTransferContext? transfer;

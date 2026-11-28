@@ -375,7 +375,7 @@ class _ObaMapViewState extends State<ObaMapView>
     if (handler != null) {
       handler(stop);
     } else {
-      ObaNavigator.of(context).push(StopRoute(stop.id));
+      ObaNavigator.of(context).push(StopRoute(stop.id, name: stop.name));
     }
   }
 
