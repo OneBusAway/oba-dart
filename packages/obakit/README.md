@@ -390,6 +390,78 @@ your location, the recentre button, and the tile attribution. Pass an
 `ObaMapCoordinator` to drive it from your code (`moveTo`, `focusStop`,
 overlays). `onShowStopsList` adds the accessible list of visible stops.
 
+#### Your own markers and lines on the map
+
+To draw your own places on the SDK map (stores, campus buildings, a
+shuttle route), own an `ObaMapCoordinator`, give it to the map and to an
+`ObaMapCoordinatorScope`, and put an `ObaMapOverlays` under that scope.
+The overlay shows while the widget is mounted and goes away when it is
+disposed:
+
+```dart
+class CampusMap extends StatefulWidget {
+  const CampusMap({super.key});
+  @override
+  State<CampusMap> createState() => _CampusMapState();
+}
+
+class _CampusMapState extends State<CampusMap> {
+  final _coordinator = ObaMapCoordinator();
+
+  // Build the overlay once (or when your data changes), not in build():
+  // ObaMapOverlays re-applies it whenever it gets a new instance.
+  late final _overlay = ObaMapOverlay(
+    markers: [
+      for (final b in buildings)
+        ObaMapMarker(
+          coordinate: b.coordinate,
+          label: 'Building: ${b.name}', // required: screen readers read it
+          kind: ObaMapMarkerKind.place,
+          icon: Icons.apartment,         // or builder: (context) => ...
+          onTap: () => showBuilding(b),
+        ),
+    ],
+    polylines: [ObaMapPolyline(points: shuttleLoop, color: shuttleBlue)],
+  );
+
+  @override
+  void dispose() {
+    _coordinator.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => ObaMapCoordinatorScope(
+    coordinator: _coordinator,
+    child: ObaMapOverlays(
+      overlay: _overlay,
+      child: ObaMapView(coordinator: _coordinator),
+    ),
+  );
+}
+```
+
+- `ObaMapOverlays` finds the coordinator through `ObaMapCoordinatorScope`.
+  Passing it to `ObaMapView` alone isn't enough; without a scope the
+  overlay does nothing.
+- Outside the full-app shell the map draws one overlay: the most recently
+  set. Put all of a screen's markers and lines in one `ObaMapOverlay`.
+- Markers take an `icon` or a `builder` (see
+  [Driving the map](#driving-the-map)). Stop pins, the rider's location and
+  the attribution stay.
+- To change the map from code, use the coordinator:
+  `_coordinator.moveTo(store.coordinate, zoom: 17)`, `fitBounds(rect)`,
+  `focusStop(stop)`. Code under the scope can reach it with
+  `ObaMapCoordinator.maybeOf(context)?.moveTo(...)`, which does nothing
+  when there is no map.
+- A route you push above the map doesn't see the scope. Wrap it in
+  `ObaMapCoordinatorScope(coordinator: _coordinator, ...)` again when it
+  needs the map (for example `StopsOnMapPage`).
+
+`examples/tapline/lib/screens/map_screen.dart` is a working example
+(reload-store markers with a storefront icon, a store list that moves the
+map, and the stops list).
+
 For a dark theme, give the map dark street tiles (and their attribution).
 Without them the default tiles show in both themes:
 
