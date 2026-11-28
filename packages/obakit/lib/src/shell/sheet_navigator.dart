@@ -147,7 +147,8 @@ class ObaSheetNavigatorHostState extends State<ObaSheetNavigatorHost> {
     );
     if (existing != null) {
       nav.popUntil((r) => identical(r, existing));
-      if (!_showsSame(existing.settings.arguments as ObaRoute, route)) {
+      final open = existing.settings.arguments as ObaRoute;
+      if (!open.showsSameContentAs(route)) {
         // Same page, different content: build it again in place.
         return nav.pushReplacement<T, Object?>(_pageRoute<T>(route));
       }
@@ -156,19 +157,6 @@ class ObaSheetNavigatorHostState extends State<ObaSheetNavigatorHost> {
     }
     return nav.push<T>(_pageRoute<T>(route));
   }
-
-  /// Whether the open page for [open] already shows what [next] (a route
-  /// with the same id) asks for. A trip planner's id says only which of its
-  /// places are set, so a planner to another place, or with another
-  /// `onItinerarySelected`, needs a new page.
-  static bool _showsSame(ObaRoute open, ObaRoute next) =>
-      switch ((open, next)) {
-        (final TripPlannerRoute a, final TripPlannerRoute b) =>
-          a.origin == b.origin &&
-              a.destination == b.destination &&
-              a.onItinerarySelected == b.onItinerarySelected,
-        _ => true,
-      };
 
   Future<T?> replace<T>(ObaRoute route) {
     final nav = navigatorState;

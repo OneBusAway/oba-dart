@@ -121,6 +121,13 @@ sealed class ObaRoute {
   /// Sheet heights for this route.
   ObaSheetDetents get detents;
 
+  /// Whether an open page built for this route already shows what [other]
+  /// (a route with the same [id]) asks for. When it doesn't, the shell
+  /// rebuilds the page from [other] instead of going back to it. True by
+  /// default; a route whose [id] leaves out part of what its page shows
+  /// overrides it.
+  bool showsSameContentAs(ObaRoute other) => true;
+
   @override
   bool operator ==(Object other) =>
       other is ObaRoute && other.runtimeType == runtimeType && other.id == id;
@@ -230,6 +237,12 @@ final class TripPlannerRoute extends ObaRoute {
   /// time) to keep an open planner's state.
   final void Function(BuildContext context, tp.Itinerary itinerary)?
   onItinerarySelected;
+  @override
+  bool showsSameContentAs(ObaRoute other) =>
+      other is TripPlannerRoute &&
+      other.origin == origin &&
+      other.destination == destination &&
+      other.onItinerarySelected == onItinerarySelected;
   @override
   String get id =>
       'tripPlanner_${[if (origin != null) 'origin', if (destination != null) 'destination'].join('_').ifEmpty('blank')}';

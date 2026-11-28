@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:obakit/obakit.dart';
 import 'package:tapline_example/map_vector.dart';
 import 'package:tapline_example/screens/map_screen.dart';
 
 import 'support/test_env.dart';
 
 Color _hex(String hex) => Color(int.parse('FF${hex.substring(1)}', radix: 16));
-
-double _contrast(Color a, Color b) {
-  final la = a.computeLuminance(), lb = b.computeLuminance();
-  final hi = la > lb ? la : lb, lo = la > lb ? lb : la;
-  return (hi + 0.05) / (lo + 0.05);
-}
 
 /// The fill of each reload-store pin the map draws.
 List<Color> _pinFills(WidgetTester tester) => [
@@ -60,7 +55,7 @@ void main() {
       final ground = _hex(palette.background);
       for (final fill in fills) {
         expect(
-          _contrast(fill, ground),
+          ObaContrast.ratio(fill, ground),
           greaterThanOrEqualTo(3),
           reason: 'pin $fill on ${palette.background}',
         );

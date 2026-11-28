@@ -252,11 +252,10 @@ class ObaOverlayMarker extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         child: SizedBox.square(
           dimension: kObaMarkerTarget,
-          child: ClipRect(
-            child: Center(
-              child: builder != null ? builder(context) : _pin(context),
-            ),
-          ),
+          // The SDK pin fits its target; only a host's widget is clipped.
+          child: builder != null
+              ? ClipRect(child: Center(child: builder(context)))
+              : Center(child: _pin(context)),
         ),
       ),
     );

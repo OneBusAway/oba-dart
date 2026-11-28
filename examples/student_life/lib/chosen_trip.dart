@@ -59,11 +59,7 @@ String leaveLabel(
   final local = start.toLocal();
   final today = now.toLocal();
   final time = m.formatTimeOfDay(TimeOfDay.fromDateTime(local));
-  final sameDay =
-      local.year == today.year &&
-      local.month == today.month &&
-      local.day == today.day;
-  return sameDay
+  return DateUtils.isSameDay(local, today)
       ? 'Leave by $time'
       : 'Leave ${m.formatMediumDate(local)} at $time';
 }

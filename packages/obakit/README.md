@@ -809,6 +809,11 @@ new public widgets to the `show` list for your file in `lib/obakit.dart`.
   `build(context)`.
 - To change a shared route's parameters or detents, edit `oba_route.dart`,
   but only that route's class. Detents mirror iOS `SheetRoute.swift`.
+- The shell goes back to an open page whose route has the same `id`. If
+  the `id` leaves out something the page shows (it never holds
+  coordinates), override `showsSameContentAs` so a route that differs
+  rebuilds the page. `TripPlannerRoute` does this for its places and
+  callback.
 - To navigate, call `ObaNavigator.of(context).push(SomeRoute(...))`. Never
   call `Navigator.push` for an SDK destination. Pop with
   `ObaNavigator.of(context).pop()`.

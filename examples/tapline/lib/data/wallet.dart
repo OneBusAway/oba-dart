@@ -77,13 +77,12 @@ class Wallet extends ChangeNotifier {
     _cancelExpiry();
     if (!hasListeners) return;
     final t = now();
-    final next = _passes
-        .where((p) => p.isActiveAt(t))
-        .map((p) => p.expiresAt)
-        .fold<DateTime?>(
-          null,
-          (soonest, e) => soonest == null || e.isBefore(soonest) ? e : soonest,
-        );
+    DateTime? next;
+    for (final p in _passes) {
+      if (p.isActiveAt(t) && (next == null || p.expiresAt.isBefore(next))) {
+        next = p.expiresAt;
+      }
+    }
     if (next == null) return;
     _expiryTimer = Timer(next.difference(t), () {
       notifyListeners();

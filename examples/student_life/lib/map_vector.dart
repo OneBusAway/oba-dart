@@ -101,10 +101,13 @@ Future<ObaTileSource> loadVectorTiles({
   required VectorPalette palette,
   required ObaTileSource rasterFallback,
 }) async {
-  // StyleReader resolves the style's sources (TileJSON) and sprites.
-  final style = await StyleReader(uri: styleUrl).read();
-  // It doesn't expose the document itself, so read it again to recolour.
-  final response = await http.get(Uri.parse(styleUrl));
+  // StyleReader resolves the style's sources (TileJSON) and sprites. It
+  // doesn't expose the document itself, so read it again (at the same
+  // time) to recolour.
+  final (style, response) = await (
+    StyleReader(uri: styleUrl).read(),
+    http.get(Uri.parse(styleUrl)),
+  ).wait;
   if (response.statusCode != 200) {
     throw http.ClientException(
       'style ${response.statusCode}',
